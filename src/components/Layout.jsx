@@ -1,10 +1,10 @@
 import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Features needed', end: true },
-  { to: '/experience', label: 'Experience' },
-  { to: '/standards', label: 'Applicable standards' },
-  { to: '/framework', label: 'Framework' },
+  { to: '/', label: 'Features needed', detail: 'Answer what this screen needs.', end: true },
+  { to: '/experience', label: 'Experience', detail: 'See it built, with notes.' },
+  { to: '/standards', label: 'Applicable standards', detail: 'What already applies, given your answers.' },
+  { to: '/framework', label: 'Framework', detail: 'Where tabular data fits.' },
 ];
 
 export default function Layout() {
@@ -14,27 +14,25 @@ export default function Layout() {
 
   return (
     <div className="app-shell">
-      <nav className="top-nav">
-        <div className="top-nav-inner">
-          <NavLink to={`/${suffix}`} className="site-title">
-            Grid and table UX reference
-          </NavLink>
-          <ul className="nav-links">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={`${item.to}${suffix}`}
-                  end={item.end}
-                  className={({ isActive }) => (isActive ? 'active' : undefined)}
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+      <aside className="side-nav">
+        <NavLink to={`/${suffix}`} className="side-nav-title">
+          Grid and table<br />UX reference
+        </NavLink>
+        <div className="side-nav-cards">
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={`${item.to}${suffix}`}
+              end={item.end}
+              className={({ isActive }) => `nav-card${isActive ? ' nav-card-active' : ''}`}
+            >
+              <span className="nav-card-label">{item.label}</span>
+              <span className="nav-card-detail">{item.detail}</span>
+            </NavLink>
+          ))}
         </div>
-      </nav>
-      <main>
+      </aside>
+      <main className="canvas">
         <Outlet />
       </main>
     </div>
