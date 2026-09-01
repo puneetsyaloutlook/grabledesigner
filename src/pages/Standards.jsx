@@ -15,8 +15,8 @@ export default function Standards() {
   }, {});
 
   return (
-    <div className="page">
-      <header>
+    <div>
+      <div className="content-header">
         <p className="eyebrow">Grid and table UX reference</p>
         <h1>Applicable standards</h1>
         <p className="intro-copy">
@@ -24,7 +24,7 @@ export default function Standards() {
           that already apply, given what was selected on the features page.
           Nothing here is optional once the triggering feature is present.
         </p>
-      </header>
+      </div>
 
       {results.length === 0 && (
         <div className="card">
@@ -39,7 +39,7 @@ export default function Standards() {
       {Object.entries(byCategory).map(([category, entries]) => (
         <section key={category} style={{ marginBottom: 'var(--space-2xl)' }}>
           <h2>{category}</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <div className="canvas-grid">
             {entries.map((entry) => (
               <div key={entry.id} className="card">
                 <p style={{ fontWeight: 500, margin: '0 0 var(--space-sm)' }}>{entry.requirement}</p>

@@ -30,8 +30,8 @@ export default function Features() {
   }
 
   return (
-    <div className="page">
-      <header>
+    <div>
+      <div className="content-header">
         <p className="eyebrow">Grid and table UX reference</p>
         <h1>Features needed</h1>
         <p className="intro-copy">
@@ -39,24 +39,26 @@ export default function Features() {
           demo and the applicable standards, so only what's relevant shows up
           on either.
         </p>
-      </header>
+      </div>
 
-      {selectionSchema.map((group) => (
-        <section key={group.group} style={{ marginBottom: 'var(--space-2xl)' }}>
-          <h2>{group.group}</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-            {group.fields.map((field) => (
-              <FieldControl
-                key={field.key}
-                field={field}
-                value={selections[field.key]}
-                selections={selections}
-                onChange={(value) => setField(field.key, value)}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      <div className="canvas-grid">
+        {selectionSchema.map((group) => (
+          <section key={group.group} className="card">
+            <h2>{group.group}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+              {group.fields.map((field) => (
+                <FieldControl
+                  key={field.key}
+                  field={field}
+                  value={selections[field.key]}
+                  selections={selections}
+                  onChange={(value) => setField(field.key, value)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
 
       <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xl)' }}>
         <button type="button" className="button button-primary" onClick={goToExperience}>

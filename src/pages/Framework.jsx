@@ -10,8 +10,8 @@ const STAGES = [
 
 export default function Framework() {
   return (
-    <div className="page-wide">
-      <header>
+    <div>
+      <div className="content-header">
         <p className="eyebrow">Grid and table UX reference</p>
         <h1>The analytics product journey</h1>
         <p className="intro-copy">
@@ -20,12 +20,12 @@ export default function Framework() {
           everything after that is built on top of what those two stages
           surface.
         </p>
-      </header>
+      </div>
 
       <div className="card">
         <h2>The seven stages</h2>
         <div style={{ overflowX: 'auto' }}>
-          <div style={{ display: 'flex', gap: 0, minWidth: '900px' }}>
+          <div style={{ display: 'flex', gap: 0, minWidth: '1000px' }}>
             {STAGES.map((stage, i) => (
               <div
                 key={stage.name}
@@ -45,27 +45,29 @@ export default function Framework() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 'var(--space-xl)' }}>
-        <h2>Two ways to move along it</h2>
-        <p>
-          Value to users and business tends to climb as you move along the
-          journey, but not always at the same rate, and not always the same
-          way.
-        </p>
-        <p>
-          <strong>Incremental buildout</strong> delivers smaller value gains
-          at each stage, but climbs steadily, without long gaps where nothing
-          ships.
-        </p>
-        <p>
-          <strong>Big-bang delivery</strong> can reach higher value at a given
-          stage, but with longer incubation cycles in between &mdash; periods
-          where nothing new is shipping while the next jump is being built.
-        </p>
-        <p>
-          Neither is correct by default. The right approach for a given
-          stage depends on how much is already understood about what users
-          are actually trying to do in their jobs, and how well that's been
+      <div className="canvas-grid" style={{ marginTop: 'var(--space-xl)' }}>
+        <div className="card">
+          <h2>Incremental buildout</h2>
+          <p>
+            Smaller value gains at each stage, but a steady climb, without
+            long gaps where nothing ships.
+          </p>
+        </div>
+        <div className="card">
+          <h2>Big-bang delivery</h2>
+          <p>
+            Can reach higher value at a given stage, but with longer
+            incubation cycles in between &mdash; periods where nothing new is
+            shipping while the next jump is being built.
+          </p>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 'var(--space-lg)' }}>
+        <p style={{ margin: 0 }}>
+          Neither is correct by default. The right approach for a given stage
+          depends on how much is already understood about what users are
+          actually trying to do in their jobs, and how well that's been
           tested with what exists today.
         </p>
       </div>

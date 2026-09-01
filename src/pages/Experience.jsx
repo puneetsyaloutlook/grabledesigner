@@ -8,8 +8,8 @@ export default function Experience() {
   const derived = computeDerivedFlags(selections);
 
   return (
-    <div className="page-wide">
-      <header>
+    <div>
+      <div className="content-header">
         <p className="eyebrow">Grid and table UX reference</p>
         <h1>Experience</h1>
         <p className="intro-copy">
@@ -18,20 +18,22 @@ export default function Experience() {
           underneath it, filtered to what's actually selected. Not yet built
           &mdash; this stub confirms the selections are arriving correctly.
         </p>
-      </header>
-
-      <div className="card">
-        <h3>Received selections</h3>
-        <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(selections, null, 2)}
-        </pre>
       </div>
 
-      <div className="card" style={{ marginTop: 'var(--space-lg)' }}>
-        <h3>Derived flags</h3>
-        <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(derived, null, 2)}
-        </pre>
+      <div className="canvas-grid">
+        <div className="card">
+          <h3>Received selections</h3>
+          <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
+            {JSON.stringify(selections, null, 2)}
+          </pre>
+        </div>
+
+        <div className="card">
+          <h3>Derived flags</h3>
+          <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
+            {JSON.stringify(derived, null, 2)}
+          </pre>
+        </div>
       </div>
     </div>
   );
