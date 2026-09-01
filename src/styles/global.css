@@ -151,10 +151,13 @@ a {
 }
 
 .reading-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  max-width: 720px;
+  column-width: 360px;
+  column-gap: var(--space-lg);
+}
+
+.reading-list .card {
+  break-inside: avoid;
+  margin-bottom: var(--space-md);
 }
 
 .eyebrow {
