@@ -45,8 +45,8 @@ export const selectionSchema = [
   {
     group: 'Structure',
     fields: [
-      { key: 'groupedHeaders', type: 'boolean', question: 'Are columns grouped under a shared parent label?' },
-      { key: 'lockedColumns', type: 'boolean', question: 'Are one or more columns pinned or frozen?' },
+      { key: 'groupedHeaders', type: 'boolean', question: 'Do multiple columns represent related sub-values under one broader category?', detail: 'For example, actual, forecast, and variance for the same quarter, or total and urban counts for the same population figure.' },
+      { key: 'lockedColumns', type: 'boolean', question: 'Do some columns need to stay visible while a user scrolls through the rest?', detail: 'For example, keeping a name or ID column in view while scanning wide data to the right.' },
       { key: 'resizableColumns', type: 'boolean', question: 'Can columns be resized?' },
       { key: 'reorderableColumns', type: 'boolean', question: 'Can columns be reordered?' },
     ],
@@ -101,7 +101,7 @@ export const selectionSchema = [
           { value: 'bulk', label: 'Bulk actions on a selection' },
         ],
       },
-      { key: 'dragReorder', type: 'boolean', question: 'Can rows be reordered by dragging?' },
+      { key: 'dragReorder', type: 'boolean', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist \u2014 not just sorting by a column\u2019s value.' },
     ],
   },
   {
@@ -180,7 +180,7 @@ export const selectionSchema = [
   {
     group: 'Summary',
     fields: [
-      { key: 'rowGrouping', type: 'boolean', question: 'Are rows grouped under a shared attribute?' },
+      { key: 'rowGrouping', type: 'boolean', question: 'Do rows need to be grouped by a shared attribute so users can scan by category?', detail: 'For example, grouping transactions by account, or tickets by status.' },
       {
         key: 'totals',
         type: 'single',
