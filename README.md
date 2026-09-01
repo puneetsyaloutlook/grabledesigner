@@ -1,10 +1,18 @@
 # Grid and table UX reference
 
-Four pages: Features needed, Experience, Applicable standards, Framework.
-Selections made on Features needed carry to Experience and Standards via
-URL query parameters (e.g. `/experience?layout=content&dataPoints=high`),
-so both pages are independently loadable and shareable by link. Framework
-is fully static and has no dependency on selections.
+Four pages: Features needed, Applicable standards, Experience, Framework.
+Selections made on Features needed carry to Applicable standards and
+Experience via URL query parameters (e.g.
+`/experience?layout=content&dataPoints=high`), so both pages are
+independently loadable and shareable by link. Framework is fully static and
+has no dependency on selections.
+
+Applicable standards and Experience are not siblings that each read the
+selections separately. Applicable standards is upstream of Experience: the
+filtered requirements list it renders is the same list Experience must
+satisfy, pulled from one shared module (`src/lib/standards.js`) rather than
+authored twice. If a requirement is applicable, the demo grid has to
+actually meet it, not just illustrate the feature that triggered it.
 
 ## Where things live
 
@@ -15,15 +23,20 @@ is fully static and has no dependency on selections.
   from this file, nothing hardcodes field names elsewhere.
 - `src/lib/selectionState.js` — encodes/decodes the selection object to and
   from the URL query string.
+- `src/lib/standards.js` — the functional requirements, each tagged with
+  the selection (or derived flag) that triggers it. This is the shared
+  source both Applicable standards and Experience read from.
 - `src/pages/Features.jsx` — built out fully; renders the schema as
   questions and writes to the debug panel so the selection object is
   visible while building the rest.
-- `src/pages/Experience.jsx`, `src/pages/Standards.jsx` — currently stubs.
-  They correctly decode the incoming selections and derived flags (visible
-  in each page's debug card) but don't yet render tagged content. That's
-  the next build step: going through the structural and standards research
-  reports, tagging each fact against the keys in `selectionSchema.js`, then
-  filtering each page's content against the incoming selections.
+- `src/pages/Standards.jsx` — built out fully; filters `standards.js`
+  against the incoming selections and renders the result, grouped by
+  category.
+- `src/pages/Experience.jsx` — the demo grid itself isn't built yet. The
+  page does correctly pull and render the same filtered requirements list
+  as Standards, so the dependency is real in code, not just described here.
+  Building the actual grid is the next step, and it needs to be checked
+  against this list as it's built, not written up afterward to describe it.
 - `src/pages/Framework.jsx` — built out fully; static, no selection
   dependency.
 - `src/styles/tokens.css` — copied directly from the design system source
@@ -49,11 +62,13 @@ link to any page but the root would 404).
 
 ## Next steps, in order
 
-1. Content-tag the structural research report and the standards report
-   against the keys in `selectionSchema.js`.
-2. Build out `Standards.jsx` to filter and render the tagged standards —
-   simpler than Experience, a good test of the tagging before it also has
-   to drive a live grid.
-3. Build out `Experience.jsx`: the live demo grid plus its filtered
-   accessibility/reference-system report, reusing the filtering approach
-   proven in step 2.
+1. Build the live demo grid in `Experience.jsx`. Use the requirements list
+   already rendered on that page as the implementation checklist — each
+   applicable entry (selected-state indication, aria-sort, focus handling,
+   and so on) needs to actually be true of the rendered grid, not just
+   listed alongside it.
+2. As the grid takes shape, cross-check it against `standards.js` directly
+   rather than against memory of the research reports — the tagged data is
+   the authoritative version at this point, the reports are what informed
+   it.
+
