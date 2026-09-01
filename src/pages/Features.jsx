@@ -81,13 +81,21 @@ function FieldControl({ field, value, selections, onChange }) {
   if (field.type === 'boolean') {
     return (
       <div>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-sm)' }}>
           <input
             type="checkbox"
             checked={Boolean(value)}
             onChange={(e) => onChange(e.target.checked)}
+            style={{ marginTop: 3 }}
           />
-          <span>{field.question}</span>
+          <span>
+            {field.question}
+            {field.detail && (
+              <span style={{ display: 'block', fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', marginTop: 2 }}>
+                {field.detail}
+              </span>
+            )}
+          </span>
         </label>
       </div>
     );
