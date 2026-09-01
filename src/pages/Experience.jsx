@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { decodeSelections } from '../lib/selectionState';
 import { computeDerivedFlags } from '../lib/selectionSchema';
 import { applicableStandards } from '../lib/standards';
+import { accentFor } from '../lib/categoryAccent';
 
 export default function Experience() {
   const [searchParams] = useSearchParams();
@@ -37,10 +38,14 @@ export default function Experience() {
           {requirements.length} requirement{requirements.length === 1 ? '' : 's'} apply,
           based on what was selected on Features needed.
         </p>
-        <div className="canvas-grid">
+        <div className="reading-list">
           {requirements.map((entry) => (
-            <div key={entry.id} className="card">
-              <p style={{ fontSize: 'var(--text-caption-size)', color: 'var(--color-primary)', margin: '0 0 var(--space-xs)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div
+              key={entry.id}
+              className="card"
+              style={{ borderLeft: `3px solid ${accentFor(entry.category)}` }}
+            >
+              <p style={{ fontSize: '0.8125rem', color: 'var(--color-action)', fontWeight: 600, margin: '0 0 var(--space-xs)' }}>
                 {entry.category}
               </p>
               <p style={{ fontWeight: 500, margin: 0 }}>{entry.requirement}</p>

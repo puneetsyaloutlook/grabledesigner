@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { decodeSelections } from '../lib/selectionState';
 import { computeDerivedFlags } from '../lib/selectionSchema';
 import { applicableStandards } from '../lib/standards';
+import { accentFor } from '../lib/categoryAccent';
 
 export default function Standards() {
   const [searchParams] = useSearchParams();
@@ -39,9 +40,13 @@ export default function Standards() {
       {Object.entries(byCategory).map(([category, entries]) => (
         <section key={category} style={{ marginBottom: 'var(--space-2xl)' }}>
           <h2>{category}</h2>
-          <div className="canvas-grid">
+          <div className="reading-list">
             {entries.map((entry) => (
-              <div key={entry.id} className="card">
+              <div
+                key={entry.id}
+                className="card"
+                style={{ borderLeft: `3px solid ${accentFor(entry.category)}` }}
+              >
                 <p style={{ fontWeight: 500, margin: '0 0 var(--space-sm)' }}>{entry.requirement}</p>
                 <p style={{ fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', margin: '0 0 var(--space-xs)' }}>
                   <strong>Why: </strong>{entry.why}
