@@ -150,6 +150,13 @@ a {
   align-items: start;
 }
 
+.reading-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 720px;
+}
+
 .eyebrow {
   display: flex;
   align-items: center;
@@ -247,6 +254,10 @@ h3 {
 .button-primary:hover {
   background: var(--blue-900);
   border-color: var(--blue-900);
+}
+
+.card p {
+  max-width: 65ch;
 }
 
 .button:focus-visible {
