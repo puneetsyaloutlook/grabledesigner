@@ -1,10 +1,10 @@
 import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Features needed', detail: 'Answer what this screen needs.', end: true },
-  { to: '/standards', label: 'Applicable standards', detail: 'What already applies, given your answers.' },
-  { to: '/experience', label: 'Experience', detail: 'Built to satisfy those standards.' },
-  { to: '/framework', label: 'Framework', detail: 'Where tabular data fits.' },
+  { to: '/', label: 'Features needed', detail: 'What functionality does the data display need to have?', end: true },
+  { to: '/standards', label: 'Applicable standards', detail: 'Based on that functionality, which UX standards apply?' },
+  { to: '/experience', label: 'Experience', detail: 'A quick demo of how those functions and standards look in the UI.' },
+  { to: '/framework', label: 'Framework', detail: 'Where does tabular data fit in the bigger picture?' },
 ];
 
 export default function Layout() {
