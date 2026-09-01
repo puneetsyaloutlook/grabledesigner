@@ -61,11 +61,11 @@ export default function Features() {
       </div>
 
       <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xl)' }}>
-        <button type="button" className="button button-primary" onClick={goToExperience}>
-          See the experience
-        </button>
-        <button type="button" className="button" onClick={goToStandards}>
+        <button type="button" className="button button-primary" onClick={goToStandards}>
           See applicable standards
+        </button>
+        <button type="button" className="button" onClick={goToExperience}>
+          See the experience
         </button>
       </div>
 

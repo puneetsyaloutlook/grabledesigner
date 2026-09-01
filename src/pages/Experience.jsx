@@ -1,11 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { decodeSelections } from '../lib/selectionState';
 import { computeDerivedFlags } from '../lib/selectionSchema';
+import { applicableStandards } from '../lib/standards';
 
 export default function Experience() {
   const [searchParams] = useSearchParams();
   const selections = decodeSelections(searchParams);
   const derived = computeDerivedFlags(selections);
+  const requirements = applicableStandards(selections, derived);
 
   return (
     <div>
@@ -14,26 +16,42 @@ export default function Experience() {
         <h1>Experience</h1>
         <p className="intro-copy">
           This page will carry the selections from Features needed into a live
-          demo grid, with an accessibility and reference-system report
-          underneath it, filtered to what's actually selected. Not yet built
-          &mdash; this stub confirms the selections are arriving correctly.
+          demo grid. The demo isn't built yet, but the requirements list below
+          is real &mdash; it's the same filtered list as the Applicable standards
+          page, pulled from the same source. Once the grid exists, it has to
+          satisfy every item here, not just illustrate the feature that
+          triggered it.
         </p>
       </div>
 
-      <div className="canvas-grid">
-        <div className="card">
-          <h3>Received selections</h3>
-          <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
-            {JSON.stringify(selections, null, 2)}
-          </pre>
-        </div>
+      <div className="card">
+        <h2>Demo grid</h2>
+        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+          Not yet built.
+        </p>
+      </div>
 
-        <div className="card">
-          <h3>Derived flags</h3>
-          <pre style={{ fontSize: 'var(--text-sm-size)', whiteSpace: 'pre-wrap' }}>
-            {JSON.stringify(derived, null, 2)}
-          </pre>
+      <section style={{ marginTop: 'var(--space-2xl)' }}>
+        <h2>Requirements this demo must satisfy</h2>
+        <p className="intro-copy">
+          {requirements.length} requirement{requirements.length === 1 ? '' : 's'} apply,
+          based on what was selected on Features needed.
+        </p>
+        <div className="canvas-grid">
+          {requirements.map((entry) => (
+            <div key={entry.id} className="card">
+              <p style={{ fontSize: 'var(--text-caption-size)', color: 'var(--color-primary)', margin: '0 0 var(--space-xs)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {entry.category}
+              </p>
+              <p style={{ fontWeight: 500, margin: 0 }}>{entry.requirement}</p>
+            </div>
+          ))}
         </div>
+      </section>
+
+      <div className="debug-panel">
+        <strong>Current selections (debug)</strong>
+        <pre>{JSON.stringify({ selections, derived }, null, 2)}</pre>
       </div>
     </div>
   );
