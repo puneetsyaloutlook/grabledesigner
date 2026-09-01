@@ -1,0 +1,64 @@
+import { useSearchParams } from 'react-router-dom';
+import { decodeSelections } from '../lib/selectionState';
+import { computeDerivedFlags } from '../lib/selectionSchema';
+import { applicableStandards } from '../lib/standards';
+
+export default function Standards() {
+  const [searchParams] = useSearchParams();
+  const selections = decodeSelections(searchParams);
+  const derived = computeDerivedFlags(selections);
+  const results = applicableStandards(selections, derived);
+
+  const byCategory = results.reduce((acc, entry) => {
+    (acc[entry.category] ||= []).push(entry);
+    return acc;
+  }, {});
+
+  return (
+    <div className="page">
+      <header>
+        <p className="eyebrow">Grid and table UX reference</p>
+        <h1>Applicable standards</h1>
+        <p className="intro-copy">
+          Not a checklist to opt into &mdash; these are functional requirements
+          that already apply, given what was selected on the features page.
+          Nothing here is optional once the triggering feature is present.
+        </p>
+      </header>
+
+      {results.length === 0 && (
+        <div className="card">
+          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+            No selections yet, or nothing selected triggers a standard beyond
+            the baseline data-formatting rules. Go to Features needed to set
+            what this grid requires.
+          </p>
+        </div>
+      )}
+
+      {Object.entries(byCategory).map(([category, entries]) => (
+        <section key={category} style={{ marginBottom: 'var(--space-2xl)' }}>
+          <h2>{category}</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            {entries.map((entry) => (
+              <div key={entry.id} className="card">
+                <p style={{ fontWeight: 500, margin: '0 0 var(--space-sm)' }}>{entry.requirement}</p>
+                <p style={{ fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', margin: '0 0 var(--space-xs)' }}>
+                  <strong>Why: </strong>{entry.why}
+                </p>
+                <p style={{ fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', margin: 0 }}>
+                  <strong>Typically satisfied by: </strong>{entry.typical}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <div className="debug-panel">
+        <strong>Current selections (debug)</strong>
+        <pre>{JSON.stringify({ selections, derived }, null, 2)}</pre>
+      </div>
+    </div>
+  );
+}

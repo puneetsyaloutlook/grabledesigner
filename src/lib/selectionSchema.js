@@ -1,0 +1,226 @@
+// Canonical selection key model.
+// This is the code version of selection-key-model.md — that document explains
+// the reasoning; this file is what the app actually reads. If the two drift
+// apart, this file wins, and the doc should be updated to match.
+//
+// Every group below renders as a section of questions on the Features page.
+// The `key` is what's used in the URL query string and in content tags on
+// the Experience and Standards pages.
+
+export const selectionSchema = [
+  {
+    group: 'Scale and layout',
+    fields: [
+      {
+        key: 'layout',
+        type: 'single',
+        question: 'Where does this sit on the page?',
+        options: [
+          { value: 'embedded', label: 'Embedded in a larger page', detail: 'Alongside other components, such as inside a tile or panel.' },
+          { value: 'content', label: 'Full width, but not the only thing', detail: 'The primary component on the page, but the page can still scroll as a whole.' },
+          { value: 'fills', label: 'Full width, fills the available space', detail: 'No page-level scroll. The table\u2019s own rows are the only scrolling element.' },
+        ],
+      },
+      {
+        key: 'dataPoints',
+        type: 'single',
+        question: 'How many data points does each row need to show?',
+        options: [
+          { value: 'low', label: 'Up to four' },
+          { value: 'mid', label: 'Up to ten' },
+          { value: 'high', label: 'More than ten' },
+        ],
+      },
+      {
+        key: 'rowVolume',
+        type: 'single',
+        question: 'Roughly how many rows will this hold?',
+        options: [
+          { value: 'small', label: 'A few hundred rows or fewer' },
+          { value: 'large', label: 'More than that' },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Structure',
+    fields: [
+      { key: 'groupedHeaders', type: 'boolean', question: 'Are columns grouped under a shared parent label?' },
+      { key: 'lockedColumns', type: 'boolean', question: 'Are one or more columns pinned or frozen?' },
+      { key: 'resizableColumns', type: 'boolean', question: 'Can columns be resized?' },
+      { key: 'reorderableColumns', type: 'boolean', question: 'Can columns be reordered?' },
+    ],
+  },
+  {
+    group: 'Finding and comparing',
+    fields: [
+      {
+        key: 'sorting',
+        type: 'single',
+        question: 'What sorting does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'single', label: 'One column at a time' },
+          { value: 'multi', label: 'Multi-column sort' },
+        ],
+      },
+      {
+        key: 'filtering',
+        type: 'single',
+        question: 'What filtering does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'inline', label: 'Per-column filter controls' },
+          { value: 'global', label: 'One global search bar' },
+          { value: 'panel', label: 'A dedicated filter panel' },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Selection and action',
+    fields: [
+      {
+        key: 'selection',
+        type: 'single',
+        question: 'What row selection does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'single', label: 'One row at a time' },
+          { value: 'multi', label: 'Multi-row, with select-all' },
+        ],
+      },
+      {
+        key: 'actions',
+        type: 'single',
+        question: 'What actions does a row need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'single', label: 'One action per row' },
+          { value: 'multiple', label: 'Several actions per row' },
+          { value: 'bulk', label: 'Bulk actions on a selection' },
+        ],
+      },
+      { key: 'dragReorder', type: 'boolean', question: 'Can rows be reordered by dragging?' },
+    ],
+  },
+  {
+    group: 'Data overflow',
+    fields: [
+      {
+        key: 'rowDetail',
+        type: 'single',
+        question: 'How does a user see data that doesn\u2019t fit in the row?',
+        detail: 'This is read-only overflow, separate from editing \u2014 a row can carry more data than fits, without any of it being editable.',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'drawer', label: 'A drawer' },
+          { value: 'modal', label: 'A modal' },
+          { value: 'expandRow', label: 'An expandable row' },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Editing',
+    fields: [
+      {
+        key: 'editing',
+        type: 'single',
+        question: 'What editing does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'inline', label: 'Edit in place' },
+          { value: 'viaDetail', label: 'Edited through the row detail view', requires: { rowDetail: ['drawer', 'modal', 'expandRow'] } },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Data loading and behaviour',
+    fields: [
+      {
+        key: 'loadStrategy',
+        type: 'single',
+        question: 'How does data load?',
+        options: [
+          { value: 'pagination', label: 'Pagination' },
+          { value: 'loadMore', label: 'A "load more" button' },
+          { value: 'infiniteScroll', label: 'Infinite scroll' },
+        ],
+      },
+      { key: 'realTimeUpdates', type: 'boolean', question: 'Can cells or rows update on their own after the page has loaded?' },
+    ],
+  },
+  {
+    group: 'Density and responsive',
+    fields: [
+      {
+        key: 'density',
+        type: 'single',
+        question: 'What row density does this need?',
+        options: [
+          { value: 'compact', label: 'Compact' },
+          { value: 'default', label: 'Default' },
+          { value: 'spacious', label: 'Spacious' },
+        ],
+      },
+      {
+        key: 'responsiveBehaviour',
+        type: 'single',
+        question: 'How should this behave on a narrow screen?',
+        options: [
+          { value: 'horizontalScroll', label: 'Scroll horizontally' },
+          { value: 'cardStack', label: 'Collapse into cards' },
+          { value: 'columnPriority', label: 'Drop lower-priority columns first' },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Summary',
+    fields: [
+      { key: 'rowGrouping', type: 'boolean', question: 'Are rows grouped under a shared attribute?' },
+      {
+        key: 'totals',
+        type: 'single',
+        question: 'What totals does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'grand', label: 'One grand total' },
+          { value: 'perGroup', label: 'A subtotal per group', requires: { rowGrouping: [true] } },
+          { value: 'both', label: 'Both' },
+        ],
+      },
+    ],
+  },
+];
+
+// Derived flags: computed from the answers above, never asked directly.
+// See selection-key-model.md, "Derived flags" section, for the reasoning.
+export function computeDerivedFlags(selections) {
+  const cellLevelInteraction =
+    selections.selection === 'single' ||
+    selections.selection === 'multi' ||
+    selections.editing === 'inline';
+
+  const virtualised =
+    selections.rowVolume === 'large' ||
+    (selections.dataPoints === 'high' && selections.loadStrategy !== 'pagination');
+
+  return { cellLevelInteraction, virtualised };
+}
+
+export function defaultSelections() {
+  const defaults = {};
+  selectionSchema.forEach((group) => {
+    group.fields.forEach((field) => {
+      if (field.type === 'boolean') {
+        defaults[field.key] = false;
+      } else {
+        defaults[field.key] = field.options[0].value;
+      }
+    });
+  });
+  return defaults;
+}

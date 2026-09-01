@@ -1,0 +1,222 @@
+/* ============================================================
+   Puneet's Design System — Color & Typography Tokens
+   Source: puneetsyaloutlook/designsystem @ main
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+
+  /* ── Role colours ──────────────────────────────────────── */
+  --color-primary:   #479FA4;
+  --color-secondary: #C39A44;
+  --color-action:    #376DA4;
+  --color-error:     #D64545;
+
+  /* ── Neutral ramp ──────────────────────────────────────── */
+  --neutral-900: #1A1A2E;
+  --neutral-700: #3D3D50;
+  --neutral-500: #8E8E9A;
+  --neutral-300: #B8B8C2;
+  --neutral-200: #D4D4DA;
+  --neutral-100: #EDEDF0;
+
+  /* ── Warm ramp ─────────────────────────────────────────── */
+  --warm-900: #6B5B2E;
+  --warm-700: #B8963E;
+  --warm-500: #D4C48A;
+  --warm-300: #E8DDB8;
+  --warm-200: #F0E8D4;
+  --warm-100: #F5F0E6;
+
+  /* ── Teal ramp ─────────────────────────────────────────── */
+  --teal-900: #1D6068;
+  --teal-700: #3A8A8F;
+  --teal-500: #5CB8B8;
+  --teal-300: #9AD4D4;
+  --teal-200: #C4E8E8;
+  --teal-100: #E4F4F4;
+
+  /* ── Blue ramp ─────────────────────────────────────────── */
+  --blue-900: #376DA4;
+  --blue-700: #5A8DBE;
+  --blue-500: #8DB8E3;
+  --blue-300: #BCD5F3;
+  --blue-200: #D8E8F8;
+  --blue-100: #ECF2FA;
+
+  /* ── Accent colours (contextual only) ─────────────────── */
+  --accent-yellow:      #FFD770;
+  --accent-pink:        #FFE9FA;
+  --accent-green-dark:  #219653;
+  --accent-green:       #27AE60;
+  --accent-green-light: #6FCF97;
+  --accent-sage:        #ADD6C2;
+  --accent-olive:       #C8D6AD;
+  --accent-sand:        #EADEA1;
+  --accent-blue-light:  #BCD5F3;
+  --accent-blue-mid:    #8DB8E3;
+  --accent-indigo:      #96A7D7;
+
+  /* ── Semantic surface colours ──────────────────────────── */
+  --surface-page:    #FFFFFF;
+  --surface-warm:    var(--neutral-100);
+  --surface-card:    #FFFFFF;
+  --surface-nav:     var(--teal-900);
+  --border-default:  var(--neutral-200);
+  --border-strong:   var(--neutral-300);
+  --border-active:   var(--color-action);
+
+  /* ── Semantic text colours ─────────────────────────────── */
+  --text-primary:    var(--neutral-900);
+  --text-secondary:  var(--neutral-500);
+  --text-disabled:   var(--neutral-300);
+  --text-link:       var(--color-action);
+  --text-inverse:    #FFFFFF;
+
+  /* ── Typography ────────────────────────────────────────── */
+  --font-sans:  'Barlow', system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-mono:  'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+
+  /* ── Type scale ────────────────────────────────────────── */
+  --text-h1-size:      2rem;       /* 32px */
+  --text-h1-lh:        1.25;
+  --text-h1-weight:    700;
+
+  --text-h2-size:      1.5rem;     /* 24px */
+  --text-h2-lh:        1.3;
+  --text-h2-weight:    600;
+
+  --text-h3-size:      1.125rem;   /* 18px */
+  --text-h3-lh:        1.4;
+  --text-h3-weight:    600;
+
+  --text-body-size:    1rem;       /* 16px */
+  --text-body-lh:      1.6;
+  --text-body-weight:  400;
+
+  --text-sm-size:      0.875rem;   /* 14px */
+  --text-sm-lh:        1.5;
+  --text-sm-weight:    400;
+
+  --text-caption-size:   0.75rem;  /* 12px */
+  --text-caption-lh:     1.4;
+  --text-caption-weight: 500;
+
+  --text-button-size:    0.875rem; /* 14px */
+  --text-button-weight:  600;
+
+  /* ── Spacing ───────────────────────────────────────────── */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* ── Border radius ─────────────────────────────────────── */
+  --radius-default: 6px;
+  --radius-lg:      8px;
+  --radius-pill:    9999px;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --shadow-subtle:   0 1px 3px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.10);
+
+  /* ── Status colours ────────────────────────────────────── */
+  --status-success-text: #219653;
+  --status-success-bg:   rgba(111, 207, 151, 0.15);
+  --status-warning-text: #C39A44;
+  --status-warning-bg:   rgba(255, 215, 112, 0.20);
+  --status-error-text:   #D64545;
+  --status-error-bg:     rgba(214, 69,  69,  0.10);
+  --status-info-text:    #376DA4;
+  --status-info-bg:      rgba(188, 213, 243, 0.30);
+}
+
+/* ── Semantic element defaults ───────────────────────────── */
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-lh);
+  color: var(--text-primary);
+  background-color: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-h1-size);
+  line-height: var(--text-h1-lh);
+  font-weight: var(--text-h1-weight);
+  color: var(--text-primary);
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-lh);
+  font-weight: var(--text-h2-weight);
+  color: var(--text-primary);
+}
+
+h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h3-size);
+  line-height: var(--text-h3-lh);
+  font-weight: var(--text-h3-weight);
+  color: var(--text-primary);
+}
+
+p {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-lh);
+  color: var(--text-primary);
+}
+
+small, .caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-lh);
+  font-weight: var(--text-caption-weight);
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--neutral-100);
+  border-radius: var(--radius-default);
+}
+code { padding: 0.1em 0.4em; }
+pre  { padding: var(--space-md); overflow-x: auto; }
+
+/* ── Brand gradients ────────────────────────────────────── */
+:root {
+  --gradient-teal:   linear-gradient(135deg, #1D6068 0%, #5CB8B8 100%);
+  --gradient-warm:   linear-gradient(135deg, #6B5B2E 0%, #D4C48A 100%);
+  --gradient-blue:   linear-gradient(135deg, #376DA4 0%, #8DB8E3 100%);
+  --gradient-brand:  linear-gradient(135deg, #1D6068 0%, #479FA4 50%, #376DA4 100%);
+  --gradient-sunset: linear-gradient(135deg, #6B5B2E 0%, #C39A44 50%, #479FA4 100%);
+  --gradient-subtle: linear-gradient(180deg, #FFFFFF 0%, #EDEDF0 100%);
+  --gradient-card:   linear-gradient(180deg, #F5F0E6 0%, #FFFFFF 100%);
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,225 @@
+// Each entry: which selection (or derived flag) makes it applicable, the
+// requirement itself, why (source), and the typical way it's satisfied.
+// `applies(selections, derived)` returns true/false — this is the
+// "applicability, not opt-in" model: nothing here is choosable, it's either
+// true of the grid as configured, or it isn't.
+
+export const standards = [
+  // Always-applicable — not tied to any toggle, true of every grid.
+  {
+    id: 'data-consistency',
+    category: 'Data formatting',
+    requirement: 'Values of the same type in the same column must be presented consistently (same precision, same date format, same units).',
+    why: 'A List Apart, "Designing Tables to be Read, Not Looked At" (Rutter): inconsistent precision makes small high-precision numbers look larger at a glance, breaking column scanning.',
+    typical: 'Format per column at render time rather than per row.',
+    applies: () => true,
+  },
+  {
+    id: 'empty-na-zero',
+    category: 'Data formatting',
+    requirement: 'Empty, not-applicable, and genuine-zero values must remain distinguishable from each other, including to screen reader users.',
+    why: 'Screen reader behaviour on truly empty cells is inconsistent (JAWS announces "blank," NVDA skips it) \u2014 WebAIM / Chax.',
+    typical: 'Use an explicit token (\u2014, N/A, 0) rather than a genuinely empty cell.',
+    applies: () => true,
+  },
+  {
+    id: 'truncation',
+    category: 'Data formatting',
+    requirement: 'If content is truncated, a mechanism must exist to reveal the full value, and it cannot rely on hover alone.',
+    why: 'WCAG 1.4.13 Content on Hover or Focus \u2014 dismissible, hoverable, persistent; the native title attribute fails this for keyboard users (GitHub Primer).',
+    typical: 'A tooltip triggered on both hover and keyboard focus, or an expand control.',
+    applies: () => true,
+  },
+
+  // Selection
+  {
+    id: 'selection-not-colour-only',
+    category: 'Selection',
+    requirement: 'A selected row or cell must be distinguishable from an unselected one without relying on colour alone.',
+    why: 'WCAG 1.4.1 Use of Color (Level A).',
+    typical: 'A checkbox in a selection column, alongside the row tint.',
+    applies: (s) => s.selection !== 'none',
+  },
+  {
+    id: 'selection-programmatic',
+    category: 'Selection',
+    requirement: 'Selected state must be exposed to assistive technology, not only shown visually.',
+    why: 'WAI-ARIA aria-selected.',
+    typical: 'aria-selected on the row or cell, paired with a checkbox (screen-reader support for aria-selected alone is inconsistent).',
+    applies: (s) => s.selection !== 'none',
+  },
+  {
+    id: 'selection-persistence',
+    category: 'Selection',
+    requirement: 'Selection state must remain correct when the view changes \u2014 scrolling, sorting, filtering, or paginating \u2014 or the change in scope must be made explicit.',
+    why: 'Follows from the integrity of the selection model: acting on the wrong scope after a silent change is a real error class.',
+    typical: 'Persist selection across pages; show a running count in the batch-action bar.',
+    applies: (s) => s.selection === 'multi',
+  },
+  {
+    id: 'selection-indeterminate',
+    category: 'Selection',
+    requirement: 'When some but not all rows are selected, the select-all control must show a third, indeterminate state distinct from checked and unchecked.',
+    why: 'WAI-ARIA aria-checked="mixed"; confirmed in Carbon Design System\u2019s data table docs.',
+    typical: 'A header checkbox rendered in the indeterminate state.',
+    applies: (s) => s.selection === 'multi',
+  },
+
+  // Sorting
+  {
+    id: 'sort-discoverable',
+    category: 'Sorting',
+    requirement: 'A sortable column must be identifiable as such before the user interacts with it.',
+    why: 'WCAG 1.4.1 plus general discoverability; convergent practice (Material Design, Carbon).',
+    typical: 'A sort icon shown on hover/focus of the header.',
+    applies: (s) => s.sorting !== 'none',
+  },
+  {
+    id: 'sort-active-indicated',
+    category: 'Sorting',
+    requirement: 'The active sort column and its direction must be indicated both visually (not colour-only) and to assistive technology.',
+    why: 'WAI-ARIA aria-sort, set on the sorted header only and moved when the sort changes.',
+    typical: 'A directional arrow on the active column header, plus aria-sort on that th.',
+    applies: (s) => s.sorting !== 'none',
+  },
+  {
+    id: 'sort-survives-freeze',
+    category: 'Sorting',
+    requirement: 'The active-sort indication must remain perceivable when the sorted column is frozen or the grid scrolls horizontally.',
+    why: 'The indicator is required information (WCAG 1.3.1/1.4.1); losing it on scroll defeats its purpose.',
+    typical: 'Keep the arrow in the sticky header cell; verify aria-sort is still announced when the column is pinned.',
+    applies: (s) => s.sorting !== 'none' && s.lockedColumns,
+  },
+
+  // Filtering
+  {
+    id: 'filter-indicated',
+    category: 'Filtering',
+    requirement: 'Users must be able to tell they\u2019re viewing filtered data, not the full set.',
+    why: 'NN/G, Data Tables: Four Major User Tasks.',
+    typical: 'A persistent filter chip or summary, plus a visible result count.',
+    applies: (s) => s.filtering !== 'none',
+  },
+  {
+    id: 'filter-count-announced',
+    category: 'Filtering',
+    requirement: 'When filtering changes the visible row count without a page reload, the new count must be announced without moving focus.',
+    why: 'WCAG 4.1.3 Status Messages (Level AA).',
+    typical: 'A role="status" / aria-live="polite" region holding "X results," updated on filter.',
+    applies: (s) => s.filtering !== 'none',
+  },
+
+  // Editing
+  {
+    id: 'edit-discoverable',
+    category: 'Editing',
+    requirement: 'Which cells are editable must be discoverable before the user attempts to edit \u2014 not by trial-and-error or hover alone.',
+    why: 'WCAG 1.4.1 (not colour alone) and 1.3.1 (the relationship must be programmatic).',
+    typical: 'A persistent affordance (visible field styling or an edit icon), not something revealed only on hover.',
+    applies: (s) => s.editing !== 'none',
+  },
+  {
+    id: 'edit-readonly-semantics',
+    category: 'Editing',
+    requirement: 'A field that\u2019s present but not currently editable should use read-only semantics; a field that\u2019s inoperable should use disabled semantics. The two aren\u2019t interchangeable.',
+    why: 'WAI-ARIA aria-readonly vs aria-disabled; prefer the native readonly attribute, since aria-readonly has weak screen-reader support (Adrian Roselli).',
+    typical: 'Native readonly for view-but-copy cells; disabled for cells that can\u2019t be acted on at all.',
+    applies: (s) => s.editing !== 'none',
+  },
+  {
+    id: 'edit-error-association',
+    category: 'Editing',
+    requirement: 'A validation error must be identified in text and programmatically tied to the field, not just placed visually nearby or shown by colour.',
+    why: 'WCAG 3.3.1 Error Identification, 1.3.1, 4.1.3.',
+    typical: 'aria-invalid="true" plus aria-describedby pointing to the visible error text.',
+    applies: (s) => s.editing !== 'none',
+  },
+
+  // Structure
+  {
+    id: 'grouped-headers-programmatic',
+    category: 'Structure',
+    requirement: 'Grouped column headers must convey the parent/child relationship programmatically, not only through visual layout.',
+    why: 'WCAG 1.3.1; W3C WAI multi-level header guidance (colspan + scope, or headers/id).',
+    typical: 'A native table with colspan and scope="colgroup" on the parent header.',
+    applies: (s) => s.groupedHeaders,
+  },
+  {
+    id: 'locked-columns-boundary',
+    category: 'Structure',
+    requirement: 'The boundary between frozen and scrollable content must be perceivable, and freezing must not break row/column structure for assistive technology.',
+    why: 'AG Grid\u2019s own accessibility docs document that pinning renders cells in separate DOM containers, breaking screen-reader navigation into pinned regions and reporting incorrect row/column numbers (GitHub issue #9129).',
+    typical: 'A visible divider or shadow at the freeze boundary, plus an option to unpin; test pinned columns with a screen reader.',
+    applies: (s) => s.lockedColumns,
+  },
+
+  // Data overflow
+  {
+    id: 'row-detail-focus',
+    category: 'Data overflow',
+    requirement: 'When a drawer or modal opens to show overflow data, keyboard focus must move into it, and closing it must return focus to where it was triggered.',
+    why: 'Standard focus-management requirement for any dialog-like overlay (WCAG 2.4.3 Focus Order).',
+    typical: 'Move focus to the drawer/modal\u2019s heading on open; return focus to the triggering row on close.',
+    applies: (s) => s.rowDetail !== 'none',
+  },
+
+  // Actions
+  {
+    id: 'drag-reorder-alternative',
+    category: 'Actions',
+    requirement: 'Drag-to-reorder must have a single-pointer, non-drag alternative that achieves the same result.',
+    why: 'WCAG 2.2 SC 2.5.7 Dragging Movements (Level AA).',
+    typical: 'A "move up / move down" menu or buttons alongside the drag handle.',
+    applies: (s) => s.dragReorder,
+  },
+  {
+    id: 'bulk-action-scope',
+    category: 'Actions',
+    requirement: 'Before executing a bulk action, the scope (how many, and often which records) must be stated explicitly; irreversible actions need confirmation and ideally undo.',
+    why: 'NN/G, Confirmation Dialogs Can Prevent User Errors \u2014 specificity in the confirmation is what prevents costly mistakes.',
+    typical: 'A batch-action bar with a live selection count; a confirmation naming that count.',
+    applies: (s) => s.actions === 'bulk',
+  },
+
+  // Data loading and behaviour
+  {
+    id: 'async-state-distinguishable',
+    category: 'Data loading',
+    requirement: 'A cell or row updating asynchronously must be visually distinguishable from a static one, and assistive technology must not be given a stale value mid-update.',
+    why: 'WAI-ARIA aria-busy \u2014 tells AT to wait until the update completes before exposing content.',
+    typical: 'aria-busy set true during the update and back to false when stable, paired with a visible spinner or skeleton.',
+    applies: (s) => s.realTimeUpdates,
+  },
+  {
+    id: 'infinite-scroll-position',
+    category: 'Data loading',
+    requirement: 'After an action, the user\u2019s position must be preserved or recoverable, and newly-loaded content must be perceivable to keyboard and screen-reader users, not just mouse-scroll users.',
+    why: 'Documented infinite-scroll accessibility failures: lost position on return, unbounded focus path, content not announced (Deque; WebAIM).',
+    typical: 'A "Load more" button as the accessible variant, or a persistent "showing X of Y" indicator.',
+    applies: (s) => s.loadStrategy === 'infiniteScroll' || s.loadStrategy === 'loadMore',
+  },
+
+  // Derived: cell-level keyboard interaction
+  {
+    id: 'cell-focus-visible',
+    category: 'Keyboard interaction',
+    requirement: 'The focused cell must have a visible focus indicator with sufficient contrast, and arrow-key navigation between cells must be explicitly managed (a grid has exactly one element in the page tab order).',
+    why: 'WCAG 2.4.7 Focus Visible, 1.4.11 Non-text Contrast; WAI-ARIA APG Grid pattern (roving tabindex or aria-activedescendant).',
+    typical: 'A 2px+ outline meeting 3:1 contrast on :focus-visible, plus roving tabindex.',
+    applies: (s, d) => d.cellLevelInteraction,
+  },
+
+  // Derived: virtualisation
+  {
+    id: 'virtualised-row-count',
+    category: 'Data loading',
+    requirement: 'Where not all rows are in the DOM (virtualised or server-paged), the grid must expose the true total and each cell\u2019s real position to assistive technology.',
+    why: 'WAI-ARIA APG Grid pattern \u2014 aria-rowcount/aria-colcount and aria-rowindex/aria-colindex.',
+    typical: 'Set aria-rowcount to the true row total, not just what\u2019s rendered.',
+    applies: (s, d) => d.virtualised,
+  },
+];
+
+export function applicableStandards(selections, derived) {
+  return standards.filter((entry) => entry.applies(selections, derived));
+}
