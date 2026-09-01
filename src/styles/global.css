@@ -8,7 +8,8 @@ body {
   font-size: var(--text-body-size);
   line-height: var(--text-body-lh);
   color: var(--text-primary);
-  background-color: var(--surface-warm);
+  background: var(--gradient-card);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -58,8 +59,9 @@ a {
   padding: var(--space-md);
   border-radius: var(--radius-lg);
   border: 1px solid transparent;
+  border-left: 3px solid transparent;
   background: transparent;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .nav-card:hover {
@@ -68,6 +70,8 @@ a {
 
 .nav-card-active {
   background: #fff;
+  border-left: 3px solid var(--color-action);
+  box-shadow: var(--shadow-elevated);
 }
 
 .nav-card-active:hover {
@@ -87,9 +91,9 @@ a {
 
 .nav-card-detail {
   font-family: var(--font-sans);
-  font-size: var(--text-caption-size);
+  font-size: 0.8125rem;
   color: var(--teal-200);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .nav-card-active .nav-card-detail {
@@ -147,13 +151,23 @@ a {
 }
 
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   font-family: var(--font-sans);
-  font-size: var(--text-caption-size);
-  font-weight: var(--text-caption-weight);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-action);
   margin: 0 0 var(--space-sm);
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-pill);
 }
 
 h1 {
@@ -191,6 +205,13 @@ h3 {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
+  box-shadow: var(--shadow-subtle);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-elevated);
 }
 
 .button {
@@ -207,12 +228,14 @@ h3 {
   border: 1px solid var(--border-default);
   background: var(--surface-page);
   color: var(--text-primary);
-  transition: border-color 150ms ease, background-color 150ms ease;
+  box-shadow: var(--shadow-subtle);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
   text-decoration: none;
 }
 
 .button:hover {
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-elevated);
 }
 
 .button-primary {
