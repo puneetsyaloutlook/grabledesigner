@@ -374,6 +374,12 @@ h3 {
   text-align: left;
 }
 
+.group-header {
+  text-align: center;
+  border-bottom: 1px solid var(--border-strong);
+  color: var(--color-action);
+}
+
 .demo-table tbody tr:hover {
   background: var(--teal-100);
 }
