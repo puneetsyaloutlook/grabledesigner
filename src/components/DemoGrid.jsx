@@ -8,12 +8,12 @@ const TIER_ORDER = { low: 0, mid: 1, high: 2 };
 // one broader "where/how this claim came in" question, and they're adjacent
 // in column order, so a group can only form (and only should) when both are
 // visible together. If only one is visible at a lower data-points tier, it
-// just renders as a normal ungrouped column \u2014 a group split apart isn't
+// just renders as a normal ungrouped column. A group split apart isn't
 // rendered as a broken group, it's just not a group.
 const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
 
 function formatDate(iso) {
-  if (!iso) return '\u2014';
+  if (!iso) return '\u2013';
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
@@ -21,20 +21,20 @@ function formatDate(iso) {
 // Negative-number-format decision: leading minus sign. Empty/NA/zero decision:
 // em dash for not-applicable, "0" written out for a genuine zero.
 function formatAmount(value) {
-  if (value === null || value === undefined) return '\u2014';
+  if (value === null || value === undefined) return '\u2013';
   if (value === 0) return '$0';
   const abs = Math.abs(value).toLocaleString();
   return value < 0 ? `-$${abs}` : `$${abs}`;
 }
 
 function formatNumber(value) {
-  if (value === null || value === undefined) return '\u2014';
+  if (value === null || value === undefined) return '\u2013';
   if (value === 0) return '0';
   return value < 0 ? `-${Math.abs(value)}` : `${value}`;
 }
 
 function formatCell(column, value) {
-  if (value === null || value === undefined || value === '') return '\u2014';
+  if (value === null || value === undefined || value === '') return '\u2013';
   if (column.type === 'currency') return formatAmount(value);
   if (column.type === 'number') return formatNumber(value);
   if (column.type === 'date') return formatDate(value);
@@ -411,14 +411,14 @@ export default function DemoGrid({ selections, derived }) {
 
       {selections.rowGrouping && (
         <p className="demo-note">
-          Row grouping isn\u2019t implemented in this demo \u2014 shown here as a scope note rather than built out.
+          Row grouping isn\u2019t implemented in this demo. Shown here as a scope note rather than built out.
         </p>
       )}
 
       <Drawer
         open={selections.rowDetail !== 'none' && selections.rowDetail !== 'expandRow' && detailRowId !== null}
         onClose={() => setDetailRowId(null)}
-        title={detailRow ? `${detailRow.id} \u2014 ${detailRow.customer}` : ''}
+        title={detailRow ? `${detailRow.id}: ${detailRow.customer}` : ''}
         variant={selections.rowDetail === 'modal' ? 'modal' : 'drawer'}
       >
         {detailRow && sampleColumns.map((c) => (
