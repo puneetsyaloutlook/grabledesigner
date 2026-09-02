@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { selectionSchema, defaultSelections } from '../lib/selectionSchema';
 import { decodeSelections, encodeSelections } from '../lib/selectionState';
 
@@ -12,17 +12,15 @@ function isOptionEnabled(option, selections) {
 
 export default function Features() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [selections, setSelections] = useState(() =>
     searchParams.toString() ? decodeSelections(searchParams) : defaultSelections()
   );
 
-  // Keep the URL live-synced to the current selections, not just on Apply.
-  // The sidebar (and any other nav link) builds its href from the URL's own
-  // query string, so without this, navigating away via the sidebar instead
-  // of an Apply button would silently carry stale selections rather than
-  // whatever was just edited. `replace: true` so every toggle doesn't add
-  // a new browser-history entry.
+  // Keep the URL live-synced to the current selections. The sidebar (and any
+  // other nav link) builds its href from the URL's own query string, so
+  // without this, navigating away via the sidebar would silently carry
+  // stale selections rather than whatever was just edited. `replace: true`
+  // so every toggle doesn't add a new browser-history entry.
   useEffect(() => {
     setSearchParams(encodeSelections(selections), { replace: true });
   }, [selections]);
@@ -31,31 +29,14 @@ export default function Features() {
     setSelections((prev) => ({ ...prev, [key]: value }));
   }
 
-  function goToExperience() {
-    navigate(`/experience?${encodeSelections(selections)}`);
-  }
-
-  function goToStandards() {
-    navigate(`/standards?${encodeSelections(selections)}`);
-  }
-
   return (
     <div>
-      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h1>Features needed</h1>
-          <p className="intro-copy" style={{ maxWidth: 'none' }}>
-            Answer what this screen needs, then apply it below to see the standards and demo update.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: 'var(--space-sm)', flexShrink: 0 }}>
-          <button type="button" className="button button-primary" onClick={goToStandards}>
-            Apply: see standards
-          </button>
-          <button type="button" className="button" onClick={goToExperience}>
-            Apply: see experience
-          </button>
-        </div>
+      <div className="content-header">
+        <h1>Features needed</h1>
+        <p className="intro-copy">
+          Answer what this screen needs, then use the sidebar to see the
+          applicable standards or the demo.
+        </p>
       </div>
 
       <div className="canvas-grid">
