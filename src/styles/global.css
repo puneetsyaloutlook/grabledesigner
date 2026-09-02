@@ -153,10 +153,13 @@ a {
 }
 
 .content-header {
-  max-width: 900px;
   margin-bottom: var(--space-2xl);
   padding-bottom: var(--space-lg);
   border-bottom: 1px solid var(--border-default);
+}
+
+.content-header .intro-copy {
+  margin-bottom: 0;
 }
 
 .canvas-grid {
