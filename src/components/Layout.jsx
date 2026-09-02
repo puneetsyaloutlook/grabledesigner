@@ -5,7 +5,7 @@ const NAV_ITEMS = [
   { to: '/standards', label: 'Applicable standards', detail: 'Based on that functionality, which UX standards apply?' },
   { to: '/experience', label: 'Experience', detail: 'A quick demo of how those functions and standards look in the UI.' },
   { to: '/documentation', label: 'Documentation', detail: 'The net result: what to actually build, and why.' },
-  { to: '/framework', label: 'Framework', detail: 'Where does tabular data fit in the bigger picture?' },
+  { to: '/framework', label: 'Framework', detail: 'The bigger picture this tool\u2019s work sits inside.', separate: true },
 ];
 
 export default function Layout() {
@@ -25,11 +25,17 @@ export default function Layout() {
         <div className="side-nav-cards">
           {NAV_ITEMS.map((item, i) => (
             <div key={item.to}>
-              {i > 0 && <span className="nav-step-arrow" aria-hidden="true" />}
+              {item.separate ? (
+                <div className="nav-separator" aria-hidden="true" />
+              ) : (
+                i > 0 && <span className="nav-step-arrow" aria-hidden="true" />
+              )}
               <NavLink
                 to={`${item.to}${suffix}`}
                 end={item.end}
-                className={({ isActive }) => `nav-card${isActive ? ' nav-card-active' : ''}`}
+                className={({ isActive }) =>
+                  `nav-card${isActive ? ' nav-card-active' : ''}${item.separate ? ' nav-card-standalone' : ''}`
+                }
               >
                 <span className="nav-card-label">{item.label}</span>
                 <span className="nav-card-detail">{item.detail}</span>
