@@ -153,7 +153,7 @@ a {
 }
 
 .content-header {
-  max-width: 640px;
+  max-width: 900px;
   margin-bottom: var(--space-2xl);
   padding-bottom: var(--space-lg);
   border-bottom: 1px solid var(--border-default);
@@ -162,6 +162,18 @@ a {
 .canvas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-lg);
+  align-items: stretch;
+}
+
+/* Same row-based height matching as canvas-grid, but auto-fill with a
+   capped max instead of auto-fit with 1fr, so a sparse row's cards stay a
+   fixed width and don't stretch to fill the leftover space. Used where the
+   card content is prose-heavy and variable length (Standards), unlike
+   Features' uniform question cards, which are fine stretching to fill. */
+.canvas-grid-capped {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 400px));
   gap: var(--space-lg);
   align-items: stretch;
 }
@@ -202,7 +214,7 @@ h3 {
 
 .intro-copy {
   color: var(--text-secondary);
-  max-width: 60ch;
+  max-width: 90ch;
   margin: 0 0 var(--space-xl);
 }
 
