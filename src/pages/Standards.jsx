@@ -20,9 +20,8 @@ export default function Standards() {
       <div className="content-header">
         <h1>Applicable standards</h1>
         <p className="intro-copy">
-          Not a checklist to opt into. These are functional requirements
-          that already apply, given what was selected on the features page.
-          Nothing here is optional once the triggering feature is present.
+          Functional requirements that apply, based on what was selected on
+          Features needed. Each one is triggered by a specific selection.
         </p>
       </div>
 
