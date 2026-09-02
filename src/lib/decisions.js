@@ -115,6 +115,17 @@ export const decisions = [
     applies: () => true,
   },
   {
+    id: 'grouped-header-pin-behaviour',
+    category: 'Structure',
+    question: 'What happens to a grouped header if pinning or reordering would separate its children?',
+    options: [
+      { label: 'Keep the group\u2019s children locked together, so they can\u2019t be split apart', chosen: true, note: 'Matches AG Grid\u2019s marryChildren option \u2014 the group stays intact, at the cost of limiting how far any one child column can be pinned or moved on its own.' },
+      { label: 'Let the group split into two separate groups when its children are separated', chosen: false, note: 'The more common default \u2014 more flexible column-by-column, but it breaks the semantic pairing the group existed to show.' },
+    ],
+    tradeoff: 'Splitting is what most grid libraries do by default, and it\u2019s more flexible, but it defeats the reason the grouping existed in the first place. Locking children together is the safer choice whenever the pairing is genuinely meaningful rather than incidental \u2014 which is the same judgement call as whether to use a grouped header at all.',
+    applies: (s) => s.groupedHeaders,
+  },
+  {
     id: 'bulk-action-treatment',
     category: 'Actions',
     question: 'How does a bulk action get confirmed?',
