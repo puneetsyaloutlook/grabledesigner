@@ -18,7 +18,6 @@ export default function Standards() {
   return (
     <div>
       <div className="content-header">
-        <p className="eyebrow">Grid and table UX reference</p>
         <h1>Applicable standards</h1>
         <p className="intro-copy">
           Not a checklist to opt into &mdash; these are functional requirements
@@ -40,7 +39,7 @@ export default function Standards() {
       {Object.entries(byCategory).map(([category, entries]) => (
         <section key={category} style={{ marginBottom: 'var(--space-2xl)' }}>
           <h2>{category}</h2>
-          <div className="reading-list">
+          <div className="canvas-grid">
             {entries.map((entry) => (
               <div
                 key={entry.id}

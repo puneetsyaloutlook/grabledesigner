@@ -31,13 +31,11 @@ export default function Features() {
 
   return (
     <div>
-      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
-        <div>
-          <p className="eyebrow">Grid and table UX reference</p>
+      <div className="content-header" style={{ maxWidth: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <h1>Features needed</h1>
-          <p className="intro-copy" style={{ marginBottom: 0 }}>
-            Answer what this screen needs, then apply it below to see the
-            standards and demo update.
+          <p className="intro-copy" style={{ maxWidth: 'none', marginBottom: 0 }}>
+            Answer what this screen needs, then apply it below to see the standards and demo update.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-sm)', flexShrink: 0 }}>

@@ -12,7 +12,6 @@ export default function Framework() {
   return (
     <div>
       <div className="content-header">
-        <p className="eyebrow">Grid and table UX reference</p>
         <h1>The analytics product journey</h1>
         <p className="intro-copy">
           Where tabular data sits, and how value tends to build from there.

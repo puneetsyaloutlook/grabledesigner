@@ -134,11 +134,10 @@ export default function Documentation() {
 
   return (
     <div>
-      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
-        <div>
-          <p className="eyebrow">Grid and table UX reference</p>
+      <div className="content-header" style={{ maxWidth: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <h1>Documentation</h1>
-          <p className="intro-copy" style={{ marginBottom: 0 }}>
+          <p className="intro-copy" style={{ maxWidth: 'none', marginBottom: 0 }}>
             What to build for this configuration, and why. {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
             {requirements.length} requirements, {decisions.length} decisions.
           </p>

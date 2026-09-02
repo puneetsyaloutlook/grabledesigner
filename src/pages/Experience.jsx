@@ -12,7 +12,6 @@ export default function Experience() {
   return (
     <div>
       <div className="content-header">
-        <p className="eyebrow">Grid and table UX reference</p>
         <h1>Experience</h1>
         <p className="intro-copy">
           A working demo built from what was selected on Features needed,
