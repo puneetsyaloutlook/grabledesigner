@@ -34,8 +34,8 @@ export default function Features() {
       <div className="content-header">
         <h1>Features needed</h1>
         <p className="intro-copy">
-          Answer what this screen needs, then use the sidebar to see the
-          applicable standards or the demo.
+          Specify what functions you need for the data display in your app,
+          then use the sidebar to see the applicable standards or the demo.
         </p>
       </div>
 
