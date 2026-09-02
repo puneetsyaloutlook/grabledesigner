@@ -1,4 +1,4 @@
-# Grid and table UX reference
+# Grid & Table Designer
 
 Four pages: Features needed, Applicable standards, Experience, Framework.
 Selections made on Features needed carry to Applicable standards and
