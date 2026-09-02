@@ -20,7 +20,7 @@ export default function Standards() {
       <div className="content-header">
         <h1>Applicable standards</h1>
         <p className="intro-copy">
-          Not a checklist to opt into &mdash; these are functional requirements
+          Not a checklist to opt into. These are functional requirements
           that already apply, given what was selected on the features page.
           Nothing here is optional once the triggering feature is present.
         </p>
@@ -39,7 +39,7 @@ export default function Standards() {
       {Object.entries(byCategory).map(([category, entries]) => (
         <section key={category} style={{ marginBottom: 'var(--space-2xl)' }}>
           <h2>{category}</h2>
-          <div className="canvas-grid">
+          <div className="canvas-grid-capped">
             {entries.map((entry) => (
               <div
                 key={entry.id}

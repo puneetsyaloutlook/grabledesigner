@@ -61,7 +61,7 @@ export default function Framework() {
           <h2>Big-bang delivery</h2>
           <p>
             Can reach higher value at a given stage, but with longer
-            incubation cycles in between &mdash; periods where nothing new is
+            incubation cycles in between: periods where nothing new is
             shipping while the next jump is being built.
           </p>
         </div>
