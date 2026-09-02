@@ -147,7 +147,7 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--space-lg);
-  align-items: start;
+  align-items: stretch;
 }
 
 .reading-list {
@@ -460,10 +460,21 @@ h3 {
   text-align: left;
 }
 
+/* Grouped headers: the parent label and its child column headers read as
+   one connected unit, not two stacked bordered cells. */
+.demo-table thead tr:first-child th {
+  border-bottom: none;
+}
+
 .group-header {
   text-align: center;
-  border-bottom: 1px solid var(--border-strong);
   color: var(--color-action);
+  padding-bottom: 2px;
+  font-weight: 600;
+}
+
+.demo-table thead tr:nth-child(2) th {
+  padding-top: 2px;
 }
 
 .demo-table tbody tr:hover {
@@ -474,16 +485,20 @@ h3 {
   background: var(--teal-100);
 }
 
-.select-col, .reorder-col, .actions-col {
+.select-col, .reorder-col, .detail-col, .actions-col {
   width: 1%;
   white-space: nowrap;
 }
 
-/* Locked-column decision: persistent border boundary, not a scroll-triggered shadow */
+/* Locked-column decision: persistent border boundary, not a scroll-triggered
+   shadow. A solid background is required for a sticky cell, "inherit" here
+   resolved to transparent (the tr has no background of its own), which let
+   other columns show through while scrolling and made the feature look
+   broken even though it was positioned correctly. */
 .locked-col {
   position: sticky;
   left: 0;
-  background: inherit;
+  background: var(--surface-page);
   border-right: 2px solid var(--border-active);
   z-index: 1;
 }
@@ -493,6 +508,16 @@ h3 {
   z-index: 2;
 }
 
+.demo-table tbody tr:hover .locked-col {
+  background: var(--teal-100);
+}
+
+.demo-table tr.row-selected .locked-col {
+  background: var(--teal-100);
+}
+
+/* Clickable headers use the action colour token, not inherited body text
+   colour, so they read as interactive at a glance. */
 .sort-header {
   display: inline-flex;
   align-items: center;
@@ -501,15 +526,31 @@ h3 {
   border: none;
   cursor: pointer;
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   padding: 0;
-  color: inherit;
+  color: var(--color-action);
 }
 
-.sort-indicator {
+/* The active sort column gets additional weight on top of the shared
+   action-colour treatment, so it reads as "this one, specifically". */
+.sort-header-active {
+  font-weight: 700;
+}
+
+/* A proper three-state caret system: unsorted (always present, muted, so a
+   sortable-but-inactive column is still visibly sortable), ascending, and
+   descending. Not just an icon that appears once a column becomes active. */
+.sort-caret {
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+.sort-caret-inactive {
+  color: var(--neutral-300);
+}
+
+.sort-caret-active {
   color: var(--color-action);
 }
 
@@ -526,16 +567,20 @@ h3 {
   justify-content: center;
 }
 
-/* Editable-affordance decision: a persistent border, not hover-only */
+/* Editable-affordance decision: styled to read as a text entry field at
+   rest, not just an outline that appears on interaction. */
 .editable-cell {
-  border: 1px dashed var(--border-strong);
-  cursor: text;
+  background: var(--surface-page);
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(26, 26, 46, 0.06);
+  cursor: text;
 }
 
 .editable-cell input {
   width: 100%;
   border: none;
+  background: none;
   font: inherit;
   padding: 0;
 }
@@ -570,7 +615,7 @@ h3 {
   box-shadow: var(--shadow-elevated);
 }
 
-.reorder-btn {
+.reorder-btn, .col-reorder-btn {
   background: none;
   border: 1px solid var(--border-default);
   border-radius: 4px;
@@ -578,6 +623,48 @@ h3 {
   height: 22px;
   cursor: pointer;
   font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.reorder-btn:hover, .col-reorder-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.col-reorder-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.col-reorder-group {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+/* Row-detail trigger: an accordion-style chevron, consistent whether it
+   opens a drawer, a modal, or expands the row in place. */
+.detail-toggle {
+  background: none;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  color: var(--color-action);
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.detail-toggle:hover {
+  background: var(--teal-100);
+}
+
+.detail-toggle[aria-expanded="true"] {
+  transform: rotate(90deg);
 }
 
 .expand-row td {
