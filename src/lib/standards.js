@@ -1,11 +1,11 @@
 // Each entry: which selection (or derived flag) makes it applicable, the
 // requirement itself, why (source), and the typical way it's satisfied.
-// `applies(selections, derived)` returns true/false — this is the
+// `applies(selections, derived)` returns true/false. This is the
 // "applicability, not opt-in" model: nothing here is choosable, it's either
 // true of the grid as configured, or it isn't.
 
 export const standards = [
-  // Always-applicable — not tied to any toggle, true of every grid.
+  // Always-applicable: not tied to any toggle, true of every grid.
   {
     id: 'data-consistency',
     category: 'Data formatting',
@@ -18,15 +18,15 @@ export const standards = [
     id: 'empty-na-zero',
     category: 'Data formatting',
     requirement: 'Empty, not-applicable, and genuine-zero values must remain distinguishable from each other, including to screen reader users.',
-    why: 'Screen reader behaviour on truly empty cells is inconsistent (JAWS announces "blank," NVDA skips it) \u2014 WebAIM / Chax.',
-    typical: 'Use an explicit token (\u2014, N/A, 0) rather than a genuinely empty cell.',
+    why: 'Screen reader behaviour on truly empty cells is inconsistent: JAWS announces "blank," NVDA skips it (WebAIM / Chax).',
+    typical: 'Use an explicit token (an en dash, N/A, or 0) rather than a genuinely empty cell.',
     applies: () => true,
   },
   {
     id: 'truncation',
     category: 'Data formatting',
     requirement: 'If content is truncated, a mechanism must exist to reveal the full value, and it cannot rely on hover alone.',
-    why: 'WCAG 1.4.13 Content on Hover or Focus \u2014 dismissible, hoverable, persistent; the native title attribute fails this for keyboard users (GitHub Primer).',
+    why: 'WCAG 1.4.13 Content on Hover or Focus requires content to be dismissible, hoverable, and persistent; the native title attribute fails this for keyboard users (GitHub Primer).',
     typical: 'A tooltip triggered on both hover and keyboard focus, or an expand control.',
     applies: () => true,
   },
@@ -51,7 +51,7 @@ export const standards = [
   {
     id: 'selection-persistence',
     category: 'Selection',
-    requirement: 'Selection state must remain correct when the view changes \u2014 scrolling, sorting, filtering, or paginating \u2014 or the change in scope must be made explicit.',
+    requirement: 'Selection state must remain correct when the view changes (scrolling, sorting, filtering, or paginating), or the change in scope must be made explicit.',
     why: 'Follows from the integrity of the selection model: acting on the wrong scope after a silent change is a real error class.',
     typical: 'Persist selection across pages; show a running count in the batch-action bar.',
     applies: (s) => s.selection === 'multi',
@@ -113,7 +113,7 @@ export const standards = [
   {
     id: 'edit-discoverable',
     category: 'Editing',
-    requirement: 'Which cells are editable must be discoverable before the user attempts to edit \u2014 not by trial-and-error or hover alone.',
+    requirement: 'Which cells are editable must be discoverable before the user attempts to edit, not by trial-and-error or hover alone.',
     why: 'WCAG 1.4.1 (not colour alone) and 1.3.1 (the relationship must be programmatic).',
     typical: 'A persistent affordance (visible field styling or an edit icon), not something revealed only on hover.',
     applies: (s) => s.editing !== 'none',
@@ -176,7 +176,7 @@ export const standards = [
     id: 'bulk-action-scope',
     category: 'Actions',
     requirement: 'Before executing a bulk action, the scope (how many, and often which records) must be stated explicitly; irreversible actions need confirmation and ideally undo.',
-    why: 'NN/G, Confirmation Dialogs Can Prevent User Errors \u2014 specificity in the confirmation is what prevents costly mistakes.',
+    why: 'NN/G, Confirmation Dialogs Can Prevent User Errors: specificity in the confirmation is what prevents costly mistakes.',
     typical: 'A batch-action bar with a live selection count; a confirmation naming that count.',
     applies: (s) => s.actions === 'bulk',
   },
@@ -186,7 +186,7 @@ export const standards = [
     id: 'async-state-distinguishable',
     category: 'Data loading',
     requirement: 'A cell or row updating asynchronously must be visually distinguishable from a static one, and assistive technology must not be given a stale value mid-update.',
-    why: 'WAI-ARIA aria-busy \u2014 tells AT to wait until the update completes before exposing content.',
+    why: 'WAI-ARIA aria-busy tells assistive technology to wait until the update completes before exposing content.',
     typical: 'aria-busy set true during the update and back to false when stable, paired with a visible spinner or skeleton.',
     applies: (s) => s.realTimeUpdates,
   },
@@ -214,7 +214,7 @@ export const standards = [
     id: 'virtualised-row-count',
     category: 'Data loading',
     requirement: 'Where not all rows are in the DOM (virtualised or server-paged), the grid must expose the true total and each cell\u2019s real position to assistive technology.',
-    why: 'WAI-ARIA APG Grid pattern \u2014 aria-rowcount/aria-colcount and aria-rowindex/aria-colindex.',
+    why: 'WAI-ARIA APG Grid pattern, via aria-rowcount/aria-colcount and aria-rowindex/aria-colindex.',
     typical: 'Set aria-rowcount to the true row total, not just what\u2019s rendered.',
     applies: (s, d) => d.virtualised,
   },

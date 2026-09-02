@@ -1,5 +1,5 @@
 // Canonical selection key model.
-// This is the code version of selection-key-model.md — that document explains
+// This is the code version of selection-key-model.md. That document explains
 // the reasoning; this file is what the app actually reads. If the two drift
 // apart, this file wins, and the doc should be updated to match.
 //
@@ -101,7 +101,7 @@ export const selectionSchema = [
           { value: 'bulk', label: 'Bulk actions on a selection' },
         ],
       },
-      { key: 'dragReorder', type: 'boolean', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist \u2014 not just sorting by a column\u2019s value.' },
+      { key: 'dragReorder', type: 'boolean', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist, not just sorting by a column\u2019s value.' },
     ],
   },
   {
@@ -111,7 +111,7 @@ export const selectionSchema = [
         key: 'rowDetail',
         type: 'single',
         question: 'How does a user see data that doesn\u2019t fit in the row?',
-        detail: 'This is read-only overflow, separate from editing \u2014 a row can carry more data than fits, without any of it being editable.',
+        detail: 'This is read-only overflow, separate from editing. A row can carry more data than fits, without any of it being editable.',
         options: [
           { value: 'none', label: 'None' },
           { value: 'drawer', label: 'A drawer' },
