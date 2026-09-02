@@ -5,22 +5,33 @@ import { selectionSchema, computeDerivedFlags } from '../lib/selectionSchema';
 import { applicableStandards } from '../lib/standards';
 import { applicableDecisions } from '../lib/decisions';
 
+const TABS = [
+  { id: 'specification', label: 'Specification' },
+  { id: 'requirements', label: 'Requirements' },
+  { id: 'decisions', label: 'Design decisions' },
+  { id: 'scope', label: 'Scope' },
+  { id: 'delivery', label: 'Delivery approach' },
+];
+
+// Every row in every table is a { name, description } pair, one shape used
+// throughout the page rather than a different structure per section.
+
 function summariseSelections(selections) {
   const items = [];
   selectionSchema.forEach((group) => {
-    const groupItems = [];
+    const rows = [];
     group.fields.forEach((field) => {
       const value = selections[field.key];
       if (field.type === 'boolean') {
-        if (value) groupItems.push({ label: field.docLabel, value: field.docDescription });
+        if (value) rows.push({ name: field.docLabel, description: field.docDescription });
         return;
       }
       const chosen = field.options.find((o) => o.value === value);
       if (chosen && value !== 'none') {
-        groupItems.push({ label: field.docLabel, value: chosen.label });
+        rows.push({ name: field.docLabel, description: `Specified as: ${chosen.label}.` });
       }
     });
-    if (groupItems.length > 0) items.push({ group: group.group, items: groupItems });
+    if (rows.length > 0) items.push({ group: group.group, rows });
   });
   return items;
 }
@@ -33,47 +44,65 @@ function groupByCategory(list) {
   return byCategory;
 }
 
-function buildPlainText(selections, summary, requirementsByCategory, decisionsByCategory, scopeText, deliveryText) {
+function describeRequirement(entry) {
+  return `${entry.why} Typically satisfied by: ${entry.typical}`;
+}
+
+function describeDecision(entry) {
+  const chosen = entry.options.filter((o) => o.chosen).map((o) => o.label).join('; ');
+  const rejected = entry.options.filter((o) => !o.chosen);
+  const rejectedText = rejected.length > 0
+    ? ' Not used: ' + rejected.map((r) => `${r.label} (${r.note})`).join(' ')
+    : '';
+  return `Chosen: ${chosen}.${rejectedText} ${entry.tradeoff}`;
+}
+
+function DocTable({ columnLabels, rows }) {
+  return (
+    <table className="doc-table">
+      <thead>
+        <tr>
+          <th scope="col">{columnLabels[0]}</th>
+          <th scope="col">{columnLabels[1]}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i}>
+            <td>{row.name}</td>
+            <td>{row.description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function buildPlainText(specification, requirementsByCategory, decisionsByCategory, scopeText, deliveryText) {
   const lines = [];
   lines.push('DOCUMENTATION');
-  lines.push('');
-  lines.push('Functionality');
-  summary.forEach(({ group, items }) => {
-    lines.push('');
-    lines.push(group);
-    items.forEach((i) => lines.push(`- ${i.label}: ${i.value}`));
+
+  lines.push('', 'Specification');
+  specification.forEach(({ group, rows }) => {
+    lines.push('', group);
+    rows.forEach((r) => lines.push(`- ${r.name}: ${r.description}`));
   });
-  lines.push('');
-  lines.push('Requirements');
+
+  lines.push('', 'Requirements');
   Object.entries(requirementsByCategory).forEach(([category, entries]) => {
-    lines.push('');
-    lines.push(category);
-    entries.forEach((e) => {
-      lines.push(`- ${e.requirement}`);
-      lines.push(`  Why: ${e.why}`);
-      lines.push(`  Typically satisfied by: ${e.typical}`);
-    });
+    lines.push('', category);
+    entries.forEach((e) => lines.push(`- ${e.requirement}: ${describeRequirement(e)}`));
   });
-  lines.push('');
-  lines.push('Design decisions');
+
+  lines.push('', 'Design decisions');
   Object.entries(decisionsByCategory).forEach(([category, entries]) => {
-    lines.push('');
-    lines.push(category);
-    entries.forEach((d) => {
-      lines.push(`${d.title}`);
-      const chosen = d.options.filter((o) => o.chosen).map((o) => o.label).join('; ');
-      const rejected = d.options.filter((o) => !o.chosen);
-      lines.push(`  Chosen: ${chosen}`);
-      rejected.forEach((r) => lines.push(`  Not used: ${r.label}. ${r.note}`));
-      lines.push(`  Rationale: ${d.tradeoff}`);
-    });
+    lines.push('', category);
+    entries.forEach((d) => lines.push(`- ${d.title}: ${describeDecision(d)}`));
   });
-  lines.push('');
-  lines.push('Scope');
-  lines.push(scopeText);
-  lines.push('');
-  lines.push('Delivery approach');
-  lines.push(deliveryText);
+
+  lines.push('', 'Scope', scopeText);
+  lines.push('', 'Delivery approach', deliveryText);
+
   return lines.join('\n');
 }
 
@@ -83,10 +112,11 @@ export default function Documentation() {
   const derived = computeDerivedFlags(selections);
   const requirements = applicableStandards(selections, derived);
   const decisions = applicableDecisions(selections, derived);
-  const summary = summariseSelections(selections);
+  const specification = summariseSelections(selections);
   const requirementsByCategory = groupByCategory(requirements);
   const decisionsByCategory = groupByCategory(decisions);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('specification');
 
   const totalComplexity = requirements.length + decisions.length;
   const scopeText = 'Grid and table work sits at the "put it in a table" and "visualise the table" stages of the analytics product journey, the display layer underneath insights, actions, predictions and automation. See the Framework page for the full seven-stage picture.';
@@ -95,7 +125,7 @@ export default function Documentation() {
     : `This configuration carries ${totalComplexity} standards and decisions combined, a contained amount. Incremental and single-release delivery are both reasonable here. The choice is a team preference, not a risk-driven one.`;
 
   function handleCopy() {
-    const text = buildPlainText(selections, summary, requirementsByCategory, decisionsByCategory, scopeText, deliveryText);
+    const text = buildPlainText(specification, requirementsByCategory, decisionsByCategory, scopeText, deliveryText);
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -109,7 +139,7 @@ export default function Documentation() {
           <p className="eyebrow">Grid and table UX reference</p>
           <h1>Documentation</h1>
           <p className="intro-copy" style={{ marginBottom: 0 }}>
-            What to build for this configuration, and why. {summary.reduce((n, g) => n + g.items.length, 0)} functionality items,{' '}
+            What to build for this configuration, and why. {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
             {requirements.length} requirements, {decisions.length} decisions.
           </p>
         </div>
@@ -119,86 +149,81 @@ export default function Documentation() {
       </div>
 
       <div className="doc-sheet">
-        <section>
-          <h2>1. Functionality</h2>
-          {summary.length === 0 ? (
-            <p>Nothing selected yet. Go to Features needed to start.</p>
-          ) : (
-            summary.map(({ group, items }) => (
-              <div key={group} className="doc-group">
-                <h3>{group}</h3>
-                <ul>
-                  {items.map((item, i) => (
-                    <li key={i}><strong>{item.label}:</strong> {item.value}</li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          )}
-        </section>
+        <div className="doc-tabs">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`doc-tab${activeTab === tab.id ? ' doc-tab-active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        <section>
-          <h2>2. Requirements</h2>
-          {requirements.length === 0 ? (
-            <p>No requirements beyond the baseline data-formatting rules.</p>
-          ) : (
-            Object.entries(requirementsByCategory).map(([category, entries]) => (
-              <div key={category} className="doc-group">
-                <h3>{category}</h3>
-                <ul>
-                  {entries.map((entry) => (
-                    <li key={entry.id}>
-                      {entry.requirement}
-                      <ul className="doc-sublist">
-                        <li>Why: {entry.why}</li>
-                        <li>Typically satisfied by: {entry.typical}</li>
-                      </ul>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          )}
-        </section>
+        {activeTab === 'specification' && (
+          <section>
+            {specification.length === 0 ? (
+              <p>Nothing specified yet. Go to Features needed to start.</p>
+            ) : (
+              specification.map(({ group, rows }) => (
+                <div key={group} className="doc-group">
+                  <h3>{group}</h3>
+                  <DocTable columnLabels={['Field', 'Specified value']} rows={rows} />
+                </div>
+              ))
+            )}
+          </section>
+        )}
 
-        <section>
-          <h2>3. Design decisions</h2>
-          {decisions.length === 0 ? (
-            <p>No decision points apply to this configuration.</p>
-          ) : (
-            Object.entries(decisionsByCategory).map(([category, entries]) => (
-              <div key={category} className="doc-group">
-                <h3>{category}</h3>
-                {entries.map((entry) => {
-                  const chosen = entry.options.filter((o) => o.chosen);
-                  const rejected = entry.options.filter((o) => !o.chosen);
-                  return (
-                    <div key={entry.id} className="doc-decision">
-                      <p className="doc-decision-title">{entry.title}</p>
-                      <p><strong>Chosen:</strong> {chosen.map((o) => o.label).join('; ')}</p>
-                      {rejected.length > 0 && (
-                        <ul className="doc-sublist">
-                          {rejected.map((r, i) => <li key={i}>Not used: {r.label}. {r.note}</li>)}
-                        </ul>
-                      )}
-                      <p><strong>Rationale:</strong> {entry.tradeoff}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            ))
-          )}
-        </section>
+        {activeTab === 'requirements' && (
+          <section>
+            {requirements.length === 0 ? (
+              <p>No requirements beyond the baseline data-formatting rules.</p>
+            ) : (
+              Object.entries(requirementsByCategory).map(([category, entries]) => (
+                <div key={category} className="doc-group">
+                  <h3>{category}</h3>
+                  <DocTable
+                    columnLabels={['Requirement', 'Description']}
+                    rows={entries.map((e) => ({ name: e.requirement, description: describeRequirement(e) }))}
+                  />
+                </div>
+              ))
+            )}
+          </section>
+        )}
 
-        <section>
-          <h2>4. Scope</h2>
-          <p>{scopeText}</p>
-        </section>
+        {activeTab === 'decisions' && (
+          <section>
+            {decisions.length === 0 ? (
+              <p>No decision points apply to this configuration.</p>
+            ) : (
+              Object.entries(decisionsByCategory).map(([category, entries]) => (
+                <div key={category} className="doc-group">
+                  <h3>{category}</h3>
+                  <DocTable
+                    columnLabels={['Decision', 'Description']}
+                    rows={entries.map((d) => ({ name: d.title, description: describeDecision(d) }))}
+                  />
+                </div>
+              ))
+            )}
+          </section>
+        )}
 
-        <section>
-          <h2>5. Delivery approach</h2>
-          <p>{deliveryText}</p>
-        </section>
+        {activeTab === 'scope' && (
+          <section>
+            <p>{scopeText}</p>
+          </section>
+        )}
+
+        {activeTab === 'delivery' && (
+          <section>
+            <p>{deliveryText}</p>
+          </section>
+        )}
       </div>
 
       <div className="debug-panel">
