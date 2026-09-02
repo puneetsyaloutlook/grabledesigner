@@ -31,10 +31,10 @@ export default function Features() {
 
   return (
     <div>
-      <div className="content-header" style={{ maxWidth: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
+      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1>Features needed</h1>
-          <p className="intro-copy" style={{ maxWidth: 'none', marginBottom: 0 }}>
+          <p className="intro-copy" style={{ maxWidth: 'none' }}>
             Answer what this screen needs, then apply it below to see the standards and demo update.
           </p>
         </div>
