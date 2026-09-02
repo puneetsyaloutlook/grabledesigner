@@ -31,14 +31,23 @@ export default function Features() {
 
   return (
     <div>
-      <div className="content-header">
-        <p className="eyebrow">Grid and table UX reference</p>
-        <h1>Features needed</h1>
-        <p className="intro-copy">
-          Answer what this screen needs. These selections carry through to the
-          demo and the applicable standards, so only what's relevant shows up
-          on either.
-        </p>
+      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
+        <div>
+          <p className="eyebrow">Grid and table UX reference</p>
+          <h1>Features needed</h1>
+          <p className="intro-copy" style={{ marginBottom: 0 }}>
+            Answer what this screen needs, then apply it below to see the
+            standards and demo update.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--space-sm)', flexShrink: 0 }}>
+          <button type="button" className="button button-primary" onClick={goToStandards}>
+            Apply: see standards
+          </button>
+          <button type="button" className="button" onClick={goToExperience}>
+            Apply: see experience
+          </button>
+        </div>
       </div>
 
       <div className="canvas-grid">
@@ -58,15 +67,6 @@ export default function Features() {
             </div>
           </section>
         ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xl)' }}>
-        <button type="button" className="button button-primary" onClick={goToStandards}>
-          See applicable standards
-        </button>
-        <button type="button" className="button" onClick={goToExperience}>
-          See the experience
-        </button>
       </div>
 
       <div className="debug-panel">

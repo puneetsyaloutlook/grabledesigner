@@ -31,10 +31,15 @@ export default function Framework() {
                 key={stage.name}
                 style={{
                   flex: 1,
-                  padding: '0 var(--space-md)',
-                  borderLeft: i === 0 ? 'none' : '1px solid var(--border-default)',
+                  padding: 'var(--space-md) var(--space-md) 0',
+                  borderTop: '3px solid',
+                  borderImage: 'var(--gradient-brand) 1',
+                  marginLeft: i === 0 ? 0 : '-1px',
                 }}
               >
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: 'var(--neutral-500)', margin: '0 0 2px' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </p>
                 <p style={{ fontWeight: 600, margin: '0 0 var(--space-xs)' }}>{stage.name}</p>
                 <p style={{ fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', margin: 0 }}>
                   {stage.detail}
@@ -46,14 +51,14 @@ export default function Framework() {
       </div>
 
       <div className="canvas-grid" style={{ marginTop: 'var(--space-xl)' }}>
-        <div className="card">
+        <div className="card" style={{ borderLeft: '3px solid var(--color-primary)' }}>
           <h2>Incremental buildout</h2>
           <p>
             Smaller value gains at each stage, but a steady climb, without
             long gaps where nothing ships.
           </p>
         </div>
-        <div className="card">
+        <div className="card" style={{ borderLeft: '3px solid var(--color-action)' }}>
           <h2>Big-bang delivery</h2>
           <p>
             Can reach higher value at a given stage, but with longer
