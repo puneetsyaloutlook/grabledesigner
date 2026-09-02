@@ -51,6 +51,16 @@ a {
   gap: var(--space-sm);
 }
 
+.nav-step-arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  margin: 2px auto;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--teal-500);
+}
+
 .nav-card {
   display: flex;
   flex-direction: column;
@@ -133,6 +143,10 @@ a {
     min-width: 180px;
   }
 
+  .nav-step-arrow {
+    display: none;
+  }
+
   .canvas {
     padding: var(--space-xl) var(--space-lg) 64px;
   }
@@ -141,6 +155,8 @@ a {
 .content-header {
   max-width: 640px;
   margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .canvas-grid {
@@ -158,26 +174,6 @@ a {
 .reading-list .card {
   break-inside: avoid;
   margin-bottom: var(--space-md);
-}
-
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-action);
-  margin: 0 0 var(--space-sm);
-}
-
-.eyebrow::before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 2px;
-  background: var(--gradient-brand);
-  border-radius: var(--radius-pill);
 }
 
 h1 {
