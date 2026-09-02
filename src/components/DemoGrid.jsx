@@ -4,6 +4,14 @@ import Drawer from './Drawer';
 
 const TIER_ORDER = { low: 0, mid: 1, high: 2 };
 
+// Grouped-headers decision: Region and Channel are genuinely sub-values of
+// one broader "where/how this claim came in" question, and they're adjacent
+// in column order, so a group can only form (and only should) when both are
+// visible together. If only one is visible at a lower data-points tier, it
+// just renders as a normal ungrouped column \u2014 a group split apart isn't
+// rendered as a broken group, it's just not a group.
+const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
+
 function formatDate(iso) {
   if (!iso) return '\u2014';
   const d = new Date(iso + 'T00:00:00');
@@ -160,6 +168,41 @@ export default function DemoGrid({ selections, derived }) {
 
   const detailRow = rows.find((r) => r.id === detailRowId);
 
+  const activeGroups = selections.groupedHeaders
+    ? GROUPS.filter((g) => g.keys.every((k) => columns.some((c) => c.key === k)))
+    : [];
+  function groupFor(key) {
+    return activeGroups.find((g) => g.keys.includes(key));
+  }
+
+  // Shared between the flat single-row header and the grouped two-row header
+  // so the sort button/label markup only exists once.
+  function headerCellContent(col) {
+    const sortEntry = sortChain.find((s) => s.key === col.key);
+    const sortIndex = sortChain.findIndex((s) => s.key === col.key);
+    const sortable = selections.sorting !== 'none';
+    if (!sortable) return col.label;
+    return (
+      <button type="button" className="sort-header" onClick={() => toggleSort(col.key)}>
+        {col.label}
+        {sortEntry && (
+          <span className="sort-indicator">
+            {sortEntry.dir === 'asc' ? '\u2191' : '\u2193'}
+            {selections.sorting === 'multi' && sortChain.length > 1 && (
+              <span className="sort-priority">{sortIndex + 1}</span>
+            )}
+          </span>
+        )}
+      </button>
+    );
+  }
+
+  function headerAriaSort(col) {
+    const sortEntry = sortChain.find((s) => s.key === col.key);
+    const sortable = selections.sorting !== 'none';
+    return sortEntry ? (sortEntry.dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined;
+  }
+
   return (
     <div>
       {bulkMode && selectedIds.size > 0 && (
@@ -175,7 +218,7 @@ export default function DemoGrid({ selections, derived }) {
           <thead>
             <tr>
               {canSelect && selections.selection === 'multi' && (
-                <th className="select-col">
+                <th className="select-col" rowSpan={activeGroups.length > 0 ? 2 : undefined}>
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -185,40 +228,70 @@ export default function DemoGrid({ selections, derived }) {
                   />
                 </th>
               )}
-              {canSelect && selections.selection === 'single' && <th className="select-col" aria-hidden="true" />}
-              {selections.dragReorder && <th className="reorder-col" aria-hidden="true" />}
-              {columns.map((col, i) => {
-                const sortEntry = sortChain.find((s) => s.key === col.key);
-                const sortIndex = sortChain.findIndex((s) => s.key === col.key);
-                const sortable = selections.sorting !== 'none';
-                const isLocked = selections.lockedColumns && i === 0;
-                return (
-                  <th
-                    key={col.key}
-                    className={isLocked ? 'locked-col' : undefined}
-                    style={{ textAlign: col.type === 'currency' || col.type === 'number' ? 'right' : 'left' }}
-                    aria-sort={sortEntry ? (sortEntry.dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined}
-                  >
-                    {sortable ? (
-                      <button type="button" className="sort-header" onClick={() => toggleSort(col.key)}>
-                        {col.label}
-                        {sortEntry && (
-                          <span className="sort-indicator">
-                            {sortEntry.dir === 'asc' ? '\u2191' : '\u2193'}
-                            {selections.sorting === 'multi' && sortChain.length > 1 && (
-                              <span className="sort-priority">{sortIndex + 1}</span>
-                            )}
-                          </span>
-                        )}
-                      </button>
-                    ) : (
-                      col.label
-                    )}
-                  </th>
-                );
-              })}
-              {selections.actions !== 'none' && selections.actions !== 'bulk' && <th className="actions-col">Actions</th>}
+              {canSelect && selections.selection === 'single' && (
+                <th className="select-col" rowSpan={activeGroups.length > 0 ? 2 : undefined} aria-hidden="true" />
+              )}
+              {selections.dragReorder && (
+                <th className="reorder-col" rowSpan={activeGroups.length > 0 ? 2 : undefined} aria-hidden="true" />
+              )}
+              {(() => {
+                const cells = [];
+                const spannedByGroup = new Set();
+                columns.forEach((col, i) => {
+                  const group = groupFor(col.key);
+                  const isLocked = selections.lockedColumns && i === 0;
+                  const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+
+                  if (group) {
+                    if (spannedByGroup.has(col.key)) return; // rendered as part of the group cell already
+                    group.keys.forEach((k) => spannedByGroup.add(k));
+                    cells.push(
+                      <th key={`group-${group.label}`} colSpan={group.keys.length} scope="colgroup" className="group-header">
+                        {group.label}
+                      </th>
+                    );
+                    return;
+                  }
+
+                  cells.push(
+                    <th
+                      key={col.key}
+                      rowSpan={activeGroups.length > 0 ? 2 : undefined}
+                      className={isLocked ? 'locked-col' : undefined}
+                      style={{ textAlign: align }}
+                      aria-sort={headerAriaSort(col)}
+                    >
+                      {headerCellContent(col)}
+                    </th>
+                  );
+                });
+                return cells;
+              })()}
+              {selections.actions !== 'none' && selections.actions !== 'bulk' && (
+                <th className="actions-col" rowSpan={activeGroups.length > 0 ? 2 : undefined}>Actions</th>
+              )}
             </tr>
+            {activeGroups.length > 0 && (
+              <tr>
+                {columns.map((col, i) => {
+                  const group = groupFor(col.key);
+                  if (!group) return null; // already rendered with rowSpan in the row above
+                  const isLocked = selections.lockedColumns && i === 0;
+                  const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+                  return (
+                    <th
+                      key={col.key}
+                      scope="col"
+                      className={isLocked ? 'locked-col' : undefined}
+                      style={{ textAlign: align }}
+                      aria-sort={headerAriaSort(col)}
+                    >
+                      {headerCellContent(col)}
+                    </th>
+                  );
+                })}
+              </tr>
+            )}
           </thead>
           <tbody>
             {sortedRows.map((row) => {
@@ -336,9 +409,9 @@ export default function DemoGrid({ selections, derived }) {
         </table>
       </div>
 
-      {(selections.groupedHeaders || selections.rowGrouping) && (
+      {selections.rowGrouping && (
         <p className="demo-note">
-          Grouped {selections.groupedHeaders && selections.rowGrouping ? 'headers and row grouping aren\u2019t' : selections.groupedHeaders ? 'headers aren\u2019t' : 'rows aren\u2019t'} implemented in this demo \u2014 shown here as a scope note rather than built out.
+          Row grouping isn\u2019t implemented in this demo \u2014 shown here as a scope note rather than built out.
         </p>
       )}
 
