@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Features needed', detail: 'What functionality does the data display need to have?', end: true },
   { to: '/standards', label: 'Applicable standards', detail: 'Based on that functionality, which UX standards apply?' },
   { to: '/experience', label: 'Experience', detail: 'A quick demo of how those functions and standards look in the UI.' },
+  { to: '/documentation', label: 'Documentation', detail: 'The net result \u2014 what to actually build, and why.' },
   { to: '/framework', label: 'Framework', detail: 'Where does tabular data fit in the bigger picture?' },
 ];
 
