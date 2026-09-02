@@ -246,11 +246,16 @@ export default function DemoGrid({ selections, derived }) {
     if (selections.sorting === 'none') return null;
     const sortEntry = sortChain.find((s) => s.key === col.key);
     if (!sortEntry) {
-      return <span className="sort-caret sort-caret-inactive" aria-hidden="true">{'\u2195'}</span>;
+      return (
+        <span className="sort-caret sort-caret-inactive" aria-hidden="true">
+          <span className="caret-triangle caret-up" />
+          <span className="caret-triangle caret-down" />
+        </span>
+      );
     }
     return (
       <span className="sort-caret sort-caret-active" aria-hidden="true">
-        {sortEntry.dir === 'asc' ? '\u25B2' : '\u25BC'}
+        <span className={`caret-triangle ${sortEntry.dir === 'asc' ? 'caret-up' : 'caret-down'}`} />
       </span>
     );
   }
@@ -543,14 +548,16 @@ export default function DemoGrid({ selections, derived }) {
                     })()}
                     {hasActionsCol && (
                       <td className="actions-col">
-                        <button type="button" className="button" aria-pressed={isFlagged} onClick={() => toggleFlag(row.id)}>
-                          {isFlagged ? 'Flagged' : 'Flag'}
-                        </button>
-                        {selections.actions === 'multiple' && (
-                          <button type="button" className="button" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>
-                            Archive
+                        <span className="actions-buttons">
+                          <button type="button" className="button" aria-pressed={isFlagged} onClick={() => toggleFlag(row.id)}>
+                            {isFlagged ? 'Flagged' : 'Flag'}
                           </button>
-                        )}
+                          {selections.actions === 'multiple' && (
+                            <button type="button" className="button" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>
+                              Archive
+                            </button>
+                          )}
+                        </span>
                       </td>
                     )}
                   </tr>
