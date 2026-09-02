@@ -68,6 +68,23 @@ a {
   border-top: 5px solid var(--teal-500);
 }
 
+/* Framework isn't a step in the sequential chain, so it gets a plain
+   divider rather than the directional arrow, and more space around it to
+   read as a separate, parallel destination rather than "next up". */
+.nav-separator {
+  height: 1px;
+  background: var(--teal-700);
+  margin: var(--space-md) 0;
+}
+
+.nav-card-standalone {
+  border-left-style: dashed;
+}
+
+.nav-card-standalone.nav-card-active {
+  border-left-style: solid;
+}
+
 .nav-card {
   display: flex;
   flex-direction: column;
