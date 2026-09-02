@@ -20,16 +20,18 @@ export default function Layout() {
           Grid and table<br />UX reference
         </NavLink>
         <div className="side-nav-cards">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={`${item.to}${suffix}`}
-              end={item.end}
-              className={({ isActive }) => `nav-card${isActive ? ' nav-card-active' : ''}`}
-            >
-              <span className="nav-card-label">{item.label}</span>
-              <span className="nav-card-detail">{item.detail}</span>
-            </NavLink>
+          {NAV_ITEMS.map((item, i) => (
+            <div key={item.to}>
+              {i > 0 && <span className="nav-step-arrow" aria-hidden="true" />}
+              <NavLink
+                to={`${item.to}${suffix}`}
+                end={item.end}
+                className={({ isActive }) => `nav-card${isActive ? ' nav-card-active' : ''}`}
+              >
+                <span className="nav-card-label">{item.label}</span>
+                <span className="nav-card-detail">{item.detail}</span>
+              </NavLink>
+            </div>
           ))}
         </div>
       </aside>
