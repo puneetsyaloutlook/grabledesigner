@@ -263,6 +263,83 @@ h3 {
   max-width: 65ch;
 }
 
+.doc-sheet {
+  background: var(--surface-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  max-width: 760px;
+}
+
+.doc-sheet section {
+  margin-bottom: var(--space-2xl);
+}
+
+.doc-sheet section:last-child {
+  margin-bottom: 0;
+}
+
+.doc-sheet h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h3-size);
+  font-weight: 700;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-default);
+  margin: 0 0 var(--space-md);
+}
+
+.doc-group {
+  margin-bottom: var(--space-lg);
+}
+
+.doc-group:last-child {
+  margin-bottom: 0;
+}
+
+.doc-sheet h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  font-weight: 600;
+  color: var(--color-action);
+  margin: 0 0 var(--space-xs);
+}
+
+.doc-sheet p {
+  margin: 0 0 var(--space-sm);
+}
+
+.doc-sheet ul {
+  margin: 0;
+  padding-left: var(--space-lg);
+}
+
+.doc-sheet li {
+  margin-bottom: var(--space-xs);
+}
+
+.doc-sublist {
+  margin-top: 4px;
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+}
+
+.doc-decision {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.doc-decision:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.doc-decision-title {
+  font-weight: 600;
+  margin: 0 0 var(--space-xs);
+}
+
 .overlay-backdrop {
   position: fixed;
   inset: 0;
