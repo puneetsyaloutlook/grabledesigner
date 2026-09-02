@@ -13,6 +13,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'layout',
+        docLabel: 'Layout',
         type: 'single',
         question: 'Where does this sit on the page?',
         options: [
@@ -23,6 +24,7 @@ export const selectionSchema = [
       },
       {
         key: 'dataPoints',
+        docLabel: 'Columns per row',
         type: 'single',
         question: 'How many data points does each row need to show?',
         options: [
@@ -33,6 +35,7 @@ export const selectionSchema = [
       },
       {
         key: 'rowVolume',
+        docLabel: 'Row volume',
         type: 'single',
         question: 'Roughly how many rows will this hold?',
         options: [
@@ -45,10 +48,10 @@ export const selectionSchema = [
   {
     group: 'Structure',
     fields: [
-      { key: 'groupedHeaders', type: 'boolean', question: 'Do multiple columns represent related sub-values under one broader category?', detail: 'For example, actual, forecast, and variance for the same quarter, or total and urban counts for the same population figure.' },
-      { key: 'lockedColumns', type: 'boolean', question: 'Do some columns need to stay visible while a user scrolls through the rest?', detail: 'For example, keeping a name or ID column in view while scanning wide data to the right.' },
-      { key: 'resizableColumns', type: 'boolean', question: 'Can columns be resized?' },
-      { key: 'reorderableColumns', type: 'boolean', question: 'Can columns be reordered?' },
+      { key: 'groupedHeaders', type: 'boolean', docLabel: 'Values hierarchy', docDescription: 'Specified as required for one or more columns.', question: 'Do multiple columns represent related sub-values under one broader category?', detail: 'For example, actual, forecast, and variance for the same quarter, or total and urban counts for the same population figure.' },
+      { key: 'lockedColumns', type: 'boolean', docLabel: 'Locked columns', docDescription: 'Specified as required, to keep key columns visible while the rest scrolls.', question: 'Do some columns need to stay visible while a user scrolls through the rest?', detail: 'For example, keeping a name or ID column in view while scanning wide data to the right.' },
+      { key: 'resizableColumns', type: 'boolean', docLabel: 'Resizable columns', docDescription: 'Specified as required.', question: 'Can columns be resized?' },
+      { key: 'reorderableColumns', type: 'boolean', docLabel: 'Reorderable columns', docDescription: 'Specified as required.', question: 'Can columns be reordered?' },
     ],
   },
   {
@@ -56,6 +59,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'sorting',
+        docLabel: 'Sorting',
         type: 'single',
         question: 'What sorting does this need?',
         options: [
@@ -66,6 +70,7 @@ export const selectionSchema = [
       },
       {
         key: 'filtering',
+        docLabel: 'Filtering',
         type: 'single',
         question: 'What filtering does this need?',
         options: [
@@ -82,6 +87,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'selection',
+        docLabel: 'Row selection',
         type: 'single',
         question: 'What row selection does this need?',
         options: [
@@ -92,6 +98,7 @@ export const selectionSchema = [
       },
       {
         key: 'actions',
+        docLabel: 'Row actions',
         type: 'single',
         question: 'What actions does a row need?',
         options: [
@@ -101,7 +108,7 @@ export const selectionSchema = [
           { value: 'bulk', label: 'Bulk actions on a selection' },
         ],
       },
-      { key: 'dragReorder', type: 'boolean', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist, not just sorting by a column\u2019s value.' },
+      { key: 'dragReorder', type: 'boolean', docLabel: 'Row order control', docDescription: 'Specified as required, so row order is user-controlled rather than derived from sorting.', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist, not just sorting by a column\u2019s value.' },
     ],
   },
   {
@@ -109,6 +116,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'rowDetail',
+        docLabel: 'Row detail',
         type: 'single',
         question: 'How does a user see data that doesn\u2019t fit in the row?',
         detail: 'This is read-only overflow, separate from editing. A row can carry more data than fits, without any of it being editable.',
@@ -126,6 +134,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'editing',
+        docLabel: 'Editing',
         type: 'single',
         question: 'What editing does this need?',
         options: [
@@ -141,6 +150,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'loadStrategy',
+        docLabel: 'Data loading',
         type: 'single',
         question: 'How does data load?',
         options: [
@@ -149,7 +159,7 @@ export const selectionSchema = [
           { value: 'infiniteScroll', label: 'Infinite scroll' },
         ],
       },
-      { key: 'realTimeUpdates', type: 'boolean', question: 'Can cells or rows update on their own after the page has loaded?' },
+      { key: 'realTimeUpdates', type: 'boolean', docLabel: 'Real-time updates', docDescription: 'Specified as required, so cells or rows can update after the initial page load.', question: 'Can cells or rows update on their own after the page has loaded?' },
     ],
   },
   {
@@ -157,6 +167,7 @@ export const selectionSchema = [
     fields: [
       {
         key: 'density',
+        docLabel: 'Density',
         type: 'single',
         question: 'What row density does this need?',
         options: [
@@ -167,6 +178,7 @@ export const selectionSchema = [
       },
       {
         key: 'responsiveBehaviour',
+        docLabel: 'Responsive behaviour',
         type: 'single',
         question: 'How should this behave on a narrow screen?',
         options: [
@@ -180,9 +192,10 @@ export const selectionSchema = [
   {
     group: 'Summary',
     fields: [
-      { key: 'rowGrouping', type: 'boolean', question: 'Do rows need to be grouped by a shared attribute so users can scan by category?', detail: 'For example, grouping transactions by account, or tickets by status.' },
+      { key: 'rowGrouping', type: 'boolean', docLabel: 'Row grouping', docDescription: 'Specified as required, so rows are grouped by a shared attribute.', question: 'Do rows need to be grouped by a shared attribute so users can scan by category?', detail: 'For example, grouping transactions by account, or tickets by status.' },
       {
         key: 'totals',
+        docLabel: 'Totals',
         type: 'single',
         question: 'What totals does this need?',
         options: [
