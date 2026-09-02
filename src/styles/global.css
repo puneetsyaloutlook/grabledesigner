@@ -485,19 +485,46 @@ h3 {
   background: var(--teal-100);
 }
 
-.select-col, .reorder-col, .detail-col, .actions-col {
+.select-col, .reorder-col, .actions-col {
   width: 1%;
   white-space: nowrap;
+}
+
+/* Detail-col is pinned to the left edge and stays first in column order,
+   regardless of horizontal scroll position, so the row-detail trigger is
+   never scrolled out of view along with the data columns. */
+.detail-col {
+  position: sticky;
+  left: 0;
+  width: 40px;
+  min-width: 40px;
+  background: var(--surface-page);
+  border-right: 1px solid var(--border-default);
+  z-index: 1;
+}
+
+.demo-table thead .detail-col {
+  background: var(--surface-warm);
+  z-index: 2;
+}
+
+.demo-table tbody tr:hover .detail-col {
+  background: var(--teal-100);
+}
+
+.demo-table tr.row-selected .detail-col {
+  background: var(--teal-100);
 }
 
 /* Locked-column decision: persistent border boundary, not a scroll-triggered
    shadow. A solid background is required for a sticky cell, "inherit" here
    resolved to transparent (the tr has no background of its own), which let
    other columns show through while scrolling and made the feature look
-   broken even though it was positioned correctly. */
+   broken even though it was positioned correctly. The left offset clears
+   detail-col's own sticky width when both are present, so the two pinned
+   columns sit side by side instead of overlapping. */
 .locked-col {
   position: sticky;
-  left: 0;
   background: var(--surface-page);
   border-right: 2px solid var(--border-active);
   z-index: 1;
@@ -567,22 +594,29 @@ h3 {
   justify-content: center;
 }
 
-/* Editable-affordance decision: styled to read as a text entry field at
-   rest, not just an outline that appears on interaction. */
+/* Editable-affordance decision: the text itself reads as a field, not the
+   whole cell boundary, so it's clear which specific thing is editable
+   rather than the cell just looking oddly bordered. */
 .editable-cell {
-  background: var(--surface-page);
+  cursor: text;
+}
+
+.editable-value {
+  display: inline-block;
+  padding: 2px 6px;
   border: 1px solid var(--border-strong);
   border-radius: 4px;
+  background: var(--surface-page);
   box-shadow: inset 0 1px 2px rgba(26, 26, 46, 0.06);
-  cursor: text;
 }
 
 .editable-cell input {
   width: 100%;
-  border: none;
-  background: none;
+  border: 1px solid var(--color-action);
+  border-radius: 4px;
+  background: var(--surface-page);
   font: inherit;
-  padding: 0;
+  padding: 2px 6px;
 }
 
 .editable-cell input:focus {
@@ -615,7 +649,7 @@ h3 {
   box-shadow: var(--shadow-elevated);
 }
 
-.reorder-btn, .col-reorder-btn {
+.reorder-btn {
   background: none;
   border: 1px solid var(--border-default);
   border-radius: 4px;
@@ -626,24 +660,46 @@ h3 {
   color: var(--text-secondary);
 }
 
-.reorder-btn:hover, .col-reorder-btn:hover:not(:disabled) {
+.reorder-btn:hover {
   border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
-.col-reorder-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+/* Column reordering: an advanced, mouse-driven function, so the grip only
+   appears on hover or keyboard focus rather than sitting always-visible
+   and cluttering every header. Drawn in CSS (a dot grid) rather than a
+   text glyph, so it renders consistently regardless of font support. */
+.col-drag-handle {
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  margin-left: 6px;
+  background-image: radial-gradient(circle, var(--text-secondary) 1px, transparent 1.5px);
+  background-size: 4px 4px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0;
+  cursor: grab;
+  flex-shrink: 0;
 }
 
-.col-reorder-group {
-  display: inline-flex;
-  gap: 2px;
-  margin-left: 6px;
+th:hover .col-drag-handle,
+.col-drag-handle:focus-visible {
+  opacity: 1;
+}
+
+.col-drag-handle:focus-visible {
+  outline: 2px solid var(--border-active);
+  outline-offset: 2px;
+}
+
+th.col-drag-over {
+  background: var(--teal-100);
 }
 
 /* Row-detail trigger: an accordion-style chevron, consistent whether it
-   opens a drawer, a modal, or expands the row in place. */
+   opens a drawer, a modal, or expands the row in place. Sits in detail-col,
+   pinned to the left edge (see .detail-col above). */
 .detail-toggle {
   background: none;
   border: 1px solid var(--border-default);
@@ -665,6 +721,40 @@ h3 {
 
 .detail-toggle[aria-expanded="true"] {
   transform: rotate(90deg);
+}
+
+/* Grouped-header decision extended to the body: the whole point of pairing
+   two columns under one label is that the values are meant to be read
+   together, so they're stacked in a single merged cell, not two separate
+   side-by-side columns that happen to share a header. */
+.grouped-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: normal;
+}
+
+.grouped-cell-value {
+  font-size: var(--text-sm-size);
+}
+
+/* Actions need to read as buttons at table density, not the 44px standalone
+   size meant for page-level use. */
+.actions-col {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.actions-col .button {
+  min-height: 28px;
+  padding: 2px var(--space-sm);
+  font-size: var(--text-sm-size);
+}
+
+.actions-col .button[aria-pressed="true"] {
+  background: var(--teal-100);
+  border-color: var(--color-primary);
 }
 
 .expand-row td {
