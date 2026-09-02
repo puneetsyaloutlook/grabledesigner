@@ -569,8 +569,9 @@ h3 {
    descending. Not just an icon that appears once a column becomes active. */
 .sort-caret {
   display: inline-flex;
-  font-size: 0.625rem;
-  line-height: 1;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 3px;
 }
 
 .sort-caret-inactive {
@@ -579,6 +580,22 @@ h3 {
 
 .sort-caret-active {
   color: var(--color-action);
+}
+
+.caret-triangle {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+}
+
+.caret-up {
+  border-bottom: 4px solid currentColor;
+}
+
+.caret-down {
+  border-top: 4px solid currentColor;
 }
 
 /* Multi-sort-priority decision: a visible ordinal badge, not just an icon */
@@ -739,8 +756,11 @@ th.col-drag-over {
 }
 
 /* Actions need to read as buttons at table density, not the 44px standalone
-   size meant for page-level use. */
-.actions-col {
+   size meant for page-level use. Scoped to td specifically: .actions-col is
+   shared with the th header cell, and display:flex on a th breaks its
+   participation in the table's column-width layout, which is what was
+   misaligning the header against its own column. */
+td.actions-col {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
