@@ -3,6 +3,7 @@ import { sampleColumns, sampleRows } from '../lib/sampleData';
 import Drawer from './Drawer';
 
 const TIER_ORDER = { low: 0, mid: 1, high: 2 };
+const DETAIL_COL_WIDTH = 40;
 
 // Grouped-headers decision: Region and Channel are genuinely sub-values of
 // one broader "where/how this claim came in" question, and they're adjacent
@@ -66,10 +67,13 @@ export default function DemoGrid({ selections, derived }) {
   const [flaggedIds, setFlaggedIds] = useState(new Set());
   const [sortChain, setSortChain] = useState([]); // [{ key, dir }]
   const [columnOrder, setColumnOrder] = useState(null); // array of keys, or null = natural order
+  const [draggedKey, setDraggedKey] = useState(null);
+  const [dragOverKey, setDragOverKey] = useState(null);
   const [editingCell, setEditingCell] = useState(null); // { rowId, key }
   const [editValues, setEditValues] = useState({}); // `${rowId}:${key}` -> value
-  const [detailRowId, setDetailRowId] = useState(null);
-  const [expandedIds, setExpandedIds] = useState(new Set());
+  const [modalRowId, setModalRowId] = useState(null);
+  const [openDrawerRowId, setOpenDrawerRowId] = useState(null); // one at a time
+  const [expandedIds, setExpandedIds] = useState(new Set()); // many at a time
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [updatingRowId, setUpdatingRowId] = useState(null);
 
@@ -110,7 +114,18 @@ export default function DemoGrid({ selections, derived }) {
   })();
   const orderedKeys = orderedColumns.map((c) => c.key);
 
-  function moveColumn(key, direction) {
+  function moveColumnTo(fromKey, toKey) {
+    if (fromKey === toKey) return;
+    if (groupFor(fromKey) || groupFor(toKey)) return;
+    const keys = [...orderedKeys];
+    const from = keys.indexOf(fromKey);
+    const to = keys.indexOf(toKey);
+    keys.splice(from, 1);
+    keys.splice(to, 0, fromKey);
+    setColumnOrder(keys);
+  }
+
+  function moveColumnStep(key, direction) {
     const idx = orderedKeys.indexOf(key);
     const swapWith = idx + direction;
     if (swapWith < 0 || swapWith >= orderedKeys.length) return;
@@ -124,6 +139,7 @@ export default function DemoGrid({ selections, derived }) {
   const canSelect = selections.selection !== 'none';
   const hasDetailCol = selections.rowDetail !== 'none';
   const hasActionsCol = selections.actions !== 'none' && selections.actions !== 'bulk';
+  const lockedColLeft = hasDetailCol ? DETAIL_COL_WIDTH : 0;
 
   function toggleSort(key) {
     if (selections.sorting === 'single') {
@@ -209,7 +225,22 @@ export default function DemoGrid({ selections, derived }) {
     return override !== undefined ? override : row[column.key];
   }
 
-  const detailRow = rows.find((r) => r.id === detailRowId);
+  function toggleDetail(rowId) {
+    if (selections.rowDetail === 'expandRow') {
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.has(rowId) ? next.delete(rowId) : next.add(rowId);
+        return next;
+      });
+    } else if (selections.rowDetail === 'drawer') {
+      // Single-open: opening a new row's drawer closes whichever was open.
+      setOpenDrawerRowId((prev) => (prev === rowId ? null : rowId));
+    } else if (selections.rowDetail === 'modal') {
+      setModalRowId(rowId);
+    }
+  }
+
+  const modalRow = rows.find((r) => r.id === modalRowId);
 
   function sortCaret(col) {
     if (selections.sorting === 'none') return null;
@@ -225,15 +256,13 @@ export default function DemoGrid({ selections, derived }) {
   }
 
   // Shared between the flat single-row header and the grouped two-row header
-  // so the sort button / reorder buttons / label markup only exists once.
+  // so the sort button / drag handle / label markup only exists once.
   function headerCellContent(col) {
     const sortEntry = sortChain.find((s) => s.key === col.key);
     const sortIndex = sortChain.findIndex((s) => s.key === col.key);
     const sortable = selections.sorting !== 'none';
     const isGrouped = Boolean(groupFor(col.key));
-    const idx = orderedKeys.indexOf(col.key);
-    const leftBlocked = idx <= 0 || Boolean(groupFor(orderedKeys[idx - 1]));
-    const rightBlocked = idx >= orderedKeys.length - 1 || Boolean(groupFor(orderedKeys[idx + 1]));
+    const canReorder = selections.reorderableColumns && !isGrouped;
 
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -252,27 +281,20 @@ export default function DemoGrid({ selections, derived }) {
         ) : (
           col.label
         )}
-        {selections.reorderableColumns && !isGrouped && (
-          <span className="col-reorder-group">
-            <button
-              type="button"
-              className="col-reorder-btn"
-              disabled={leftBlocked}
-              onClick={() => moveColumn(col.key, -1)}
-              aria-label={`Move ${col.label} left`}
-            >
-              {'\u2039'}
-            </button>
-            <button
-              type="button"
-              className="col-reorder-btn"
-              disabled={rightBlocked}
-              onClick={() => moveColumn(col.key, 1)}
-              aria-label={`Move ${col.label} right`}
-            >
-              {'\u203A'}
-            </button>
-          </span>
+        {canReorder && (
+          <span
+            className="col-drag-handle"
+            role="button"
+            tabIndex={0}
+            aria-label={`Drag to reorder ${col.label}, or use the arrow keys`}
+            draggable
+            onDragStart={() => setDraggedKey(col.key)}
+            onDragEnd={() => { setDraggedKey(null); setDragOverKey(null); }}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowLeft') { e.preventDefault(); moveColumnStep(col.key, -1); }
+              if (e.key === 'ArrowRight') { e.preventDefault(); moveColumnStep(col.key, 1); }
+            }}
+          />
         )}
       </span>
     );
@@ -284,12 +306,39 @@ export default function DemoGrid({ selections, derived }) {
     return sortEntry ? (sortEntry.dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined;
   }
 
+  function headerDragProps(col) {
+    if (!selections.reorderableColumns || groupFor(col.key)) return {};
+    return {
+      onDragOver: (e) => { e.preventDefault(); setDragOverKey(col.key); },
+      onDragLeave: () => setDragOverKey((k) => (k === col.key ? null : k)),
+      onDrop: (e) => {
+        e.preventDefault();
+        if (draggedKey) moveColumnTo(draggedKey, col.key);
+        setDraggedKey(null);
+        setDragOverKey(null);
+      },
+    };
+  }
+
   const totalColSpan =
+    (hasDetailCol ? 1 : 0) +
     (canSelect ? 1 : 0) +
     (selections.dragReorder ? 1 : 0) +
     orderedColumns.length +
-    (hasDetailCol ? 1 : 0) +
     (hasActionsCol ? 1 : 0);
+
+  function DetailContent({ row }) {
+    return (
+      <div className="expand-content">
+        {sampleColumns.filter((c) => !columns.includes(c)).map((c) => (
+          <div key={c.key}><strong>{c.label}:</strong> {formatCell(c, row[c.key])}</div>
+        ))}
+        {sampleColumns.filter((c) => !columns.includes(c)).length === 0 && (
+          <div>{row.notes}</div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -305,6 +354,9 @@ export default function DemoGrid({ selections, derived }) {
         <table className="demo-table" data-density={selections.density}>
           <thead>
             <tr>
+              {hasDetailCol && (
+                <th className="detail-col" rowSpan={activeGroups.length > 0 ? 2 : undefined} aria-hidden="true" />
+              )}
               {canSelect && selections.selection === 'multi' && (
                 <th className="select-col" rowSpan={activeGroups.length > 0 ? 2 : undefined}>
                   <input
@@ -345,9 +397,10 @@ export default function DemoGrid({ selections, derived }) {
                     <th
                       key={col.key}
                       rowSpan={activeGroups.length > 0 ? 2 : undefined}
-                      className={isLocked ? 'locked-col' : undefined}
-                      style={{ textAlign: align, minWidth: col.width }}
+                      className={[isLocked && 'locked-col', dragOverKey === col.key && 'col-drag-over'].filter(Boolean).join(' ') || undefined}
+                      style={{ textAlign: align, minWidth: col.width, left: isLocked ? lockedColLeft : undefined }}
                       aria-sort={headerAriaSort(col)}
+                      {...headerDragProps(col)}
                     >
                       {headerCellContent(col)}
                     </th>
@@ -355,9 +408,6 @@ export default function DemoGrid({ selections, derived }) {
                 });
                 return cells;
               })()}
-              {hasDetailCol && (
-                <th className="detail-col" rowSpan={activeGroups.length > 0 ? 2 : undefined} aria-hidden="true" />
-              )}
               {hasActionsCol && (
                 <th className="actions-col" rowSpan={activeGroups.length > 0 ? 2 : undefined}>Actions</th>
               )}
@@ -374,7 +424,7 @@ export default function DemoGrid({ selections, derived }) {
                       key={col.key}
                       scope="col"
                       className={isLocked ? 'locked-col' : undefined}
-                      style={{ textAlign: align, minWidth: col.width }}
+                      style={{ textAlign: align, minWidth: col.width, left: isLocked ? lockedColLeft : undefined }}
                       aria-sort={headerAriaSort(col)}
                     >
                       {headerCellContent(col)}
@@ -389,10 +439,29 @@ export default function DemoGrid({ selections, derived }) {
               const isSelected = selectedIds.has(row.id);
               const isFlagged = flaggedIds.has(row.id);
               const isExpanded = expandedIds.has(row.id);
+              const isDrawerOpen = openDrawerRowId === row.id;
               const isUpdating = updatingRowId === row.id;
+              const showInlineDetail =
+                (selections.rowDetail === 'expandRow' && isExpanded) ||
+                (selections.rowDetail === 'drawer' && isDrawerOpen);
+
               return (
                 <Fragment key={row.id}>
                   <tr className={isSelected ? 'row-selected' : undefined} aria-busy={isUpdating || undefined}>
+                    {hasDetailCol && (
+                      <td className="detail-col">
+                        <button
+                          type="button"
+                          className="detail-toggle"
+                          aria-expanded={selections.rowDetail === 'modal' ? modalRowId === row.id : showInlineDetail}
+                          aria-haspopup={selections.rowDetail === 'modal' ? 'dialog' : undefined}
+                          aria-label={`${showInlineDetail ? 'Hide' : 'Show'} details for ${row.id}`}
+                          onClick={() => toggleDetail(row.id)}
+                        >
+                          {'\u203A'}
+                        </button>
+                      </td>
+                    )}
                     {canSelect && (
                       <td className="select-col">
                         <input
@@ -409,72 +478,71 @@ export default function DemoGrid({ selections, derived }) {
                         <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, 1)} aria-label={`Move ${row.id} down`}>{'\u2193'}</button>
                       </td>
                     )}
-                    {orderedColumns.map((col, i) => {
-                      const isLocked = selections.lockedColumns && i === 0;
-                      const value = cellValue(row, col);
-                      const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
-                      const editable = selections.editing === 'inline' && col.editable;
-                      const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+                    {(() => {
+                      const cells = [];
+                      const spannedByGroup = new Set();
+                      orderedColumns.forEach((col, i) => {
+                        const group = groupFor(col.key);
+                        const isLocked = selections.lockedColumns && i === 0;
 
-                      let content;
-                      if (isEditingThis) {
-                        content = (
-                          <input
-                            autoFocus
-                            defaultValue={value ?? ''}
-                            onBlur={(e) => commitEdit(row.id, col.key, e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') setEditingCell(null); }}
-                          />
+                        if (group) {
+                          if (spannedByGroup.has(col.key)) return;
+                          group.keys.forEach((k) => spannedByGroup.add(k));
+                          cells.push(
+                            <td key={`group-cell-${group.label}`} colSpan={group.keys.length}>
+                              <div className="grouped-cell">
+                                {group.keys.map((k) => {
+                                  const gcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
+                                  return (
+                                    <div key={k} className="grouped-cell-value">
+                                      {formatCell(gcol, cellValue(row, gcol))}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </td>
+                          );
+                          return;
+                        }
+
+                        const value = cellValue(row, col);
+                        const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
+                        const editable = selections.editing === 'inline' && col.editable;
+                        const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+
+                        let content;
+                        if (isEditingThis) {
+                          content = (
+                            <input
+                              autoFocus
+                              defaultValue={value ?? ''}
+                              onBlur={(e) => commitEdit(row.id, col.key, e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') setEditingCell(null); }}
+                            />
+                          );
+                        } else if (col.truncate && value && String(value).length > 40) {
+                          content = <TruncatedCell text={String(value).slice(0, 40) + '\u2026'} />;
+                        } else if (editable) {
+                          content = <span className="editable-value">{formatCell(col, value)}</span>;
+                        } else {
+                          content = formatCell(col, value);
+                        }
+
+                        cells.push(
+                          <td
+                            key={col.key}
+                            className={[isLocked && 'locked-col', editable && 'editable-cell'].filter(Boolean).join(' ') || undefined}
+                            style={{ textAlign: align, minWidth: col.width, left: isLocked ? lockedColLeft : undefined }}
+                            onClick={editable && !isEditingThis ? () => setEditingCell({ rowId: row.id, key: col.key }) : undefined}
+                          >
+                            {content}
+                          </td>
                         );
-                      } else if (col.truncate && value && String(value).length > 40) {
-                        content = <TruncatedCell text={String(value).slice(0, 40) + '\u2026'} />;
-                      } else {
-                        content = formatCell(col, value);
-                      }
-
-                      return (
-                        <td
-                          key={col.key}
-                          className={[isLocked && 'locked-col', editable && 'editable-cell'].filter(Boolean).join(' ') || undefined}
-                          style={{ textAlign: align, minWidth: col.width }}
-                          onClick={editable && !isEditingThis ? () => setEditingCell({ rowId: row.id, key: col.key }) : undefined}
-                        >
-                          {content}
-                        </td>
-                      );
-                    })}
-                    {hasDetailCol && (
-                      <td className="detail-col">
-                        {selections.rowDetail === 'expandRow' ? (
-                          <button
-                            type="button"
-                            className="detail-toggle"
-                            aria-expanded={isExpanded}
-                            aria-label={isExpanded ? `Hide details for ${row.id}` : `Show details for ${row.id}`}
-                            onClick={() => setExpandedIds((prev) => {
-                              const next = new Set(prev);
-                              next.has(row.id) ? next.delete(row.id) : next.add(row.id);
-                              return next;
-                            })}
-                          >
-                            {'\u203A'}
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="detail-toggle"
-                            aria-expanded={detailRowId === row.id}
-                            aria-haspopup="dialog"
-                            aria-label={`View details for ${row.id}`}
-                            onClick={() => setDetailRowId(row.id)}
-                          >
-                            {'\u203A'}
-                          </button>
-                        )}
-                      </td>
-                    )}
+                      });
+                      return cells;
+                    })()}
                     {hasActionsCol && (
-                      <td className="actions-col" style={{ display: 'flex', gap: 'var(--space-xs)' }}>
+                      <td className="actions-col">
                         <button type="button" className="button" aria-pressed={isFlagged} onClick={() => toggleFlag(row.id)}>
                           {isFlagged ? 'Flagged' : 'Flag'}
                         </button>
@@ -486,17 +554,10 @@ export default function DemoGrid({ selections, derived }) {
                       </td>
                     )}
                   </tr>
-                  {selections.rowDetail === 'expandRow' && isExpanded && (
+                  {showInlineDetail && (
                     <tr className="expand-row">
                       <td colSpan={totalColSpan}>
-                        <div className="expand-content">
-                          {sampleColumns.filter((c) => !columns.includes(c)).map((c) => (
-                            <div key={c.key}><strong>{c.label}:</strong> {formatCell(c, row[c.key])}</div>
-                          ))}
-                          {sampleColumns.filter((c) => !columns.includes(c)).length === 0 && (
-                            <div>{row.notes}</div>
-                          )}
-                        </div>
+                        <DetailContent row={row} />
                       </td>
                     </tr>
                   )}
@@ -507,6 +568,7 @@ export default function DemoGrid({ selections, derived }) {
           {selections.totals !== 'none' && columns.some((c) => c.key === 'amount') && (
             <tfoot>
               <tr>
+                {hasDetailCol && <td className="detail-col" />}
                 {canSelect && <td className="select-col" />}
                 {selections.dragReorder && <td className="reorder-col" />}
                 {orderedColumns.map((col, i) => (
@@ -516,7 +578,6 @@ export default function DemoGrid({ selections, derived }) {
                       : i === 0 ? 'Total' : ''}
                   </td>
                 ))}
-                {hasDetailCol && <td className="detail-col" />}
                 {hasActionsCol && <td className="actions-col" />}
               </tr>
             </tfoot>
@@ -531,14 +592,14 @@ export default function DemoGrid({ selections, derived }) {
       )}
 
       <Drawer
-        open={selections.rowDetail !== 'none' && selections.rowDetail !== 'expandRow' && detailRowId !== null}
-        onClose={() => setDetailRowId(null)}
-        title={detailRow ? `${detailRow.id}: ${detailRow.customer}` : ''}
-        variant={selections.rowDetail === 'modal' ? 'modal' : 'drawer'}
+        open={selections.rowDetail === 'modal' && modalRowId !== null}
+        onClose={() => setModalRowId(null)}
+        title={modalRow ? `${modalRow.id}: ${modalRow.customer}` : ''}
+        variant="modal"
       >
-        {detailRow && sampleColumns.map((c) => (
+        {modalRow && sampleColumns.map((c) => (
           <p key={c.key} style={{ margin: '0 0 var(--space-sm)' }}>
-            <strong>{c.label}:</strong> {formatCell(c, cellValue(detailRow, c))}
+            <strong>{c.label}:</strong> {formatCell(c, cellValue(modalRow, c))}
           </p>
         ))}
       </Drawer>
