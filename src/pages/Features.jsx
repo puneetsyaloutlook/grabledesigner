@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { selectionSchema, defaultSelections } from '../lib/selectionSchema';
 import { decodeSelections, encodeSelections } from '../lib/selectionState';
@@ -11,11 +11,21 @@ function isOptionEnabled(option, selections) {
 }
 
 export default function Features() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [selections, setSelections] = useState(() =>
     searchParams.toString() ? decodeSelections(searchParams) : defaultSelections()
   );
+
+  // Keep the URL live-synced to the current selections, not just on Apply.
+  // The sidebar (and any other nav link) builds its href from the URL's own
+  // query string, so without this, navigating away via the sidebar instead
+  // of an Apply button would silently carry stale selections rather than
+  // whatever was just edited. `replace: true` so every toggle doesn't add
+  // a new browser-history entry.
+  useEffect(() => {
+    setSearchParams(encodeSelections(selections), { replace: true });
+  }, [selections]);
 
   function setField(key, value) {
     setSelections((prev) => ({ ...prev, [key]: value }));
