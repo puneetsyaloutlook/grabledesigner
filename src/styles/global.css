@@ -45,6 +45,13 @@ a {
   color: #fff;
 }
 
+.side-nav-tagline {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--teal-200);
+  margin: 4px 0 0;
+}
+
 .side-nav-cards {
   display: flex;
   flex-direction: column;
@@ -130,7 +137,7 @@ a {
     overflow-x: auto;
   }
 
-  .side-nav-title {
+  .side-nav-brand {
     flex-shrink: 0;
   }
 
