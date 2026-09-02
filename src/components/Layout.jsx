@@ -16,9 +16,12 @@ export default function Layout() {
   return (
     <div className="app-shell">
       <aside className="side-nav">
-        <NavLink to={`/${suffix}`} className="side-nav-title">
-          Grid and table<br />UX reference
-        </NavLink>
+        <div className="side-nav-brand">
+          <NavLink to={`/${suffix}`} className="side-nav-title">
+            Grid & Table Designer
+          </NavLink>
+          <p className="side-nav-tagline">Encouraging your data display behaviours.</p>
+        </div>
         <div className="side-nav-cards">
           {NAV_ITEMS.map((item, i) => (
             <div key={item.to}>
