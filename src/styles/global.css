@@ -756,12 +756,13 @@ th.col-drag-over {
 }
 
 /* Actions need to read as buttons at table density, not the 44px standalone
-   size meant for page-level use. Scoped to td specifically: .actions-col is
-   shared with the th header cell, and display:flex on a th breaks its
-   participation in the table's column-width layout, which is what was
-   misaligning the header against its own column. */
-td.actions-col {
-  display: flex;
+   size meant for page-level use. The flex layout lives on an inner wrapper,
+   not the td itself: a td with display:flex stops behaving as a normal
+   table cell, which is what caused both the earlier header misalignment
+   and this row-border misalignment - the cell's own height/border no
+   longer computes consistently against its plain table-cell siblings. */
+.actions-buttons {
+  display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
 }
