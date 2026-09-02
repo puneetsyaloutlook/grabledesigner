@@ -4,11 +4,13 @@ import { decodeSelections } from '../lib/selectionState';
 import { selectionSchema, computeDerivedFlags } from '../lib/selectionSchema';
 import { applicableStandards } from '../lib/standards';
 import { applicableDecisions } from '../lib/decisions';
+import { applicableReferences } from '../lib/referenceSystems';
 
 const TABS = [
   { id: 'specification', label: 'Specification' },
   { id: 'requirements', label: 'Requirements' },
   { id: 'decisions', label: 'Design decisions' },
+  { id: 'references', label: 'Reference systems' },
   { id: 'scope', label: 'Scope' },
   { id: 'delivery', label: 'Delivery approach' },
 ];
@@ -49,12 +51,17 @@ function describeRequirement(entry) {
 }
 
 function describeDecision(entry) {
-  const chosen = entry.options.filter((o) => o.chosen).map((o) => o.label).join('; ');
+  const chosenOptions = entry.options.filter((o) => o.chosen);
+  const chosenText = chosenOptions.map((o) => `${o.label} (${o.note})`).join('; ');
   const rejected = entry.options.filter((o) => !o.chosen);
   const rejectedText = rejected.length > 0
     ? ' Not used: ' + rejected.map((r) => `${r.label} (${r.note})`).join(' ')
     : '';
-  return `Chosen: ${chosen}.${rejectedText} ${entry.tradeoff}`;
+  return `Chosen: ${chosenText}.${rejectedText} ${entry.tradeoff}`;
+}
+
+function describeReference(entry) {
+  return `${entry.summary} Pros: ${entry.pros.join('; ')}. Cons: ${entry.cons.join('; ')}.`;
 }
 
 function DocTable({ columnLabels, rows }) {
@@ -78,7 +85,7 @@ function DocTable({ columnLabels, rows }) {
   );
 }
 
-function buildPlainText(specification, requirementsByCategory, decisionsByCategory, scopeText, deliveryText) {
+function buildPlainText(specification, requirementsByCategory, decisionsByCategory, references, scopeText, deliveryText) {
   const lines = [];
   lines.push('DOCUMENTATION');
 
@@ -100,6 +107,9 @@ function buildPlainText(specification, requirementsByCategory, decisionsByCatego
     entries.forEach((d) => lines.push(`- ${d.title}: ${describeDecision(d)}`));
   });
 
+  lines.push('', 'Reference systems');
+  references.forEach((r) => lines.push(`- ${r.name}: ${describeReference(r)}`));
+
   lines.push('', 'Scope', scopeText);
   lines.push('', 'Delivery approach', deliveryText);
 
@@ -112,6 +122,7 @@ export default function Documentation() {
   const derived = computeDerivedFlags(selections);
   const requirements = applicableStandards(selections, derived);
   const decisions = applicableDecisions(selections, derived);
+  const references = applicableReferences(selections, derived);
   const specification = summariseSelections(selections);
   const requirementsByCategory = groupByCategory(requirements);
   const decisionsByCategory = groupByCategory(decisions);
@@ -125,7 +136,7 @@ export default function Documentation() {
     : `This configuration carries ${totalComplexity} standards and decisions combined, a contained amount. Incremental and single-release delivery are both reasonable here. The choice is a team preference, not a risk-driven one.`;
 
   function handleCopy() {
-    const text = buildPlainText(specification, requirementsByCategory, decisionsByCategory, scopeText, deliveryText);
+    const text = buildPlainText(specification, requirementsByCategory, decisionsByCategory, references, scopeText, deliveryText);
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -139,7 +150,7 @@ export default function Documentation() {
           <h1>Documentation</h1>
           <p className="intro-copy" style={{ maxWidth: 'none' }}>
             What to build for this configuration, and why. {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
-            {requirements.length} requirements, {decisions.length} decisions.
+            {requirements.length} requirements, {decisions.length} decisions, {references.length} reference systems.
           </p>
         </div>
         <button type="button" className="button button-primary" onClick={handleCopy} style={{ flexShrink: 0 }}>
@@ -208,6 +219,19 @@ export default function Documentation() {
                   />
                 </div>
               ))
+            )}
+          </section>
+        )}
+
+        {activeTab === 'references' && (
+          <section>
+            {references.length === 0 ? (
+              <p>No specific systems stand out for this configuration; it\u2019s simple enough that most general-purpose table components would do.</p>
+            ) : (
+              <DocTable
+                columnLabels={['System', 'Why it fits, and the trade-offs']}
+                rows={references.map((r) => ({ name: r.name, description: describeReference(r) }))}
+              />
             )}
           </section>
         )}
