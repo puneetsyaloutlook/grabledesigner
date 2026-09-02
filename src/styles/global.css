@@ -750,11 +750,18 @@ th.col-drag-over {
   min-height: 28px;
   padding: 2px var(--space-sm);
   font-size: var(--text-sm-size);
+  color: var(--color-action);
+  border-color: var(--color-action);
+}
+
+.actions-col .button:hover {
+  background: var(--blue-100);
 }
 
 .actions-col .button[aria-pressed="true"] {
   background: var(--teal-100);
   border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .expand-row td {
