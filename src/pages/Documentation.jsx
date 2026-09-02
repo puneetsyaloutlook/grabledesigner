@@ -12,12 +12,12 @@ function summariseSelections(selections) {
     group.fields.forEach((field) => {
       const value = selections[field.key];
       if (field.type === 'boolean') {
-        if (value) groupItems.push(field.question);
+        if (value) groupItems.push({ label: field.docLabel, value: field.docDescription });
         return;
       }
       const chosen = field.options.find((o) => o.value === value);
       if (chosen && value !== 'none') {
-        groupItems.push(`${field.question} ${chosen.label}`);
+        groupItems.push({ label: field.docLabel, value: chosen.label });
       }
     });
     if (groupItems.length > 0) items.push({ group: group.group, items: groupItems });
@@ -41,7 +41,7 @@ function buildPlainText(selections, summary, requirementsByCategory, decisionsBy
   summary.forEach(({ group, items }) => {
     lines.push('');
     lines.push(group);
-    items.forEach((i) => lines.push(`- ${i}`));
+    items.forEach((i) => lines.push(`- ${i.label}: ${i.value}`));
   });
   lines.push('');
   lines.push('Requirements');
@@ -128,7 +128,9 @@ export default function Documentation() {
               <div key={group} className="doc-group">
                 <h3>{group}</h3>
                 <ul>
-                  {items.map((item, i) => <li key={i}>{item}</li>)}
+                  {items.map((item, i) => (
+                    <li key={i}><strong>{item.label}:</strong> {item.value}</li>
+                  ))}
                 </ul>
               </div>
             ))
