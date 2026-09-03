@@ -4,7 +4,7 @@ const STAGES = [
   {
     name: 'Get the data',
     icon: Database,
-    detail: 'Validate that the data actually exists, is accessible, and is reliable enough to build on. This is a feasibility question before it\u2019s a design question: nothing downstream works if the data supply itself isn\u2019t sound.',
+    detail: 'Validate that the data actually exists, is accessible, and is reliable enough to build on. This is a feasibility question before it’s a design question: nothing downstream works if the data supply itself isn’t sound.',
   },
   {
     name: 'Put it in a table',
@@ -15,7 +15,7 @@ const STAGES = [
   {
     name: 'Visualise the table',
     icon: PieChart,
-    detail: 'Help users process what they\u2019re looking at through charts, summaries, or other visual treatments. The data is the same as the previous stage, presented in a form that\u2019s faster to read and compare.',
+    detail: 'Help users process what they’re looking at through charts, summaries, or other visual treatments. The data is the same as the previous stage, presented in a form that’s faster to read and compare.',
   },
   {
     name: 'Draw out insights',
@@ -30,12 +30,12 @@ const STAGES = [
   {
     name: 'Draw out predictions',
     icon: TrendingUp,
-    detail: 'Move from reacting to what\u2019s already happened to anticipating what\u2019s likely to happen next, so users can act ahead of an issue rather than after it.',
+    detail: 'Move from reacting to what’s already happened to anticipating what’s likely to happen next, so users can act ahead of an issue rather than after it.',
   },
   {
     name: 'Automate actions',
     icon: Cog,
-    detail: 'Remove the repetitive or low-value parts of the response entirely, so the system acts on the user\u2019s behalf where that response is well understood enough to trust.',
+    detail: 'Remove the repetitive or low-value parts of the response entirely, so the system acts on the user’s behalf where that response is well understood enough to trust.',
   },
 ];
 
@@ -50,7 +50,7 @@ export default function Framework() {
         <div className="framework-intro">
           <h2>The 7 stages</h2>
           <p>This framework describes the evolution of data display interactions in enterprise applications.</p>
-          <p>Every stage builds one on top of the previous, as the experience evolves to fit users\u2019 needs better.</p>
+          <p>Every stage builds one on top of the previous, as the experience evolves to fit users’ needs better.</p>
           <p>Each stage needs more investment in understanding deeper workflow and business process needs.</p>
           <span className="framework-current-marker" aria-hidden="true" />
           <p>This tool helps visualise and design tabular data display.</p>
@@ -84,14 +84,14 @@ export default function Framework() {
               jumps further with each release, but the trade-off is a
               longer gap where nothing ships while that larger scope is
               being built, and a wrong assumption is more expensive to
-              unwind once it\u2019s baked into something bigger.
+              unwind once it’s baked into something bigger.
             </p>
           </div>
           <div className="framework-approach framework-approach-alt">
             <h3>Through stages</h3>
             <p>
               The right approach when the workflow or business process
-              isn\u2019t yet fully understood. Each stage becomes a chance to
+              isn’t yet fully understood. Each stage becomes a chance to
               test an assumption against real usage before committing
               further, so the team discovers and documents how the work
               actually happens as they go. Value grows steadily, and

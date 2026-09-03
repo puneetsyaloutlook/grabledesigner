@@ -220,7 +220,7 @@ export default function Documentation() {
         {activeTab === 'references' && (
           <section>
             {references.length === 0 ? (
-              <p>No specific systems stand out for this configuration; it\u2019s simple enough that most general-purpose table components would do.</p>
+              <p>No specific systems stand out for this configuration; it’s simple enough that most general-purpose table components would do.</p>
             ) : (
               <DocTable
                 columnLabels={['System', 'Why it fits, and the trade-offs']}
