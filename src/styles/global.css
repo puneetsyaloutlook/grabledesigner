@@ -640,7 +640,7 @@ h3 {
 
 .group-header {
   text-align: center;
-  color: var(--color-action);
+  color: var(--text-secondary);
   padding-bottom: 2px;
   font-weight: 600;
 }
@@ -915,21 +915,6 @@ th.col-drag-over {
 
 .detail-toggle[aria-expanded="true"] {
   transform: rotate(90deg);
-}
-
-/* Grouped-header decision extended to the body: the whole point of pairing
-   two columns under one label is that the values are meant to be read
-   together, so they're stacked in a single merged cell, not two separate
-   side-by-side columns that happen to share a header. */
-.grouped-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  white-space: normal;
-}
-
-.grouped-cell-value {
-  font-size: var(--text-sm-size);
 }
 
 /* Actions need to read as buttons at table density, not the 44px standalone
