@@ -1,12 +1,9 @@
 import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
+import { STEPS, FRAMEWORK_ITEM } from '../lib/navSteps';
+import logoIcon from '../assets/icon-logo.svg';
+import checkIcon from '../assets/icon-check.svg';
 
-const NAV_ITEMS = [
-  { to: '/features', label: 'Features needed', detail: 'What functionality do you need for the data display?', end: true },
-  { to: '/standards', label: 'Applicable standards', detail: 'Based on that functionality, which UX standards apply?' },
-  { to: '/experience', label: 'Experience', detail: 'A quick demo of how those functions and standards look in the UI.' },
-  { to: '/documentation', label: 'Documentation', detail: 'The net result: what to actually build, and why.' },
-  { to: '/framework', label: 'Framework', detail: 'The bigger picture this tool\u2019s work sits inside.', separate: true },
-];
+const NAV_ITEMS = [...STEPS, FRAMEWORK_ITEM];
 
 export default function Layout() {
   const [searchParams] = useSearchParams();
@@ -18,7 +15,8 @@ export default function Layout() {
       <aside className="side-nav">
         <div className="side-nav-brand">
           <NavLink to={`/${suffix}`} className="side-nav-title">
-            Grid & Table Designer
+            <img src={logoIcon} alt="" className="side-nav-logo" />
+            <span>Grid &amp; Table Designer</span>
           </NavLink>
           <p className="side-nav-tagline">Encouraging your data display behaviours.</p>
         </div>
@@ -37,6 +35,7 @@ export default function Layout() {
                   `nav-card${isActive ? ' nav-card-active' : ''}${item.separate ? ' nav-card-standalone' : ''}`
                 }
               >
+                <img src={checkIcon} alt="" className="nav-card-icon" />
                 <span className="nav-card-label">{item.label}</span>
                 <span className="nav-card-detail">{item.detail}</span>
               </NavLink>
