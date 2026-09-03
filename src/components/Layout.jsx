@@ -21,12 +21,10 @@ export default function Layout() {
           <p className="side-nav-tagline">Encouraging your data display behaviours.</p>
         </div>
         <div className="side-nav-cards">
-          {NAV_ITEMS.map((item, i) => (
+          {NAV_ITEMS.map((item) => (
             <div key={item.to}>
-              {item.separate ? (
+              {item.separate && (
                 <div className="nav-separator" aria-hidden="true" />
-              ) : (
-                i > 0 && <span className="nav-step-arrow" aria-hidden="true" />
               )}
               <NavLink
                 to={`${item.to}${suffix}`}
