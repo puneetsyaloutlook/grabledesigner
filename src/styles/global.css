@@ -351,7 +351,6 @@ h3 {
 .doc-tabs-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-lg);
   border-bottom: 1px solid var(--border-default);
   margin-bottom: var(--space-xl);
@@ -361,6 +360,8 @@ h3 {
   display: flex;
   gap: var(--space-lg);
   overflow-x: auto;
+  flex: 1;
+  min-width: 0;
 }
 
 .doc-tab {
@@ -375,6 +376,7 @@ h3 {
   color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .doc-tab:hover {
