@@ -485,30 +485,8 @@ export default function DemoGrid({ selections, derived }) {
           )}
           {(() => {
             const cells = [];
-            const spannedByGroup = new Set();
             orderedColumns.forEach((col, i) => {
-              const group = groupFor(col.key);
               const isLocked = selections.lockedColumns && i === 0;
-
-              if (group) {
-                if (spannedByGroup.has(col.key)) return;
-                group.keys.forEach((k) => spannedByGroup.add(k));
-                cells.push(
-                  <td key={`group-cell-${group.label}`} colSpan={group.keys.length}>
-                    <div className="grouped-cell">
-                      {group.keys.map((k) => {
-                        const gcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
-                        return (
-                          <div key={k} className="grouped-cell-value" style={fontStyleFor(gcol)}>
-                            {formatCell(gcol, cellValue(row, gcol))}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </td>
-                );
-                return;
-              }
 
               const value = cellValue(row, col);
               const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
