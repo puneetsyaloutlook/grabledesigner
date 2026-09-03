@@ -356,6 +356,11 @@ h3 {
   margin-bottom: var(--space-xl);
 }
 
+.doc-copy-button {
+  flex-shrink: 0;
+  transform: translateY(-4px);
+}
+
 .doc-tabs {
   display: flex;
   gap: var(--space-lg);
