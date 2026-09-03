@@ -15,7 +15,7 @@ const DETAIL_COL_WIDTH = 40;
 const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
 
 function formatDate(iso) {
-  if (!iso) return '\u2013';
+  if (!iso) return '–';
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
@@ -23,20 +23,20 @@ function formatDate(iso) {
 // Negative-number-format decision: leading minus sign. Empty/NA/zero decision:
 // en dash for not-applicable, "0" written out for a genuine zero.
 function formatAmount(value) {
-  if (value === null || value === undefined) return '\u2013';
+  if (value === null || value === undefined) return '–';
   if (value === 0) return '$0';
   const abs = Math.abs(value).toLocaleString();
   return value < 0 ? `-$${abs}` : `$${abs}`;
 }
 
 function formatNumber(value) {
-  if (value === null || value === undefined) return '\u2013';
+  if (value === null || value === undefined) return '–';
   if (value === 0) return '0';
   return value < 0 ? `-${Math.abs(value)}` : `${value}`;
 }
 
 function formatCell(column, value) {
-  if (value === null || value === undefined || value === '') return '\u2013';
+  if (value === null || value === undefined || value === '') return '–';
   if (column.type === 'currency') return formatAmount(value);
   if (column.type === 'number') return formatNumber(value);
   if (column.type === 'date') return formatDate(value);
@@ -526,7 +526,7 @@ export default function DemoGrid({ selections, derived }) {
                   />
                 );
               } else if (col.truncate && value && String(value).length > 40) {
-                content = <TruncatedCell text={String(value).slice(0, 40) + '\u2026'} />;
+                content = <TruncatedCell text={String(value).slice(0, 40) + '…'} />;
               } else if (editable) {
                 content = <span className="editable-value">{formatCell(col, value)}</span>;
               } else {
@@ -806,6 +806,12 @@ export default function DemoGrid({ selections, derived }) {
         </table>
       </div>
 
+      {selections.editing === 'viaDetail' && (
+        <p className="demo-note">
+          {'Editing through the row detail view isn’t implemented in this demo, the drawer, modal, or expanded row still shows read-only fields. Shown here as a scope note rather than built out.'}
+        </p>
+      )}
+
       <Drawer
         open={selections.rowDetail === 'modal' && modalRowId !== null}
         onClose={() => setModalRowId(null)}
@@ -825,7 +831,7 @@ export default function DemoGrid({ selections, derived }) {
         title="Delete selected claims?"
         variant="modal"
       >
-        <p>This will permanently delete {selectedIds.size} claim{selectedIds.size === 1 ? '' : 's'}. This can\u2019t be undone.</p>
+        <p>This will permanently delete {selectedIds.size} claim{selectedIds.size === 1 ? '' : 's'}. This can’t be undone.</p>
         <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-md)' }}>
           <button type="button" className="button" onClick={() => setConfirmBulkDelete(false)}>Cancel</button>
           <button

@@ -64,7 +64,7 @@ export default function Drawer({ open, onClose, title, children, variant = 'draw
         <div className="overlay-header">
           <h2 id="overlay-title" tabIndex={-1}>{title}</h2>
           <button type="button" className="overlay-close" onClick={onClose} aria-label="Close">
-            {'\u2715'}
+            {'✕'}
           </button>
         </div>
         <div className="overlay-body">{children}</div>
