@@ -30,7 +30,7 @@ function summariseSelections(selections) {
       }
       const chosen = field.options.find((o) => o.value === value);
       if (chosen && value !== 'none') {
-        rows.push({ name: field.docLabel, description: `Specified as: ${chosen.label}.` });
+        rows.push({ name: field.docLabel, description: `${chosen.label}.` });
       }
     });
     if (rows.length > 0) items.push({ group: group.group, rows });
