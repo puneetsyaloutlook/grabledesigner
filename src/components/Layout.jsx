@@ -33,7 +33,9 @@ export default function Layout() {
                   `nav-card${isActive ? ' nav-card-active' : ''}${item.separate ? ' nav-card-standalone' : ''}`
                 }
               >
-                <img src={checkIcon} alt="" className="nav-card-icon" />
+                {!item.separate && (
+                  <img src={checkIcon} alt="" className="nav-card-icon" />
+                )}
                 <span className="nav-card-label">{item.label}</span>
                 <span className="nav-card-detail">{item.detail}</span>
               </NavLink>
