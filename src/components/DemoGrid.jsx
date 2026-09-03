@@ -42,6 +42,26 @@ function formatCell(column, value) {
   return String(value);
 }
 
+// Numeric/alphanumeric font-treatment standard: numeric columns get tabular
+// figures so digits align down the column; ID/code-shaped columns get a
+// monospace font so mixed letters and numbers stay predictable to scan.
+function fontStyleFor(column) {
+  if (column.type === 'currency' || column.type === 'number') {
+    return { fontVariantNumeric: 'tabular-nums' };
+  }
+  if (column.mono) {
+    return { fontFamily: 'var(--font-mono)' };
+  }
+  return {};
+}
+
+// Sort-default-direction standard: the first click sorts in the direction
+// that's actually the useful default for that data type, not always
+// ascending regardless of what the column holds.
+function defaultDirFor(column) {
+  return column?.type === 'date' ? 'desc' : 'asc';
+}
+
 // Truncation-reveal decision: tooltip on hover AND keyboard focus, not
 // native title (which fails keyboard users outright).
 function TruncatedCell({ text }) {
@@ -76,6 +96,9 @@ export default function DemoGrid({ selections, derived }) {
   const [expandedIds, setExpandedIds] = useState(new Set()); // many at a time
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [updatingRowId, setUpdatingRowId] = useState(null);
+  const [filterQuery, setFilterQuery] = useState('');
+  const [columnFilters, setColumnFilters] = useState({});
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
 
   // realTimeUpdates decision: simulate one row updating asynchronously,
   // aria-busy while in progress rather than swapping the value silently.
@@ -141,18 +164,44 @@ export default function DemoGrid({ selections, derived }) {
   const hasActionsCol = selections.actions !== 'none' && selections.actions !== 'bulk';
   const lockedColLeft = hasDetailCol ? DETAIL_COL_WIDTH : 0;
 
+  function cellValue(row, column) {
+    const override = editValues[`${row.id}:${column.key}`];
+    return override !== undefined ? override : row[column.key];
+  }
+
+  // Filtering: genuinely filters the visible rows, not just a decorative
+  // input. 'global' matches the query against every visible column;
+  // 'inline' and 'panel' filter per column, 'panel' just hides the controls
+  // behind a toggle rather than showing them by default.
+  const filteredRows = rows.filter((row) => {
+    if (selections.filtering === 'global' && filterQuery.trim()) {
+      const q = filterQuery.trim().toLowerCase();
+      return columns.some((col) => String(formatCell(col, cellValue(row, col))).toLowerCase().includes(q));
+    }
+    if (selections.filtering === 'inline' || selections.filtering === 'panel') {
+      return Object.entries(columnFilters).every(([key, val]) => {
+        if (!val || !val.trim()) return true;
+        const col = columns.find((c) => c.key === key);
+        if (!col) return true;
+        return String(formatCell(col, cellValue(row, col))).toLowerCase().includes(val.trim().toLowerCase());
+      });
+    }
+    return true;
+  });
+
   function toggleSort(key) {
+    const col = columns.find((c) => c.key === key);
     if (selections.sorting === 'single') {
       setSortChain((prev) => {
         const current = prev[0];
-        if (!current || current.key !== key) return [{ key, dir: 'asc' }];
+        if (!current || current.key !== key) return [{ key, dir: defaultDirFor(col) }];
         if (current.dir === 'asc') return [{ key, dir: 'desc' }];
         return [];
       });
     } else if (selections.sorting === 'multi') {
       setSortChain((prev) => {
         const idx = prev.findIndex((s) => s.key === key);
-        if (idx === -1) return [...prev, { key, dir: 'asc' }];
+        if (idx === -1) return [...prev, { key, dir: defaultDirFor(col) }];
         if (prev[idx].dir === 'asc') {
           const next = [...prev];
           next[idx] = { key, dir: 'desc' };
@@ -163,7 +212,7 @@ export default function DemoGrid({ selections, derived }) {
     }
   }
 
-  const sortedRows = [...rows].sort((a, b) => {
+  const sortedRows = [...filteredRows].sort((a, b) => {
     for (const { key, dir } of sortChain) {
       const col = columns.find((c) => c.key === key);
       let av = a[key];
@@ -189,11 +238,17 @@ export default function DemoGrid({ selections, derived }) {
     });
   }
 
-  const allSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id));
+  // Select-all operates on what's currently visible (filtered), not every
+  // row in the dataset regardless of filter.
+  const allSelected = filteredRows.length > 0 && filteredRows.every((r) => selectedIds.has(r.id));
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   function toggleSelectAll() {
-    setSelectedIds(allSelected ? new Set() : new Set(rows.map((r) => r.id)));
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredRows.map((r) => r.id)));
+    }
   }
 
   function moveRow(id, direction) {
@@ -218,11 +273,6 @@ export default function DemoGrid({ selections, derived }) {
   function commitEdit(rowId, key, value) {
     setEditValues((prev) => ({ ...prev, [`${rowId}:${key}`]: value }));
     setEditingCell(null);
-  }
-
-  function cellValue(row, column) {
-    const override = editValues[`${row.id}:${column.key}`];
-    return override !== undefined ? override : row[column.key];
   }
 
   function toggleDetail(rowId) {
@@ -345,8 +395,230 @@ export default function DemoGrid({ selections, derived }) {
     );
   }
 
+  // Shared row-rendering so the flat case and the grouped case use the same
+  // markup rather than two copies drifting apart.
+  function renderDataRow(row) {
+    const isSelected = selectedIds.has(row.id);
+    const isFlagged = flaggedIds.has(row.id);
+    const isExpanded = expandedIds.has(row.id);
+    const isDrawerOpen = openDrawerRowId === row.id;
+    const isUpdating = updatingRowId === row.id;
+    const showInlineDetail =
+      (selections.rowDetail === 'expandRow' && isExpanded) ||
+      (selections.rowDetail === 'drawer' && isDrawerOpen);
+
+    return (
+      <Fragment key={row.id}>
+        <tr className={isSelected ? 'row-selected' : undefined} aria-busy={isUpdating || undefined}>
+          {hasDetailCol && (
+            <td className="detail-col">
+              <button
+                type="button"
+                className="detail-toggle"
+                aria-expanded={selections.rowDetail === 'modal' ? modalRowId === row.id : showInlineDetail}
+                aria-haspopup={selections.rowDetail === 'modal' ? 'dialog' : undefined}
+                aria-label={`${showInlineDetail ? 'Hide' : 'Show'} details for ${row.id}`}
+                onClick={() => toggleDetail(row.id)}
+              >
+                {'\u203A'}
+              </button>
+            </td>
+          )}
+          {canSelect && (
+            <td className="select-col">
+              <input
+                type={selections.selection === 'multi' ? 'checkbox' : 'radio'}
+                checked={isSelected}
+                onChange={() => toggleRowSelected(row.id)}
+                aria-label={`Select ${row.id}`}
+              />
+            </td>
+          )}
+          {selections.dragReorder && (
+            <td className="reorder-col">
+              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, -1)} aria-label={`Move ${row.id} up`}>{'\u2191'}</button>
+              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, 1)} aria-label={`Move ${row.id} down`}>{'\u2193'}</button>
+            </td>
+          )}
+          {(() => {
+            const cells = [];
+            const spannedByGroup = new Set();
+            orderedColumns.forEach((col, i) => {
+              const group = groupFor(col.key);
+              const isLocked = selections.lockedColumns && i === 0;
+
+              if (group) {
+                if (spannedByGroup.has(col.key)) return;
+                group.keys.forEach((k) => spannedByGroup.add(k));
+                cells.push(
+                  <td key={`group-cell-${group.label}`} colSpan={group.keys.length}>
+                    <div className="grouped-cell">
+                      {group.keys.map((k) => {
+                        const gcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
+                        return (
+                          <div key={k} className="grouped-cell-value" style={fontStyleFor(gcol)}>
+                            {formatCell(gcol, cellValue(row, gcol))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </td>
+                );
+                return;
+              }
+
+              const value = cellValue(row, col);
+              const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
+              const editable = selections.editing === 'inline' && col.editable;
+              const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+
+              let content;
+              if (isEditingThis) {
+                content = (
+                  <input
+                    autoFocus
+                    defaultValue={value ?? ''}
+                    onBlur={(e) => commitEdit(row.id, col.key, e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') setEditingCell(null); }}
+                  />
+                );
+              } else if (col.truncate && value && String(value).length > 40) {
+                content = <TruncatedCell text={String(value).slice(0, 40) + '\u2026'} />;
+              } else if (editable) {
+                content = <span className="editable-value">{formatCell(col, value)}</span>;
+              } else {
+                content = formatCell(col, value);
+              }
+
+              cells.push(
+                <td
+                  key={col.key}
+                  className={[isLocked && 'locked-col', editable && 'editable-cell'].filter(Boolean).join(' ') || undefined}
+                  style={{ textAlign: align, minWidth: col.width, left: isLocked ? lockedColLeft : undefined, ...fontStyleFor(col) }}
+                  onClick={editable && !isEditingThis ? () => setEditingCell({ rowId: row.id, key: col.key }) : undefined}
+                >
+                  {content}
+                </td>
+              );
+            });
+            return cells;
+          })()}
+          {hasActionsCol && (
+            <td className="actions-col">
+              <span className="actions-buttons">
+                <button type="button" className="button" aria-pressed={isFlagged} onClick={() => toggleFlag(row.id)}>
+                  {isFlagged ? 'Flagged' : 'Flag'}
+                </button>
+                {selections.actions === 'multiple' && (
+                  <button type="button" className="button" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>
+                    Archive
+                  </button>
+                )}
+              </span>
+            </td>
+          )}
+        </tr>
+        {showInlineDetail && (
+          <tr className="expand-row">
+            <td colSpan={totalColSpan}>
+              <DetailContent row={row} />
+            </td>
+          </tr>
+        )}
+      </Fragment>
+    );
+  }
+
+  // A totals row (grand or per-group) reuses the same column structure as a
+  // data row, so the amount lands right-aligned under the Amount column
+  // rather than as a single spanning line of text.
+  function renderTotalsRow(rowsForTotal, label, keySuffix) {
+    return (
+      <tr key={`totals-${keySuffix}`} className="totals-row">
+        {hasDetailCol && <td className="detail-col" />}
+        {canSelect && <td className="select-col" />}
+        {selections.dragReorder && <td className="reorder-col" />}
+        {orderedColumns.map((col, i) => (
+          <td
+            key={col.key}
+            style={{
+              textAlign: col.type === 'currency' || col.type === 'number' ? 'right' : 'left',
+              fontWeight: 600,
+              ...fontStyleFor(col),
+            }}
+          >
+            {col.key === 'amount'
+              ? formatAmount(rowsForTotal.reduce((sum, r) => sum + (r.amount || 0), 0))
+              : i === 0 ? label : ''}
+          </td>
+        ))}
+        {hasActionsCol && <td className="actions-col" />}
+      </tr>
+    );
+  }
+
+  // Row-grouping decision: rows group by status (a real categorical field
+  // in the sample data), each group shown with a header row and, when
+  // totals includes per-group, its own subtotal directly beneath it.
+  function buildGroupedSections() {
+    if (!selections.rowGrouping) return [{ label: null, rows: sortedRows }];
+    const map = {};
+    sortedRows.forEach((row) => {
+      const key = row.status || 'Unspecified';
+      (map[key] ||= []).push(row);
+    });
+    return Object.keys(map).sort().map((label) => ({ label, rows: map[label] }));
+  }
+
+  const showPerGroupTotals = selections.rowGrouping && (selections.totals === 'perGroup' || selections.totals === 'both');
+  const showGrandTotal = (selections.totals === 'grand' || selections.totals === 'both') && columns.some((c) => c.key === 'amount');
+
+  const itemCountLabel = filteredRows.length === rows.length
+    ? `Claims (${rows.length})`
+    : `Claims (${filteredRows.length} of ${rows.length})`;
+
   return (
-    <div>
+    <div className="card demo-card">
+      <div className="demo-card-header">
+        <h3 role="status" aria-live="polite">{itemCountLabel}</h3>
+        {selections.filtering === 'global' && (
+          <input
+            type="search"
+            className="filter-input filter-input-global"
+            placeholder="Search all columns"
+            aria-label="Search all columns"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+          />
+        )}
+        {selections.filtering === 'panel' && (
+          <button
+            type="button"
+            className="button"
+            aria-expanded={filterPanelOpen}
+            onClick={() => setFilterPanelOpen((o) => !o)}
+          >
+            Filters
+          </button>
+        )}
+      </div>
+
+      {(selections.filtering === 'inline' || (selections.filtering === 'panel' && filterPanelOpen)) && (
+        <div className="filter-bar">
+          {orderedColumns.map((col) => (
+            <input
+              key={col.key}
+              type="text"
+              className="filter-input"
+              placeholder={col.label}
+              aria-label={`Filter by ${col.label}`}
+              value={columnFilters[col.key] || ''}
+              onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
+            />
+          ))}
+        </div>
+      )}
+
       {bulkMode && selectedIds.size > 0 && (
         <div className="bulk-bar">
           <span>{selectedIds.size} selected</span>
@@ -440,163 +712,31 @@ export default function DemoGrid({ selections, derived }) {
             )}
           </thead>
           <tbody>
-            {sortedRows.map((row) => {
-              const isSelected = selectedIds.has(row.id);
-              const isFlagged = flaggedIds.has(row.id);
-              const isExpanded = expandedIds.has(row.id);
-              const isDrawerOpen = openDrawerRowId === row.id;
-              const isUpdating = updatingRowId === row.id;
-              const showInlineDetail =
-                (selections.rowDetail === 'expandRow' && isExpanded) ||
-                (selections.rowDetail === 'drawer' && isDrawerOpen);
-
-              return (
-                <Fragment key={row.id}>
-                  <tr className={isSelected ? 'row-selected' : undefined} aria-busy={isUpdating || undefined}>
-                    {hasDetailCol && (
-                      <td className="detail-col">
-                        <button
-                          type="button"
-                          className="detail-toggle"
-                          aria-expanded={selections.rowDetail === 'modal' ? modalRowId === row.id : showInlineDetail}
-                          aria-haspopup={selections.rowDetail === 'modal' ? 'dialog' : undefined}
-                          aria-label={`${showInlineDetail ? 'Hide' : 'Show'} details for ${row.id}`}
-                          onClick={() => toggleDetail(row.id)}
-                        >
-                          {'\u203A'}
-                        </button>
-                      </td>
-                    )}
-                    {canSelect && (
-                      <td className="select-col">
-                        <input
-                          type={selections.selection === 'multi' ? 'checkbox' : 'radio'}
-                          checked={isSelected}
-                          onChange={() => toggleRowSelected(row.id)}
-                          aria-label={`Select ${row.id}`}
-                        />
-                      </td>
-                    )}
-                    {selections.dragReorder && (
-                      <td className="reorder-col">
-                        <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, -1)} aria-label={`Move ${row.id} up`}>{'\u2191'}</button>
-                        <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, 1)} aria-label={`Move ${row.id} down`}>{'\u2193'}</button>
-                      </td>
-                    )}
-                    {(() => {
-                      const cells = [];
-                      const spannedByGroup = new Set();
-                      orderedColumns.forEach((col, i) => {
-                        const group = groupFor(col.key);
-                        const isLocked = selections.lockedColumns && i === 0;
-
-                        if (group) {
-                          if (spannedByGroup.has(col.key)) return;
-                          group.keys.forEach((k) => spannedByGroup.add(k));
-                          cells.push(
-                            <td key={`group-cell-${group.label}`} colSpan={group.keys.length}>
-                              <div className="grouped-cell">
-                                {group.keys.map((k) => {
-                                  const gcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
-                                  return (
-                                    <div key={k} className="grouped-cell-value">
-                                      {formatCell(gcol, cellValue(row, gcol))}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </td>
-                          );
-                          return;
-                        }
-
-                        const value = cellValue(row, col);
-                        const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
-                        const editable = selections.editing === 'inline' && col.editable;
-                        const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
-
-                        let content;
-                        if (isEditingThis) {
-                          content = (
-                            <input
-                              autoFocus
-                              defaultValue={value ?? ''}
-                              onBlur={(e) => commitEdit(row.id, col.key, e.target.value)}
-                              onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') setEditingCell(null); }}
-                            />
-                          );
-                        } else if (col.truncate && value && String(value).length > 40) {
-                          content = <TruncatedCell text={String(value).slice(0, 40) + '\u2026'} />;
-                        } else if (editable) {
-                          content = <span className="editable-value">{formatCell(col, value)}</span>;
-                        } else {
-                          content = formatCell(col, value);
-                        }
-
-                        cells.push(
-                          <td
-                            key={col.key}
-                            className={[isLocked && 'locked-col', editable && 'editable-cell'].filter(Boolean).join(' ') || undefined}
-                            style={{ textAlign: align, minWidth: col.width, left: isLocked ? lockedColLeft : undefined }}
-                            onClick={editable && !isEditingThis ? () => setEditingCell({ rowId: row.id, key: col.key }) : undefined}
-                          >
-                            {content}
-                          </td>
-                        );
-                      });
-                      return cells;
-                    })()}
-                    {hasActionsCol && (
-                      <td className="actions-col">
-                        <span className="actions-buttons">
-                          <button type="button" className="button" aria-pressed={isFlagged} onClick={() => toggleFlag(row.id)}>
-                            {isFlagged ? 'Flagged' : 'Flag'}
-                          </button>
-                          {selections.actions === 'multiple' && (
-                            <button type="button" className="button" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>
-                              Archive
-                            </button>
-                          )}
-                        </span>
-                      </td>
-                    )}
-                  </tr>
-                  {showInlineDetail && (
-                    <tr className="expand-row">
-                      <td colSpan={totalColSpan}>
-                        <DetailContent row={row} />
-                      </td>
+            {filteredRows.length === 0 ? (
+              <tr>
+                <td colSpan={totalColSpan} className="empty-row">No claims match the current filter.</td>
+              </tr>
+            ) : (
+              buildGroupedSections().map((section) => (
+                <Fragment key={section.label || 'all'}>
+                  {section.label && (
+                    <tr className="group-header-row">
+                      <td colSpan={totalColSpan}>{section.label} ({section.rows.length})</td>
                     </tr>
                   )}
+                  {section.rows.map((row) => renderDataRow(row))}
+                  {section.label && showPerGroupTotals && renderTotalsRow(section.rows, 'Subtotal', section.label)}
                 </Fragment>
-              );
-            })}
+              ))
+            )}
           </tbody>
-          {selections.totals !== 'none' && columns.some((c) => c.key === 'amount') && (
+          {showGrandTotal && (
             <tfoot>
-              <tr>
-                {hasDetailCol && <td className="detail-col" />}
-                {canSelect && <td className="select-col" />}
-                {selections.dragReorder && <td className="reorder-col" />}
-                {orderedColumns.map((col, i) => (
-                  <td key={col.key} style={{ textAlign: col.type === 'currency' || col.type === 'number' ? 'right' : 'left', fontWeight: 600 }}>
-                    {col.key === 'amount'
-                      ? formatAmount(rows.reduce((sum, r) => sum + (r.amount || 0), 0))
-                      : i === 0 ? 'Total' : ''}
-                  </td>
-                ))}
-                {hasActionsCol && <td className="actions-col" />}
-              </tr>
+              {renderTotalsRow(filteredRows, 'Total', 'grand')}
             </tfoot>
           )}
         </table>
       </div>
-
-      {selections.rowGrouping && (
-        <p className="demo-note">
-          Row grouping isn\u2019t implemented in this demo. Shown here as a scope note rather than built out.
-        </p>
-      )}
 
       <Drawer
         open={selections.rowDetail === 'modal' && modalRowId !== null}
