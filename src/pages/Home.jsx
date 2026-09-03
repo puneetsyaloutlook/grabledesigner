@@ -7,7 +7,7 @@ import { STEPS } from '../lib/navSteps';
 // clickable way to move between pages.
 const SUMMARIES = {
   '/features': 'Start with the patterns your users need to find in the data. Then map the functionality specified here to those needs, not the reverse.',
-  '/standards': 'Functional requirements that apply, based on what was selected on Features needed. Each one is triggered by a specific selection.',
+  '/standards': 'UX and accessibility standards that apply, based on what was selected on Features needed. Each one is triggered by a specific selection.',
   '/experience': 'A working demo built from what was selected on Features needed, implementing the applicable standards and the specific rendering choices behind it.',
   '/documentation': 'The net result: what to build for this configuration, and why, synthesised from your selections, the applicable standards, and the decisions made in Experience.',
 };
