@@ -26,7 +26,7 @@ export const selectionSchema = [
         key: 'dataPoints',
         docLabel: 'Columns per row',
         type: 'single',
-        question: 'How many data points does each row need to show?',
+        question: 'How many data points should each row show?',
         options: [
           { value: 'low', label: 'Up to four' },
           { value: 'mid', label: 'Up to ten' },
@@ -61,7 +61,7 @@ export const selectionSchema = [
         key: 'sorting',
         docLabel: 'Sorting',
         type: 'single',
-        question: 'What sorting does this need?',
+        question: 'What sorting should this support?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'single', label: 'One column at a time' },
@@ -72,7 +72,7 @@ export const selectionSchema = [
         key: 'filtering',
         docLabel: 'Filtering',
         type: 'single',
-        question: 'What filtering does this need?',
+        question: 'What filtering should this support?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'inline', label: 'Per-column filter controls' },
@@ -89,7 +89,7 @@ export const selectionSchema = [
         key: 'selection',
         docLabel: 'Row selection',
         type: 'single',
-        question: 'What row selection does this need?',
+        question: 'What row selection should this support?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'single', label: 'One row at a time' },
@@ -100,7 +100,7 @@ export const selectionSchema = [
         key: 'actions',
         docLabel: 'Row actions',
         type: 'single',
-        question: 'What actions does a row need?',
+        question: 'What actions should a row support?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'single', label: 'One action per row' },
@@ -136,7 +136,7 @@ export const selectionSchema = [
         key: 'editing',
         docLabel: 'Editing',
         type: 'single',
-        question: 'What editing does this need?',
+        question: 'What editing should this support?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'inline', label: 'Edit in place' },
@@ -169,7 +169,7 @@ export const selectionSchema = [
         key: 'density',
         docLabel: 'Density',
         type: 'single',
-        question: 'What row density does this need?',
+        question: 'What row density should this use?',
         options: [
           { value: 'compact', label: 'Compact' },
           { value: 'default', label: 'Default' },
@@ -197,7 +197,7 @@ export const selectionSchema = [
         key: 'totals',
         docLabel: 'Totals',
         type: 'single',
-        question: 'What totals does this need?',
+        question: 'What totals should this show?',
         options: [
           { value: 'none', label: 'None' },
           { value: 'grand', label: 'One grand total' },

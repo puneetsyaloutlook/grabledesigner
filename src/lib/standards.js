@@ -218,6 +218,36 @@ export const standards = [
     typical: 'Set aria-rowcount to the true row total, not just what\u2019s rendered.',
     applies: (s, d) => d.virtualised,
   },
+
+  // Typography
+  {
+    id: 'numeric-alphanumeric-font-treatment',
+    category: 'Data formatting',
+    requirement: 'Numeric values need a font treatment that keeps every digit the same width, so figures line up down a column. Alphanumeric codes and IDs benefit from a monospace font specifically, so mixed letters and numbers stay predictable to scan.',
+    why: 'Proportional fonts vary digit width by default, which misaligns numbers in a column; tabular (fixed-width) figures are a font feature built to solve exactly this. A List Apart, "Designing Tables to be Read, Not Looked At" (Rutter), makes the same point about consistent numeric alignment supporting column scanning.',
+    typical: 'font-variant-numeric: tabular-nums on numeric and currency columns; a monospace font family specifically on ID or code-shaped columns.',
+    applies: () => true,
+  },
+
+  // Item count
+  {
+    id: 'item-count-in-title',
+    category: 'Data formatting',
+    requirement: 'The table\u2019s title or header area must show how many items are displayed. When a filter is active, it must show both the filtered count and the total, not just one or the other.',
+    why: 'NN/G\u2019s data table guidance calls for "a clear count of the number of items returned" as a baseline, and that expectation only gets more important once filtering can silently reduce what\u2019s shown.',
+    typical: 'A title reading "Claims (12)" normally, or "Claims (4 of 12)" once a filter narrows the result.',
+    applies: () => true,
+  },
+
+  // Sorting default direction
+  {
+    id: 'sort-default-direction',
+    category: 'Sorting',
+    requirement: 'The first click on a sortable column must sort in the correct default direction for that column\u2019s data type, not always ascending regardless of type: alphanumeric text sorts A to Z, numbers sort ascending (smallest first), and dates sort descending (most recent first).',
+    why: 'These are the directions users already expect from the type of data itself; sorting a date column ascending on first click means the most relevant (most recent) rows are the ones pushed to the bottom, out of view.',
+    typical: 'Branch the first-click direction on the column\u2019s data type, rather than defaulting every column to ascending.',
+    applies: (s) => s.sorting !== 'none',
+  },
 ];
 
 export function applicableStandards(selections, derived) {
