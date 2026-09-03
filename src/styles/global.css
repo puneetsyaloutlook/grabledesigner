@@ -575,7 +575,7 @@ h3 {
 }
 
 .group-header-row td {
-  background: var(--surface-warm);
+  background: var(--blue-100);
   font-weight: 600;
   padding-top: var(--space-sm);
   padding-bottom: var(--space-sm);
@@ -583,7 +583,7 @@ h3 {
 
 .totals-row td {
   border-top: 2px solid var(--border-strong);
-  background: var(--surface-warm);
+  background: var(--surface-page);
 }
 
 .empty-row {
@@ -945,7 +945,7 @@ th.col-drag-over {
 }
 
 .expand-row td {
-  background: var(--surface-warm);
+  background: var(--neutral-100);
   white-space: normal;
 }
 
