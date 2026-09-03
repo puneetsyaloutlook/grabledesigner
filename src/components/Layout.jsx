@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Features needed', detail: 'What functionality do you need for the data display?', end: true },
+  { to: '/features', label: 'Features needed', detail: 'What functionality do you need for the data display?', end: true },
   { to: '/standards', label: 'Applicable standards', detail: 'Based on that functionality, which UX standards apply?' },
   { to: '/experience', label: 'Experience', detail: 'A quick demo of how those functions and standards look in the UI.' },
   { to: '/documentation', label: 'Documentation', detail: 'The net result: what to actually build, and why.' },
