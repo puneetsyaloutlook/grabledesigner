@@ -19,10 +19,6 @@ export default function Standards() {
     <div>
       <div className="content-header">
         <h1>Applicable standards</h1>
-        <p className="intro-copy">
-          Functional requirements that apply, based on what was selected on
-          Features needed. Each one is triggered by a specific selection.
-        </p>
       </div>
 
       {results.length === 0 && (

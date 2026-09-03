@@ -149,7 +149,7 @@ export default function Documentation() {
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1>Documentation</h1>
           <p className="intro-copy" style={{ maxWidth: 'none' }}>
-            What to build for this configuration, and why. {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
+            {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
             {requirements.length} requirements, {decisions.length} decisions, {references.length} reference systems.
           </p>
         </div>
