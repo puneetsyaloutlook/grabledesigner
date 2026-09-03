@@ -43,7 +43,7 @@ export default function Framework() {
   return (
     <div>
       <div className="content-header">
-        <h1>The product maturity framework</h1>
+        <h1>The data display journey</h1>
       </div>
 
       <div className="framework-card">
