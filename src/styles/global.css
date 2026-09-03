@@ -1069,3 +1069,114 @@ tr[aria-busy="true"] {
     padding: 0 !important;
   }
 }
+
+/* Framework page */
+
+.framework-card {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-xl);
+  background: var(--surface-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+}
+
+.framework-intro h2 {
+  margin: 0 0 var(--space-md);
+}
+
+.framework-intro p {
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.framework-current-marker {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--teal-500);
+  margin: var(--space-lg) 0;
+}
+
+.framework-stages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.framework-stage-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  background: var(--warm-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.framework-stage-card h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.framework-stage-card p {
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.framework-stage-icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  margin-top: 2px;
+}
+
+/* The one stage this tool's own work actually covers, per the Where this
+   tool fits framing: put it in a table. A solid fill, not just a border
+   accent, so it reads as "you are here" against the rest of the sequence. */
+.framework-stage-current {
+  background: var(--teal-500);
+}
+
+.framework-stage-current h3,
+.framework-stage-current p {
+  color: #fff;
+}
+
+.framework-stage-current .framework-stage-icon {
+  color: #fff;
+}
+
+.framework-approaches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-xl);
+  margin-top: var(--space-lg);
+}
+
+.framework-approach {
+  border-left: 3px solid var(--color-action);
+  padding-left: var(--space-md);
+}
+
+.framework-approach-alt {
+  border-left-color: var(--color-primary);
+}
+
+.framework-approach h3 {
+  margin: 0 0 var(--space-sm);
+}
+
+.framework-approach p {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .framework-card {
+    grid-template-columns: 1fr;
+  }
+}
