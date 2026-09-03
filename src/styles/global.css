@@ -345,14 +345,22 @@ h3 {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   padding: var(--space-2xl);
-  max-width: 960px;
+  max-width: 1200px;
+}
+
+.doc-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: var(--space-xl);
 }
 
 .doc-tabs {
   display: flex;
   gap: var(--space-lg);
-  border-bottom: 1px solid var(--border-default);
-  margin-bottom: var(--space-xl);
+  overflow-x: auto;
 }
 
 .doc-tab {
@@ -366,6 +374,7 @@ h3 {
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .doc-tab:hover {
