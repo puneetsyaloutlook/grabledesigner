@@ -67,19 +67,9 @@ a {
   gap: var(--space-sm);
 }
 
-.nav-step-arrow {
-  display: block;
-  width: 0;
-  height: 0;
-  margin: 2px auto;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid var(--teal-500);
-}
-
 /* Framework isn't a step in the sequential chain, so it gets a plain
-   divider rather than the directional arrow, and more space around it to
-   read as a separate, parallel destination rather than "next up". */
+   divider, and more space around it to read as a separate, parallel
+   destination rather than "next up". */
 .nav-separator {
   height: 1px;
   background: var(--teal-700);
@@ -174,10 +164,6 @@ a {
   .nav-card {
     flex-shrink: 0;
     min-width: 180px;
-  }
-
-  .nav-step-arrow {
-    display: none;
   }
 
   .canvas {
@@ -321,25 +307,10 @@ h3 {
 }
 
 .home-step-chip {
-  display: block;
-  text-decoration: none;
-  color: inherit;
   background: var(--warm-100);
   border: 1px solid var(--warm-500);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  transition: box-shadow 150ms ease, border-color 150ms ease;
-}
-
-.home-step-chip:hover {
-  border-color: var(--warm-700);
-  box-shadow: var(--shadow-subtle);
-}
-
-.home-step-icon {
-  width: 14px;
-  height: 10px;
-  margin-bottom: var(--space-sm);
 }
 
 .home-step-chip h3 {
