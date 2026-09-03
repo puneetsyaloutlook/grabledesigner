@@ -60,7 +60,7 @@ export const standards = [
     id: 'selection-indeterminate',
     category: 'Selection',
     requirement: 'When some but not all rows are selected, the select-all control must show a third, indeterminate state distinct from checked and unchecked.',
-    why: 'WAI-ARIA aria-checked="mixed"; confirmed in Carbon Design System\u2019s data table docs.',
+    why: 'WAI-ARIA aria-checked="mixed"; confirmed in Carbon Design System’s data table docs.',
     typical: 'A header checkbox rendered in the indeterminate state.',
     applies: (s) => s.selection === 'multi',
   },
@@ -95,7 +95,7 @@ export const standards = [
   {
     id: 'filter-indicated',
     category: 'Filtering',
-    requirement: 'Users must be able to tell they\u2019re viewing filtered data, not the full set.',
+    requirement: 'Users must be able to tell they’re viewing filtered data, not the full set.',
     why: 'NN/G, Data Tables: Four Major User Tasks.',
     typical: 'A persistent filter chip or summary, plus a visible result count.',
     applies: (s) => s.filtering !== 'none',
@@ -121,9 +121,9 @@ export const standards = [
   {
     id: 'edit-readonly-semantics',
     category: 'Editing',
-    requirement: 'A field that\u2019s present but not currently editable should use read-only semantics; a field that\u2019s inoperable should use disabled semantics. The two aren\u2019t interchangeable.',
+    requirement: 'A field that’s present but not currently editable should use read-only semantics; a field that’s inoperable should use disabled semantics. The two aren’t interchangeable.',
     why: 'WAI-ARIA aria-readonly vs aria-disabled; prefer the native readonly attribute, since aria-readonly has weak screen-reader support (Adrian Roselli).',
-    typical: 'Native readonly for view-but-copy cells; disabled for cells that can\u2019t be acted on at all.',
+    typical: 'Native readonly for view-but-copy cells; disabled for cells that can’t be acted on at all.',
     applies: (s) => s.editing !== 'none',
   },
   {
@@ -148,7 +148,7 @@ export const standards = [
     id: 'locked-columns-boundary',
     category: 'Structure',
     requirement: 'The boundary between frozen and scrollable content must be perceivable, and freezing must not break row/column structure for assistive technology.',
-    why: 'AG Grid\u2019s own accessibility docs document that pinning renders cells in separate DOM containers, breaking screen-reader navigation into pinned regions and reporting incorrect row/column numbers (GitHub issue #9129).',
+    why: 'AG Grid’s own accessibility docs document that pinning renders cells in separate DOM containers, breaking screen-reader navigation into pinned regions and reporting incorrect row/column numbers (GitHub issue #9129).',
     typical: 'A visible divider or shadow at the freeze boundary, plus an option to unpin; test pinned columns with a screen reader.',
     applies: (s) => s.lockedColumns,
   },
@@ -159,7 +159,7 @@ export const standards = [
     category: 'Data overflow',
     requirement: 'When a drawer or modal opens to show overflow data, keyboard focus must move into it, and closing it must return focus to where it was triggered.',
     why: 'Standard focus-management requirement for any dialog-like overlay (WCAG 2.4.3 Focus Order).',
-    typical: 'Move focus to the drawer/modal\u2019s heading on open; return focus to the triggering row on close.',
+    typical: 'Move focus to the drawer/modal’s heading on open; return focus to the triggering row on close.',
     applies: (s) => s.rowDetail !== 'none',
   },
 
@@ -193,7 +193,7 @@ export const standards = [
   {
     id: 'infinite-scroll-position',
     category: 'Data loading',
-    requirement: 'After an action, the user\u2019s position must be preserved or recoverable, and newly-loaded content must be perceivable to keyboard and screen-reader users, not just mouse-scroll users.',
+    requirement: 'After an action, the user’s position must be preserved or recoverable, and newly-loaded content must be perceivable to keyboard and screen-reader users, not just mouse-scroll users.',
     why: 'Documented infinite-scroll accessibility failures: lost position on return, unbounded focus path, content not announced (Deque; WebAIM).',
     typical: 'A "Load more" button as the accessible variant, or a persistent "showing X of Y" indicator.',
     applies: (s) => s.loadStrategy === 'infiniteScroll' || s.loadStrategy === 'loadMore',
@@ -213,9 +213,9 @@ export const standards = [
   {
     id: 'virtualised-row-count',
     category: 'Data loading',
-    requirement: 'Where not all rows are in the DOM (virtualised or server-paged), the grid must expose the true total and each cell\u2019s real position to assistive technology.',
+    requirement: 'Where not all rows are in the DOM (virtualised or server-paged), the grid must expose the true total and each cell’s real position to assistive technology.',
     why: 'WAI-ARIA APG Grid pattern, via aria-rowcount/aria-colcount and aria-rowindex/aria-colindex.',
-    typical: 'Set aria-rowcount to the true row total, not just what\u2019s rendered.',
+    typical: 'Set aria-rowcount to the true row total, not just what’s rendered.',
     applies: (s, d) => d.virtualised,
   },
 
@@ -233,8 +233,8 @@ export const standards = [
   {
     id: 'item-count-in-title',
     category: 'Data formatting',
-    requirement: 'The table\u2019s title or header area must show how many items are displayed. When a filter is active, it must show both the filtered count and the total, not just one or the other.',
-    why: 'NN/G\u2019s data table guidance calls for "a clear count of the number of items returned" as a baseline, and that expectation only gets more important once filtering can silently reduce what\u2019s shown.',
+    requirement: 'The table’s title or header area must show how many items are displayed. When a filter is active, it must show both the filtered count and the total, not just one or the other.',
+    why: 'NN/G’s data table guidance calls for "a clear count of the number of items returned" as a baseline, and that expectation only gets more important once filtering can silently reduce what’s shown.',
     typical: 'A title reading "Claims (12)" normally, or "Claims (4 of 12)" once a filter narrows the result.',
     applies: () => true,
   },
@@ -243,9 +243,9 @@ export const standards = [
   {
     id: 'sort-default-direction',
     category: 'Sorting',
-    requirement: 'The first click on a sortable column must sort in the correct default direction for that column\u2019s data type, not always ascending regardless of type: alphanumeric text sorts A to Z, numbers sort ascending (smallest first), and dates sort descending (most recent first).',
+    requirement: 'The first click on a sortable column must sort in the correct default direction for that column’s data type, not always ascending regardless of type: alphanumeric text sorts A to Z, numbers sort ascending (smallest first), and dates sort descending (most recent first).',
     why: 'These are the directions users already expect from the type of data itself; sorting a date column ascending on first click means the most relevant (most recent) rows are the ones pushed to the bottom, out of view.',
-    typical: 'Branch the first-click direction on the column\u2019s data type, rather than defaulting every column to ascending.',
+    typical: 'Branch the first-click direction on the column’s data type, rather than defaulting every column to ascending.',
     applies: (s) => s.sorting !== 'none',
   },
 
@@ -263,9 +263,9 @@ export const standards = [
   {
     id: 'refresh-preserves-state',
     category: 'Data loading',
-    requirement: 'A manual refresh must preserve the user\u2019s current state, active sort, active filters, selection, and scroll position, rather than silently resetting the view back to its defaults.',
-    why: 'The same reasoning already established for pagination and infinite scroll: an action that changes the underlying data shouldn\u2019t also throw away context the user has already set up, unless that\u2019s explicitly what was asked for.',
-    typical: 'Re-fetch and re-render in place; don\u2019t reset sort, filter, or selection state as a side effect of the refresh itself.',
+    requirement: 'A manual refresh must preserve the user’s current state, active sort, active filters, selection, and scroll position, rather than silently resetting the view back to its defaults.',
+    why: 'The same reasoning already established for pagination and infinite scroll: an action that changes the underlying data shouldn’t also throw away context the user has already set up, unless that’s explicitly what was asked for.',
+    typical: 'Re-fetch and re-render in place; don’t reset sort, filter, or selection state as a side effect of the refresh itself.',
     applies: (s) => s.manualRefresh,
   },
 
@@ -274,7 +274,7 @@ export const standards = [
     id: 'print-overflow-handling',
     category: 'Data loading',
     requirement: 'Printed output must not silently cut off content that only exists via horizontal scroll or sticky positioning on screen. Print needs its own layout, not a frozen snapshot of the on-screen scroll state.',
-    why: 'CSS overflow and position: sticky are screen-scroll concepts; browsers don\u2019t paginate or reflow them sensibly for print by default, which is why locked columns or wide tables commonly lose data at the print stage without a dedicated print stylesheet.',
+    why: 'CSS overflow and position: sticky are screen-scroll concepts; browsers don’t paginate or reflow them sensibly for print by default, which is why locked columns or wide tables commonly lose data at the print stage without a dedicated print stylesheet.',
     typical: 'A print-specific stylesheet that un-sticks pinned columns and lets the table flow naturally across the printed page width.',
     applies: (s) => s.printSupport,
   },

@@ -31,7 +31,7 @@ export const decisions = [
     question: 'How is a partial selection shown on the select-all control?',
     options: [
       { label: 'Native indeterminate checkbox state (a dash)', chosen: true, note: 'Matches the platform convention (aria-checked="mixed") and needs no custom markup.' },
-      { label: 'A custom icon or badge showing a count', chosen: false, note: 'Can carry more information (how many selected) but isn\u2019t a recognised control state, so it has to be built and explained from scratch.' },
+      { label: 'A custom icon or badge showing a count', chosen: false, note: 'Can carry more information (how many selected) but isn’t a recognised control state, so it has to be built and explained from scratch.' },
     ],
     tradeoff: 'The native dash is instantly recognisable but mute. It says "some" not "how many". A count is more informative but unfamiliar as a checkbox treatment.',
     applies: (s) => s.selection === 'multi',
@@ -58,7 +58,7 @@ export const decisions = [
       { label: 'A tooltip triggered on hover and keyboard focus', chosen: true, note: 'Matches the "typically satisfied by" pattern from the applicable standards, and keeps the grid visually quiet.' },
       { label: 'An inline "Show more" link or click-to-expand', chosen: false, note: 'Simpler to implement correctly and inherently keyboard/touch-friendly, at the cost of a visible control in every truncated cell.' },
     ],
-    tradeoff: 'GitHub Primer\u2019s own docs argue for "Show more" over a tooltip precisely because tooltips are easy to get wrong for keyboard users (the native title attribute fails outright). The tooltip is used here because it can be built correctly, but "Show more" is the lower-risk default if that engineering effort isn\u2019t available.',
+    tradeoff: 'GitHub Primer’s own docs argue for "Show more" over a tooltip precisely because tooltips are easy to get wrong for keyboard users (the native title attribute fails outright). The tooltip is used here because it can be built correctly, but "Show more" is the lower-risk default if that engineering effort isn’t available.',
     applies: () => true,
   },
   {
@@ -70,7 +70,7 @@ export const decisions = [
       { label: 'End-truncated (keep the start, cut the tail)', chosen: true, note: 'Correct default for names, descriptions, and prose, where the start carries the meaning.' },
       { label: 'Middle-truncated (keep both ends, cut the middle)', chosen: false, note: 'Better for IDs, file paths, and codes, where both the start and the end carry meaning. Used selectively, not as the default.' },
     ],
-    tradeoff: 'One truncation rule doesn\u2019t fit every column type. This demo defaults to end-truncation and would switch to middle-truncation specifically on ID- or path-shaped columns.',
+    tradeoff: 'One truncation rule doesn’t fit every column type. This demo defaults to end-truncation and would switch to middle-truncation specifically on ID- or path-shaped columns.',
     applies: () => true,
   },
   {
@@ -79,8 +79,8 @@ export const decisions = [
     category: 'Sorting',
     question: 'How is sort priority shown when more than one column is sorted?',
     options: [
-      { label: 'A small ordinal number next to each sorted column\u2019s arrow', chosen: true, note: 'Makes priority actually legible, following Adrian Roselli\u2019s accessible pattern (the number sits in an aria-hidden span; aria-sort carries the direction).' },
-      { label: 'Per-column icons with no visible priority', chosen: false, note: 'AG Grid\u2019s approach: simpler headers, but priority becomes undiscoverable without clicking through.' },
+      { label: 'A small ordinal number next to each sorted column’s arrow', chosen: true, note: 'Makes priority actually legible, following Adrian Roselli’s accessible pattern (the number sits in an aria-hidden span; aria-sort carries the direction).' },
+      { label: 'Per-column icons with no visible priority', chosen: false, note: 'AG Grid’s approach: simpler headers, but priority becomes undiscoverable without clicking through.' },
     ],
     tradeoff: 'Visible ordinal numbers add a small amount of header clutter in exchange for genuinely legible sort priority, rather than leaving it implicit.',
     applies: (s) => s.sorting === 'multi',
@@ -91,8 +91,8 @@ export const decisions = [
     category: 'Structure',
     question: 'How is the edge between a frozen column and the scrollable area shown?',
     options: [
-      { label: 'A persistent 1px border at the boundary', chosen: true, note: 'Unambiguous at rest and while scrolling, doesn\u2019t rely on a scroll event to appear.' },
-      { label: 'A drop shadow that appears on scroll', chosen: false, note: 'Ant Design\u2019s approach: visually quieter, but flagged in the structural research as a documented discoverability weakness, easy to miss entirely.' },
+      { label: 'A persistent 1px border at the boundary', chosen: true, note: 'Unambiguous at rest and while scrolling, doesn’t rely on a scroll event to appear.' },
+      { label: 'A drop shadow that appears on scroll', chosen: false, note: 'Ant Design’s approach: visually quieter, but flagged in the structural research as a documented discoverability weakness, easy to miss entirely.' },
       { label: 'A background colour shift on the frozen column', chosen: false, note: 'Very visible, but reads as a heavier visual seam than the boundary usually warrants.' },
     ],
     tradeoff: 'The shadow-on-scroll treatment is the more common pattern in the wild but is genuinely easy to miss; a persistent border trades a little visual quietness for reliability.',
@@ -102,7 +102,7 @@ export const decisions = [
     id: 'empty-na-zero-tokens',
     title: 'Empty, not-applicable, and zero tokens',
     category: 'Data formatting',
-    question: 'What\u2019s shown for not-applicable versus genuinely empty versus zero?',
+    question: 'What’s shown for not-applicable versus genuinely empty versus zero?',
     options: [
       { label: 'An en dash for not-applicable, "0" written out for zero', chosen: true, note: 'Visually quiet in a dense numeric column while keeping all three states distinguishable, including to screen readers.' },
       { label: 'The word "N/A" spelled out', chosen: false, note: 'More explicit for a first-time user, but adds real visual weight repeated down a long column.' },
@@ -120,7 +120,7 @@ export const decisions = [
       { label: 'Accounting-style parentheses', chosen: false, note: 'Familiar in finance-specific contexts, less broadly understood outside them.' },
       { label: 'Red text colour alone', chosen: false, note: 'Rejected outright, since colour as the only signal fails the same not-colour-alone requirement selection state has to meet.' },
     ],
-    tradeoff: 'The choice between a minus sign and parentheses is genuinely audience-dependent; red-alone isn\u2019t a real option regardless of audience.',
+    tradeoff: 'The choice between a minus sign and parentheses is genuinely audience-dependent; red-alone isn’t a real option regardless of audience.',
     applies: () => true,
   },
   {
@@ -129,10 +129,10 @@ export const decisions = [
     category: 'Structure',
     question: 'What happens to a grouped header if pinning or reordering would separate its children?',
     options: [
-      { label: 'Keep the group\u2019s children locked together, so they can\u2019t be split apart', chosen: true, note: 'Matches AG Grid\u2019s marryChildren option. The group stays intact, at the cost of limiting how far any one child column can be pinned or moved on its own.' },
+      { label: 'Keep the group’s children locked together, so they can’t be split apart', chosen: true, note: 'Matches AG Grid’s marryChildren option. The group stays intact, at the cost of limiting how far any one child column can be pinned or moved on its own.' },
       { label: 'Let the group split into two separate groups when its children are separated', chosen: false, note: 'The more common default: more flexible column-by-column, but it breaks the semantic pairing the group existed to show.' },
     ],
-    tradeoff: 'Splitting is what most grid libraries do by default, and it\u2019s more flexible, but it defeats the reason the grouping existed in the first place. Locking children together is the safer choice whenever the pairing is genuinely meaningful rather than incidental, the same judgement call as whether to use a grouped header at all.',
+    tradeoff: 'Splitting is what most grid libraries do by default, and it’s more flexible, but it defeats the reason the grouping existed in the first place. Locking children together is the safer choice whenever the pairing is genuinely meaningful rather than incidental, the same judgement call as whether to use a grouped header at all.',
     applies: (s) => s.groupedHeaders,
   },
   {
@@ -144,17 +144,17 @@ export const decisions = [
       { label: 'A persistent action bar with a live selection count, no extra confirmation step', chosen: true, note: 'Used here for non-destructive bulk actions (tagging, exporting): low friction, the count itself is the safeguard.' },
       { label: 'The same bar, but its action button opens a confirmation modal naming the count', chosen: true, note: 'Used here specifically for destructive or irreversible bulk actions (bulk delete): the extra step is deliberate friction where a mistake is costly.' },
     ],
-    tradeoff: 'This isn\u2019t really either/or. The research (NN/G) supports scaling the friction to the stakes of the action, not applying one confirmation pattern uniformly regardless of what\u2019s being done.',
+    tradeoff: 'This isn’t really either/or. The research (NN/G) supports scaling the friction to the stakes of the action, not applying one confirmation pattern uniformly regardless of what’s being done.',
     applies: (s) => s.actions === 'bulk',
   },
   {
     id: 'export-scope',
     title: 'Export scope',
     category: 'Data loading',
-    question: 'Does export include the full dataset, or only what\u2019s currently visible?',
+    question: 'Does export include the full dataset, or only what’s currently visible?',
     options: [
-      { label: 'The current filtered and sorted view, in the current column order', chosen: true, note: 'Matches what\u2019s on screen, so the export isn\u2019t a surprise. Consistent with the item-count-in-title standard: what you see is what you get.' },
-      { label: 'The full underlying dataset, regardless of any active filter', chosen: false, note: 'Sometimes the actual intent (a full backup or handoff), but silently exporting more than what\u2019s visible on screen is the more common source of "why doesn\u2019t this match what I filtered to" complaints.' },
+      { label: 'The current filtered and sorted view, in the current column order', chosen: true, note: 'Matches what’s on screen, so the export isn’t a surprise. Consistent with the item-count-in-title standard: what you see is what you get.' },
+      { label: 'The full underlying dataset, regardless of any active filter', chosen: false, note: 'Sometimes the actual intent (a full backup or handoff), but silently exporting more than what’s visible on screen is the more common source of "why doesn’t this match what I filtered to" complaints.' },
     ],
     tradeoff: 'Full-dataset export is genuinely the right call for some use cases (a full data handoff), but it needs to be a clearly labelled, separate choice from a default "export this" action, not the default itself.',
     applies: (s) => s.exportFormat !== 'none',
@@ -166,9 +166,9 @@ export const decisions = [
     question: 'Do checkboxes, sort controls, and action buttons appear in the printed output?',
     options: [
       { label: 'Hidden via a print stylesheet: only the data itself prints', chosen: true, note: 'Matches standard practice; a checkbox or a sort arrow means nothing on paper, and printing them adds visual noise without adding information.' },
-      { label: 'Left visible, printed exactly as they render on screen', chosen: false, note: 'Simpler to build (no separate print stylesheet needed for this specifically), but prints controls that can\u2019t be interacted with, wasting space and reading as unfinished.' },
+      { label: 'Left visible, printed exactly as they render on screen', chosen: false, note: 'Simpler to build (no separate print stylesheet needed for this specifically), but prints controls that can’t be interacted with, wasting space and reading as unfinished.' },
     ],
-    tradeoff: 'Hiding interactive chrome needs a real print stylesheet, not just relying on the screen layout, which is the same underlying work the overflow-handling requirement already needs, so there\u2019s little extra cost to doing both properly at once.',
+    tradeoff: 'Hiding interactive chrome needs a real print stylesheet, not just relying on the screen layout, which is the same underlying work the overflow-handling requirement already needs, so there’s little extra cost to doing both properly at once.',
     applies: (s) => s.printSupport,
   },
 ];

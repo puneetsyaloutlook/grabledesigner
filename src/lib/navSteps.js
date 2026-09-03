@@ -13,6 +13,6 @@ export const STEPS = [
 export const FRAMEWORK_ITEM = {
   to: '/framework',
   label: 'Framework',
-  detail: 'The bigger picture this tool\u2019s work sits inside.',
+  detail: 'The bigger picture this tool’s work sits inside.',
   separate: true,
 };

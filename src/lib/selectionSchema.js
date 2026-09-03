@@ -19,7 +19,7 @@ export const selectionSchema = [
         options: [
           { value: 'embedded', label: 'Embedded in a larger page', detail: 'Alongside other components, such as inside a tile or panel.' },
           { value: 'content', label: 'Full width, but not the only thing', detail: 'The primary component on the page, but the page can still scroll as a whole.' },
-          { value: 'fills', label: 'Full width, fills the available space', detail: 'No page-level scroll. The table\u2019s own rows are the only scrolling element.' },
+          { value: 'fills', label: 'Full width, fills the available space', detail: 'No page-level scroll. The table’s own rows are the only scrolling element.' },
         ],
       },
       {
@@ -108,7 +108,7 @@ export const selectionSchema = [
           { value: 'bulk', label: 'Bulk actions on a selection' },
         ],
       },
-      { key: 'dragReorder', type: 'boolean', docLabel: 'Row order control', docDescription: 'Required, so row order is user-controlled rather than derived from sorting.', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist, not just sorting by a column\u2019s value.' },
+      { key: 'dragReorder', type: 'boolean', docLabel: 'Row order control', docDescription: 'Required, so row order is user-controlled rather than derived from sorting.', question: 'Does the order of rows carry meaning that users need to set themselves?', detail: 'For example, a manually ranked priority list or a playlist, not just sorting by a column’s value.' },
     ],
   },
   {
@@ -118,7 +118,7 @@ export const selectionSchema = [
         key: 'rowDetail',
         docLabel: 'Row detail',
         type: 'single',
-        question: 'How does a user see data that doesn\u2019t fit in the row?',
+        question: 'How does a user see data that doesn’t fit in the row?',
         detail: 'This is read-only overflow, separate from editing. A row can carry more data than fits, without any of it being editable.',
         options: [
           { value: 'none', label: 'None' },

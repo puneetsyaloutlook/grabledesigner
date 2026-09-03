@@ -28,7 +28,7 @@ export const referenceSystems = [
       'Sort and filter state are fully controlled, easy to wire up to external state',
     ],
     cons: [
-      'Horizontal-scroll affordance relies on a shadow that\u2019s a known, documented discoverability weakness',
+      'Horizontal-scroll affordance relies on a shadow that’s a known, documented discoverability weakness',
       'No first-party support for grouped-header pin behaviour beyond basic column groups',
     ],
     applies: (s) => s.lockedColumns || s.groupedHeaders || s.sorting !== 'none' || s.filtering !== 'none',
@@ -51,7 +51,7 @@ export const referenceSystems = [
     name: 'Salesforce Lightning (lightning-datatable)',
     summary: 'A well-documented convention for showing which cells are locked, with sensible defaults for column sizing.',
     pros: [
-      'A specific, named icon convention for read-only cells that\u2019s easy to copy directly',
+      'A specific, named icon convention for read-only cells that’s easy to copy directly',
       'Documented default and maximum column widths, rather than leaving sizing undefined',
     ],
     cons: [
@@ -67,7 +67,7 @@ export const referenceSystems = [
       'A named, hard-won failure mode (hierarchical datagrids) with a documented alternative, not just a feature list',
     ],
     cons: [
-      'Less widely adopted outside VMware\u2019s own ecosystem than AG Grid or Ant Design',
+      'Less widely adopted outside VMware’s own ecosystem than AG Grid or Ant Design',
     ],
     applies: (s) => s.rowDetail !== 'none' || s.dataPoints === 'high',
   },
