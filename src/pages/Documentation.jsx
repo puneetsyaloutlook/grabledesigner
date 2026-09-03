@@ -126,6 +126,12 @@ export default function Documentation() {
   const specification = summariseSelections(selections);
   const requirementsByCategory = groupByCategory(requirements);
   const decisionsByCategory = groupByCategory(decisions);
+  const tabCounts = {
+    specification: specification.reduce((n, g) => n + g.rows.length, 0),
+    requirements: requirements.length,
+    decisions: decisions.length,
+    references: references.length,
+  };
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('specification');
 
@@ -145,31 +151,28 @@ export default function Documentation() {
 
   return (
     <div>
-      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-md)' }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h1>Documentation</h1>
-          <p className="intro-copy" style={{ maxWidth: 'none' }}>
-            {specification.reduce((n, g) => n + g.rows.length, 0)} specified items,{' '}
-            {requirements.length} requirements, {decisions.length} decisions, {references.length} reference systems.
-          </p>
-        </div>
-        <button type="button" className="button button-primary" onClick={handleCopy} style={{ flexShrink: 0 }}>
+      <div className="content-header">
+        <h1>Documentation</h1>
+        <button type="button" className="button button-primary" onClick={handleCopy} style={{ marginTop: 'var(--space-md)' }}>
           {copied ? 'Copied' : 'Copy as text'}
         </button>
       </div>
 
       <div className="doc-sheet">
         <div className="doc-tabs">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`doc-tab${activeTab === tab.id ? ' doc-tab-active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const count = tabCounts[tab.id];
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={`doc-tab${activeTab === tab.id ? ' doc-tab-active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}{count !== undefined ? ` (${count})` : ''}
+              </button>
+            );
+          })}
         </div>
 
         {activeTab === 'specification' && (
