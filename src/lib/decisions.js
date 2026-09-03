@@ -7,8 +7,8 @@
 //
 // Several of these are exactly the stylistic content that was deliberately
 // kept OUT of standards.js (alignment, negative-number format, truncation
-// direction) because it's a choice, not a functional requirement. This is
-// where that content belongs instead.
+// direction) because it's a choice, not a required standard. This is where
+// that content belongs instead.
 
 export const decisions = [
   {
