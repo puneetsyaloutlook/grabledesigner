@@ -160,6 +160,7 @@ export const selectionSchema = [
         ],
       },
       { key: 'realTimeUpdates', type: 'boolean', docLabel: 'Real-time updates', docDescription: 'Required, so cells or rows can update after the initial page load.', question: 'Can cells or rows update on their own after the page has loaded?' },
+      { key: 'manualRefresh', type: 'boolean', docLabel: 'Manual refresh', docDescription: 'Required, so users can reload the data without leaving the page.', question: 'Can users manually refresh the data?' },
     ],
   },
   {
@@ -205,6 +206,25 @@ export const selectionSchema = [
           { value: 'both', label: 'Both' },
         ],
       },
+    ],
+  },
+  {
+    group: 'Export and print',
+    fields: [
+      {
+        key: 'exportFormat',
+        docLabel: 'Export',
+        type: 'single',
+        question: 'What export or download does this need?',
+        options: [
+          { value: 'none', label: 'None' },
+          { value: 'screen', label: 'A generic download, no format choice' },
+          { value: 'csv', label: 'Export as CSV' },
+          { value: 'excel', label: 'Export as Excel' },
+          { value: 'pdf', label: 'Export as PDF' },
+        ],
+      },
+      { key: 'printSupport', type: 'boolean', docLabel: 'Print support', docDescription: 'Required, so the table can be printed directly from the browser.', question: 'Does this need to be printable?' },
     ],
   },
 ];

@@ -221,11 +221,11 @@ export const standards = [
 
   // Typography
   {
-    id: 'numeric-alphanumeric-font-treatment',
+    id: 'numeric-font-treatment',
     category: 'Data formatting',
-    requirement: 'Numeric values need a font treatment that keeps every digit the same width, so figures line up down a column. Alphanumeric codes and IDs benefit from a monospace font specifically, so mixed letters and numbers stay predictable to scan.',
-    why: 'Proportional fonts vary digit width by default, which misaligns numbers in a column; tabular (fixed-width) figures are a font feature built to solve exactly this. A List Apart, "Designing Tables to be Read, Not Looked At" (Rutter), makes the same point about consistent numeric alignment supporting column scanning.',
-    typical: 'font-variant-numeric: tabular-nums on numeric and currency columns; a monospace font family specifically on ID or code-shaped columns.',
+    requirement: 'Numeric values need a font treatment that keeps every digit the same width, so figures line up down a column.',
+    why: 'Proportional fonts vary digit width by default, which misaligns numbers in a column; tabular (fixed-width) figures are a font feature built to solve exactly this, available within the existing typeface rather than requiring a different one. A List Apart, "Designing Tables to be Read, Not Looked At" (Rutter), makes the same point about consistent numeric alignment supporting column scanning.',
+    typical: 'font-variant-numeric: tabular-nums on numeric and currency columns.',
     applies: () => true,
   },
 
@@ -247,6 +247,36 @@ export const standards = [
     why: 'These are the directions users already expect from the type of data itself; sorting a date column ascending on first click means the most relevant (most recent) rows are the ones pushed to the bottom, out of view.',
     typical: 'Branch the first-click direction on the column\u2019s data type, rather than defaulting every column to ascending.',
     applies: (s) => s.sorting !== 'none',
+  },
+
+  // Export
+  {
+    id: 'export-loading-state',
+    category: 'Data loading',
+    requirement: 'A long-running export must show a distinct progress or loading state, not leave the trigger looking unresponsive, and must not block interaction with the rest of the page while it runs.',
+    why: 'Same underlying requirement as any async update (WAI-ARIA aria-busy): the user needs to know the system registered the action and is working on it, without the interface appearing frozen.',
+    typical: 'A spinner or progress state on the export control itself; disable the control while exporting rather than the whole page.',
+    applies: (s) => s.exportFormat !== 'none',
+  },
+
+  // Refresh
+  {
+    id: 'refresh-preserves-state',
+    category: 'Data loading',
+    requirement: 'A manual refresh must preserve the user\u2019s current state, active sort, active filters, selection, and scroll position, rather than silently resetting the view back to its defaults.',
+    why: 'The same reasoning already established for pagination and infinite scroll: an action that changes the underlying data shouldn\u2019t also throw away context the user has already set up, unless that\u2019s explicitly what was asked for.',
+    typical: 'Re-fetch and re-render in place; don\u2019t reset sort, filter, or selection state as a side effect of the refresh itself.',
+    applies: (s) => s.manualRefresh,
+  },
+
+  // Print
+  {
+    id: 'print-overflow-handling',
+    category: 'Data loading',
+    requirement: 'Printed output must not silently cut off content that only exists via horizontal scroll or sticky positioning on screen. Print needs its own layout, not a frozen snapshot of the on-screen scroll state.',
+    why: 'CSS overflow and position: sticky are screen-scroll concepts; browsers don\u2019t paginate or reflow them sensibly for print by default, which is why locked columns or wide tables commonly lose data at the print stage without a dedicated print stylesheet.',
+    typical: 'A print-specific stylesheet that un-sticks pinned columns and lets the table flow naturally across the printed page width.',
+    applies: (s) => s.printSupport,
   },
 ];
 

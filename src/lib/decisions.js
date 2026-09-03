@@ -147,6 +147,30 @@ export const decisions = [
     tradeoff: 'This isn\u2019t really either/or. The research (NN/G) supports scaling the friction to the stakes of the action, not applying one confirmation pattern uniformly regardless of what\u2019s being done.',
     applies: (s) => s.actions === 'bulk',
   },
+  {
+    id: 'export-scope',
+    title: 'Export scope',
+    category: 'Data loading',
+    question: 'Does export include the full dataset, or only what\u2019s currently visible?',
+    options: [
+      { label: 'The current filtered and sorted view, in the current column order', chosen: true, note: 'Matches what\u2019s on screen, so the export isn\u2019t a surprise. Consistent with the item-count-in-title standard: what you see is what you get.' },
+      { label: 'The full underlying dataset, regardless of any active filter', chosen: false, note: 'Sometimes the actual intent (a full backup or handoff), but silently exporting more than what\u2019s visible on screen is the more common source of "why doesn\u2019t this match what I filtered to" complaints.' },
+    ],
+    tradeoff: 'Full-dataset export is genuinely the right call for some use cases (a full data handoff), but it needs to be a clearly labelled, separate choice from a default "export this" action, not the default itself.',
+    applies: (s) => s.exportFormat !== 'none',
+  },
+  {
+    id: 'print-interactive-chrome',
+    title: 'Interactive chrome in print output',
+    category: 'Data loading',
+    question: 'Do checkboxes, sort controls, and action buttons appear in the printed output?',
+    options: [
+      { label: 'Hidden via a print stylesheet: only the data itself prints', chosen: true, note: 'Matches standard practice; a checkbox or a sort arrow means nothing on paper, and printing them adds visual noise without adding information.' },
+      { label: 'Left visible, printed exactly as they render on screen', chosen: false, note: 'Simpler to build (no separate print stylesheet needed for this specifically), but prints controls that can\u2019t be interacted with, wasting space and reading as unfinished.' },
+    ],
+    tradeoff: 'Hiding interactive chrome needs a real print stylesheet, not just relying on the screen layout, which is the same underlying work the overflow-handling requirement already needs, so there\u2019s little extra cost to doing both properly at once.',
+    applies: (s) => s.printSupport,
+  },
 ];
 
 export function applicableDecisions(selections, derived) {

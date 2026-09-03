@@ -3,7 +3,7 @@
 // a negative number, and long text that needs truncation.
 
 export const sampleColumns = [
-  { key: 'id', label: 'Claim ID', tier: 'low', type: 'text', width: 100, mono: true },
+  { key: 'id', label: 'Claim ID', tier: 'low', type: 'text', width: 100 },
   { key: 'customer', label: 'Customer', tier: 'low', type: 'text', width: 160 },
   { key: 'amount', label: 'Amount', tier: 'low', type: 'currency', width: 110 },
   { key: 'status', label: 'Status', tier: 'low', type: 'status', width: 120 },
