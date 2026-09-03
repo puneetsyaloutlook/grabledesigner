@@ -11,8 +11,6 @@ const TABS = [
   { id: 'requirements', label: 'Requirements' },
   { id: 'decisions', label: 'Design decisions' },
   { id: 'references', label: 'Reference systems' },
-  { id: 'scope', label: 'Scope' },
-  { id: 'delivery', label: 'Delivery approach' },
 ];
 
 // Every row in every table is a { name, description } pair, one shape used
@@ -85,7 +83,7 @@ function DocTable({ columnLabels, rows }) {
   );
 }
 
-function buildPlainText(specification, requirementsByCategory, decisionsByCategory, references, scopeText, deliveryText) {
+function buildPlainText(specification, requirementsByCategory, decisionsByCategory, references) {
   const lines = [];
   lines.push('DOCUMENTATION');
 
@@ -110,9 +108,6 @@ function buildPlainText(specification, requirementsByCategory, decisionsByCatego
   lines.push('', 'Reference systems');
   references.forEach((r) => lines.push(`- ${r.name}: ${describeReference(r)}`));
 
-  lines.push('', 'Scope', scopeText);
-  lines.push('', 'Delivery approach', deliveryText);
-
   return lines.join('\n');
 }
 
@@ -135,14 +130,8 @@ export default function Documentation() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('specification');
 
-  const totalComplexity = requirements.length + decisions.length;
-  const scopeText = 'Grid and table work sits at the "put it in a table" and "visualise the table" stages of the analytics product journey, the display layer underneath insights, actions, predictions and automation. See the Framework page for the full seven-stage picture.';
-  const deliveryText = totalComplexity >= 15
-    ? `This configuration carries ${totalComplexity} standards and decisions combined. Build it incrementally: ship the simpler capabilities first and add the rest in later passes, rather than one release carrying all of it.`
-    : `This configuration carries ${totalComplexity} standards and decisions combined, a contained amount. Incremental and single-release delivery are both reasonable here. The choice is a team preference, not a risk-driven one.`;
-
   function handleCopy() {
-    const text = buildPlainText(specification, requirementsByCategory, decisionsByCategory, references, scopeText, deliveryText);
+    const text = buildPlainText(specification, requirementsByCategory, decisionsByCategory, references);
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -172,7 +161,7 @@ export default function Documentation() {
               );
             })}
           </div>
-          <button type="button" className="button button-primary" onClick={handleCopy} style={{ flexShrink: 0 }}>
+          <button type="button" className="button button-primary doc-copy-button" onClick={handleCopy}>
             {copied ? 'Copied' : 'Copy as text'}
           </button>
         </div>
@@ -238,18 +227,6 @@ export default function Documentation() {
                 rows={references.map((r) => ({ name: r.name, description: describeReference(r) }))}
               />
             )}
-          </section>
-        )}
-
-        {activeTab === 'scope' && (
-          <section>
-            <p>{scopeText}</p>
-          </section>
-        )}
-
-        {activeTab === 'delivery' && (
-          <section>
-            <p>{deliveryText}</p>
           </section>
         )}
       </div>
