@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import Home from './pages/Home';
 import Features from './pages/Features';
 import Experience from './pages/Experience';
 import Standards from './pages/Standards';
@@ -10,7 +11,8 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Features />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/features" element={<Features />} />
         <Route path="/experience" element={<Experience />} />
         <Route path="/standards" element={<Standards />} />
         <Route path="/documentation" element={<Documentation />} />
