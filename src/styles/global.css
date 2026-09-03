@@ -538,6 +538,19 @@ h3 {
   font-weight: 600;
 }
 
+.demo-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.demo-card-actions .button {
+  min-height: 32px;
+  padding: 4px var(--space-md);
+  font-size: var(--text-sm-size);
+}
+
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -741,20 +754,13 @@ h3 {
   color: var(--color-action);
 }
 
-.caret-triangle {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
+.icon-spin {
+  animation: icon-spin 900ms linear infinite;
 }
 
-.caret-up {
-  border-bottom: 4px solid currentColor;
-}
-
-.caret-down {
-  border-top: 4px solid currentColor;
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Multi-sort-priority decision: a visible ordinal badge, not just an icon */
@@ -825,6 +831,8 @@ h3 {
   box-shadow: var(--shadow-elevated);
 }
 
+/* Row and column reordering, being interactive, use the action colour like
+   every other interactive icon in the demo, not a muted neutral. */
 .reorder-btn {
   background: none;
   border: 1px solid var(--border-default);
@@ -832,28 +840,25 @@ h3 {
   width: 22px;
   height: 22px;
   cursor: pointer;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--color-action);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .reorder-btn:hover {
   border-color: var(--border-strong);
-  color: var(--text-primary);
+  background: var(--teal-100);
 }
 
 /* Column reordering: an advanced, mouse-driven function, so the grip only
    appears on hover or keyboard focus rather than sitting always-visible
-   and cluttering every header. Drawn in CSS (a dot grid) rather than a
-   text glyph, so it renders consistently regardless of font support. */
+   and cluttering every header. */
 .col-drag-handle {
-  display: inline-block;
-  width: 8px;
-  height: 12px;
+  display: inline-flex;
+  align-items: center;
   margin-left: 6px;
-  background-image: radial-gradient(circle, var(--text-secondary) 1px, transparent 1.5px);
-  background-size: 4px 4px;
-  background-repeat: repeat;
-  background-position: center;
+  color: var(--color-action);
   opacity: 0;
   cursor: grab;
   flex-shrink: 0;
@@ -873,10 +878,11 @@ th.col-drag-over {
   background: var(--teal-100);
 }
 
-/* Row-detail trigger: an accordion-style chevron, consistent whether it
-   opens a drawer, a modal, or expands the row in place. Sits in detail-col,
-   pinned to the left edge (see .detail-col above). */
-.detail-toggle {
+/* Shared base for every icon-only interactive control in the demo, so the
+   detail-toggle accordion and the refresh/export/print controls read as
+   one consistent system, not separately-styled one-offs. All action
+   coloured, since they're all interactive. */
+.icon-button {
   background: none;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-pill);
@@ -884,15 +890,27 @@ th.col-drag-over {
   height: 26px;
   cursor: pointer;
   color: var(--color-action);
-  font-size: 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 150ms ease, background-color 150ms ease;
+  transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
 }
 
-.detail-toggle:hover {
+.icon-button:hover {
   background: var(--teal-100);
+  border-color: var(--border-strong);
+}
+
+.icon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Row-detail trigger: an accordion-style chevron, consistent whether it
+   opens a drawer, a modal, or expands the row in place. Sits in detail-col,
+   pinned to the left edge (see .detail-col above). */
+.detail-toggle {
+  transform-origin: center;
 }
 
 .detail-toggle[aria-expanded="true"] {
@@ -1006,5 +1024,48 @@ tr[aria-busy="true"] {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print-overflow-handling standard: sticky positioning and horizontal
+   scroll are screen-scroll concepts that don't paginate sensibly for
+   print, so locked columns get un-stuck and the table's own scroll
+   container is allowed to flow across the printed page instead of being
+   cropped to whatever fit on screen at the moment of printing.
+   Print-interactive-chrome decision: controls that mean nothing on paper
+   (checkboxes, sort arrows, action buttons, the sidebar) don't print. */
+@media print {
+  .no-print,
+  .side-nav,
+  .select-col,
+  .reorder-col,
+  .detail-col,
+  .actions-col,
+  .demo-card-actions,
+  .filter-bar,
+  .bulk-bar {
+    display: none !important;
+  }
+
+  .locked-col {
+    position: static !important;
+    left: auto !important;
+  }
+
+  .demo-table-wrap {
+    overflow: visible !important;
+  }
+
+  .demo-card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell {
+    display: block !important;
+  }
+
+  .canvas {
+    padding: 0 !important;
   }
 }
