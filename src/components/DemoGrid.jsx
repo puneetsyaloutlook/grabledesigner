@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
+import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer } from 'lucide-react';
 import { sampleColumns, sampleRows } from '../lib/sampleData';
 import Drawer from './Drawer';
 
@@ -99,6 +100,8 @@ export default function DemoGrid({ selections, derived }) {
   const [filterQuery, setFilterQuery] = useState('');
   const [columnFilters, setColumnFilters] = useState({});
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // realTimeUpdates decision: simulate one row updating asynchronously,
   // aria-busy while in progress rather than swapping the value silently.
@@ -270,6 +273,45 @@ export default function DemoGrid({ selections, derived }) {
     });
   }
 
+  // Refresh-preserves-state standard: this deliberately touches nothing
+  // except its own loading flag. Sort, filters, and selection are untouched
+  // state elsewhere in this component, so "preserving" them isn't an extra
+  // step, it's just not writing code that would clear them.
+  function handleRefresh() {
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 900);
+  }
+
+  // Export-scope decision: exports sortedRows (the current filtered and
+  // sorted view) using orderedColumns (the current column order), not the
+  // raw underlying dataset. A real xlsx or pdf library isn't part of this
+  // project's dependencies, so every format produces a genuine CSV file
+  // rather than a mislabelled fake binary; the format selection still
+  // demonstrates which schema choice is in effect, the file itself is
+  // honest about what it actually is.
+  function handleExport() {
+    setIsExporting(true);
+    const escapeCsv = (value) => {
+      const str = String(value);
+      return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+    };
+    const header = orderedColumns.map((c) => escapeCsv(c.label)).join(',');
+    const csvRows = sortedRows.map((row) =>
+      orderedColumns.map((col) => escapeCsv(formatCell(col, cellValue(row, col)))).join(',')
+    );
+    const csv = [header, ...csvRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'claims-export.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setTimeout(() => setIsExporting(false), 400);
+  }
+
   function commitEdit(rowId, key, value) {
     setEditValues((prev) => ({ ...prev, [`${rowId}:${key}`]: value }));
     setEditingCell(null);
@@ -298,14 +340,13 @@ export default function DemoGrid({ selections, derived }) {
     if (!sortEntry) {
       return (
         <span className="sort-caret sort-caret-inactive" aria-hidden="true">
-          <span className="caret-triangle caret-up" />
-          <span className="caret-triangle caret-down" />
+          <ChevronsUpDown size={14} />
         </span>
       );
     }
     return (
       <span className="sort-caret sort-caret-active" aria-hidden="true">
-        <span className={`caret-triangle ${sortEntry.dir === 'asc' ? 'caret-up' : 'caret-down'}`} />
+        {sortEntry.dir === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </span>
     );
   }
@@ -349,7 +390,9 @@ export default function DemoGrid({ selections, derived }) {
               if (e.key === 'ArrowLeft') { e.preventDefault(); moveColumnStep(col.key, -1); }
               if (e.key === 'ArrowRight') { e.preventDefault(); moveColumnStep(col.key, 1); }
             }}
-          />
+          >
+            <GripVertical size={14} />
+          </span>
         )}
       </span>
     );
@@ -414,13 +457,13 @@ export default function DemoGrid({ selections, derived }) {
             <td className="detail-col">
               <button
                 type="button"
-                className="detail-toggle"
+                className="icon-button detail-toggle"
                 aria-expanded={selections.rowDetail === 'modal' ? modalRowId === row.id : showInlineDetail}
                 aria-haspopup={selections.rowDetail === 'modal' ? 'dialog' : undefined}
                 aria-label={`${showInlineDetail ? 'Hide' : 'Show'} details for ${row.id}`}
                 onClick={() => toggleDetail(row.id)}
               >
-                {'\u203A'}
+                <ChevronRight size={14} />
               </button>
             </td>
           )}
@@ -436,8 +479,8 @@ export default function DemoGrid({ selections, derived }) {
           )}
           {selections.dragReorder && (
             <td className="reorder-col">
-              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, -1)} aria-label={`Move ${row.id} up`}>{'\u2191'}</button>
-              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, 1)} aria-label={`Move ${row.id} down`}>{'\u2193'}</button>
+              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, -1)} aria-label={`Move ${row.id} up`}><ArrowUp size={14} /></button>
+              <button type="button" className="reorder-btn" onClick={() => moveRow(row.id, 1)} aria-label={`Move ${row.id} down`}><ArrowDown size={14} /></button>
             </td>
           )}
           {(() => {
@@ -581,30 +624,55 @@ export default function DemoGrid({ selections, derived }) {
     <div className="card demo-card">
       <div className="demo-card-header">
         <h3 role="status" aria-live="polite">{itemCountLabel}</h3>
-        {selections.filtering === 'global' && (
-          <input
-            type="search"
-            className="filter-input filter-input-global"
-            placeholder="Search all columns"
-            aria-label="Search all columns"
-            value={filterQuery}
-            onChange={(e) => setFilterQuery(e.target.value)}
-          />
-        )}
-        {selections.filtering === 'panel' && (
-          <button
-            type="button"
-            className="button"
-            aria-expanded={filterPanelOpen}
-            onClick={() => setFilterPanelOpen((o) => !o)}
-          >
-            Filters
-          </button>
-        )}
+        <div className="demo-card-actions no-print">
+          {selections.filtering === 'global' && (
+            <input
+              type="search"
+              className="filter-input filter-input-global"
+              placeholder="Search all columns"
+              aria-label="Search all columns"
+              value={filterQuery}
+              onChange={(e) => setFilterQuery(e.target.value)}
+            />
+          )}
+          {selections.filtering === 'panel' && (
+            <button
+              type="button"
+              className="button"
+              aria-expanded={filterPanelOpen}
+              onClick={() => setFilterPanelOpen((o) => !o)}
+            >
+              Filters
+            </button>
+          )}
+          {selections.manualRefresh && (
+            <button type="button" className="icon-button" onClick={handleRefresh} disabled={isRefreshing} aria-busy={isRefreshing} aria-label={isRefreshing ? 'Refreshing' : 'Refresh'} title="Refresh">
+              <RefreshCw size={16} className={isRefreshing ? 'icon-spin' : undefined} />
+            </button>
+          )}
+          {selections.exportFormat !== 'none' && (
+            <button
+              type="button"
+              className="icon-button"
+              onClick={handleExport}
+              disabled={isExporting}
+              aria-busy={isExporting}
+              aria-label={isExporting ? 'Exporting' : selections.exportFormat === 'screen' ? 'Download' : `Export as ${selections.exportFormat.toUpperCase()}`}
+              title={selections.exportFormat === 'screen' ? 'Download' : `Export as ${selections.exportFormat.toUpperCase()}`}
+            >
+              <Download size={16} />
+            </button>
+          )}
+          {selections.printSupport && (
+            <button type="button" className="icon-button no-print" onClick={() => window.print()} aria-label="Print" title="Print">
+              <Printer size={16} />
+            </button>
+          )}
+        </div>
       </div>
 
       {(selections.filtering === 'inline' || (selections.filtering === 'panel' && filterPanelOpen)) && (
-        <div className="filter-bar">
+        <div className="filter-bar no-print">
           {orderedColumns.map((col) => (
             <input
               key={col.key}
@@ -620,14 +688,14 @@ export default function DemoGrid({ selections, derived }) {
       )}
 
       {bulkMode && selectedIds.size > 0 && (
-        <div className="bulk-bar">
+        <div className="bulk-bar no-print">
           <span>{selectedIds.size} selected</span>
           <button type="button" className="button" onClick={() => setSelectedIds(new Set())}>Tag</button>
           <button type="button" className="button" onClick={() => setConfirmBulkDelete(true)}>Delete</button>
         </div>
       )}
 
-      <div className="demo-table-wrap">
+      <div className="demo-table-wrap" aria-busy={isRefreshing || undefined}>
         <table className="demo-table" data-density={selections.density}>
           <thead>
             <tr>
