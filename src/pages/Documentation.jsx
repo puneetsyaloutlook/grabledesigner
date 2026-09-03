@@ -153,26 +153,28 @@ export default function Documentation() {
     <div>
       <div className="content-header">
         <h1>Documentation</h1>
-        <button type="button" className="button button-primary" onClick={handleCopy} style={{ marginTop: 'var(--space-md)' }}>
-          {copied ? 'Copied' : 'Copy as text'}
-        </button>
       </div>
 
       <div className="doc-sheet">
-        <div className="doc-tabs">
-          {TABS.map((tab) => {
-            const count = tabCounts[tab.id];
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                className={`doc-tab${activeTab === tab.id ? ' doc-tab-active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}{count !== undefined ? ` (${count})` : ''}
-              </button>
-            );
-          })}
+        <div className="doc-tabs-row">
+          <div className="doc-tabs">
+            {TABS.map((tab) => {
+              const count = tabCounts[tab.id];
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`doc-tab${activeTab === tab.id ? ' doc-tab-active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}{count !== undefined ? ` (${count})` : ''}
+                </button>
+              );
+            })}
+          </div>
+          <button type="button" className="button button-primary" onClick={handleCopy} style={{ flexShrink: 0 }}>
+            {copied ? 'Copied' : 'Copy as text'}
+          </button>
         </div>
 
         {activeTab === 'specification' && (
