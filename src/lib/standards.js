@@ -316,6 +316,24 @@ export const standards = [
     typical: 'A timezone abbreviation next to the time (AEST, UTC), or a relative format ("2 minutes ago") that sidesteps the problem entirely by not requiring the reader to do timezone arithmetic themselves.',
     applies: (s) => s.manualRefresh || s.realTimeUpdates,
   },
+
+  // Legend
+  {
+    id: 'color-not-sole-indicator',
+    category: 'Data formatting',
+    requirement: 'A colour coding, once added, must never be the only way a value\u2019s meaning is conveyed. The colour can sit alongside the text, but the text (or an icon, or a pattern) has to be there regardless of whether the colour is perceived.',
+    why: 'WCAG 1.4.1 (Use of Color). Colour blindness affects a real share of any audience, and colour can fail for other reasons too, a bad monitor, printed output, someone glancing at a screen from an angle. A status column that already shows the word "Approved" satisfies this by construction; a coloured dot with nothing else next to it would not.',
+    typical: 'A colour swatch or dot placed next to the existing text label, never replacing it, plus a legend once a colour coding is introduced, so its meaning doesn\u2019t have to be reverse-engineered by the reader.',
+    applies: (s) => s.legend,
+  },
+  {
+    id: 'footnote-programmatic-association',
+    category: 'Data formatting',
+    requirement: 'A footnote marker on a value must be associated with its explanation programmatically, not only by a shared symbol and visual proximity. A screen reader encountering the marker needs to reach the explanation too, not just an asterisk with nothing attached to it.',
+    why: 'The same underlying issue as the stacked-pair-programmatic standard: a sighted reader connects the marker to the explanation by position on the page, but that spatial relationship has no equivalent for anyone not perceiving the layout, unless the connection is also made in markup.',
+    typical: 'aria-describedby on the cell pointing at the footnote\u2019s own id, or an accessible label on the marker itself stating the explanation directly, not just the bare symbol.',
+    applies: (s) => s.footnote,
+  },
 ];
 
 export function applicableStandards(selections, derived) {

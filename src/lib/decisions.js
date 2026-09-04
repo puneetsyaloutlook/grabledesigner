@@ -195,6 +195,30 @@ export const decisions = [
     tradeoff: 'Daylight saving isn\u2019t a separate problem this needs to solve: the timestamp is built from the browser\u2019s own Date and Intl APIs rather than manual UTC-offset math, so the platform\u2019s own timezone database handles DST transitions correctly without extra code. The one thing this demo doesn\u2019t attempt is per-user locale formatting, a real production system would format the date and time according to the viewer\u2019s own locale rather than one fixed format for everyone, which this reference keeps fixed for legibility.',
     applies: (s) => s.manualRefresh || s.realTimeUpdates,
   },
+  {
+    id: 'legend-placement',
+    title: 'Where the legend sits',
+    category: 'Data formatting',
+    question: 'Does the legend sit in the table\u2019s footer, or repeated near the column it explains?',
+    options: [
+      { label: 'Once, in the footer', chosen: true, note: 'The colour coding applies to the whole column, every row, so explaining it once, in one place, is enough. Repeating it near the column header would just be the same three words shown as many times as there are columns using colour.' },
+      { label: 'Inline, next to the column header itself', chosen: false, note: 'Keeps the explanation closer to what it explains, which helps on a very wide table where the footer is far away, but adds width to the header for something that doesn\u2019t change per column and is easy to overlook amongst sort and filter controls already living there.' },
+    ],
+    tradeoff: 'A single legend also scales better once more than one column uses colour: a footer key can hold every colour meaning in one place, where a per-header approach would either repeat the same key on each coloured column or need its own way to say "see the other one".',
+    applies: (s) => s.legend,
+  },
+  {
+    id: 'footnote-symbol-scheme',
+    title: 'Footnote symbol scheme',
+    category: 'Data formatting',
+    question: 'Does a footnote get an asterisk, or a number?',
+    options: [
+      { label: 'A single asterisk for the one disclaimer in this demo', chosen: true, note: 'Traditional symbol sequences (*, \u2020, \u2021, \u00A7) work for a small, fixed number of footnotes, but this demo only needs one, so a plain asterisk is the simplest correct choice for what\u2019s actually here.' },
+      { label: 'A numbered scheme (\u00b9, \u00b2, \u00b3...)', chosen: false, note: 'The scalable choice once a table might carry more disclaimers than the symbol sequence has distinct marks for, which most real tables eventually do; not needed for a single footnote, but the right default the moment a second one shows up.' },
+    ],
+    tradeoff: 'Whichever scheme is chosen, the standard that actually matters is programmatic association, not the symbol itself: an asterisk and a number are equally meaningless to a screen reader without something connecting the marker to its explanation.',
+    applies: (s) => s.footnote,
+  },
 ];
 
 export function applicableDecisions(selections, derived) {

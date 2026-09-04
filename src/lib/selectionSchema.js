@@ -228,6 +228,13 @@ export const selectionSchema = [
       { key: 'printSupport', type: 'boolean', docLabel: 'Print support', docDescription: 'Required, so the table can be printed directly from the browser.', question: 'Does this need to be printable?' },
     ],
   },
+  {
+    group: 'Footer and legend',
+    fields: [
+      { key: 'legend', type: 'boolean', docLabel: 'Legend', docDescription: 'Required, to explain what a colour coding means.', question: 'Does this need a legend explaining what a colour or icon coding means?', detail: 'Turns on a colour indicator for status, in addition to the text that\u2019s already there, and a key in the footer explaining what each colour means. Without the key, an unexplained colour is decoration, not information.' },
+      { key: 'footnote', type: 'boolean', docLabel: 'Footnote', docDescription: 'Required, disclaiming a specific value.', question: 'Does a specific value need a disclaimer or caveat attached, the way an asterisk points to an explanation?', detail: 'A footer is content about the data, not information about the grid itself: a caveat on one figure ("restated," "unaudited," "no payout"), not a restated row count or anything else that\u2019s really about the table rather than what\u2019s in it.' },
+    ],
+  },
 ];
 
 // Derived flags: computed from the answers above, never asked directly.
