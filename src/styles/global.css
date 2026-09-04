@@ -645,6 +645,57 @@ h3 {
   font-weight: 600;
 }
 
+/* Stacked-pair decision: no spanning label like a group gets, since there
+   isn't one, the two stacked headers are the whole story. Each line keeps
+   its own independent sort control (stacked-pair-sort-behaviour decision),
+   so this is two ordinary header cells stacked vertically, not one cell
+   split between two meanings. */
+.stacked-pair-header {
+  padding: 4px var(--space-sm);
+}
+
+.stacked-pair-header-line {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0;
+}
+
+.stacked-pair-header-line + .stacked-pair-header-line {
+  border-top: 1px solid var(--border-default);
+}
+
+.stacked-pair-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: normal;
+}
+
+.stacked-pair-value {
+  font-size: var(--text-sm-size);
+}
+
+.stacked-pair-value + .stacked-pair-value {
+  border-top: 1px solid var(--border-default);
+  padding-top: 2px;
+}
+
+/* Visually hidden but readable by assistive technology: the
+   stacked-pair-programmatic standard, each stacked value keeps a
+   structural association with its own header even though both live in
+   one merged cell. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .demo-table thead tr:nth-child(2) th {
   padding-top: 2px;
 }
