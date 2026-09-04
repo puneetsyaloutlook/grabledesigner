@@ -1046,7 +1046,7 @@ th.col-drag-over {
   transform-origin: center;
 }
 
-.detail-toggle[aria-expanded="true"] {
+.detail-toggle[aria-expanded="true"]:not(.detail-toggle-more) {
   transform: rotate(90deg);
 }
 
