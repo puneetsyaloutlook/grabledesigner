@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer } from 'lucide-react';
+import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer, Filter } from 'lucide-react';
 import { sampleColumns, sampleRows } from '../lib/sampleData';
 import Drawer from './Drawer';
 
@@ -119,7 +119,7 @@ export default function DemoGrid({ selections, derived }) {
   const [updatingRowId, setUpdatingRowId] = useState(null);
   const [filterQuery, setFilterQuery] = useState('');
   const [columnFilters, setColumnFilters] = useState({});
-  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [filterUIOpen, setFilterUIOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState(() => new Date());
@@ -665,32 +665,31 @@ export default function DemoGrid({ selections, derived }) {
   return (
     <div className="card demo-card">
       <div className="demo-card-header">
-        <h3 role="status" aria-live="polite">{itemCountLabel}</h3>
+        <div className="demo-card-header-left">
+          <h3 role="status" aria-live="polite">{itemCountLabel}</h3>
+          {(selections.filtering === 'global' || selections.filtering === 'panel') && (
+            <>
+              <span className="header-separator" aria-hidden="true">|</span>
+              <button
+                type="button"
+                className="filters-trigger no-print"
+                onClick={() => setFilterUIOpen((o) => !o)}
+                aria-expanded={filterUIOpen}
+              >
+                <Filter size={14} />
+                Filters
+              </button>
+            </>
+          )}
+        </div>
         <div className="demo-card-actions no-print">
           {(selections.manualRefresh || selections.realTimeUpdates) && (
-            <span className="as-of-timestamp" role="status" aria-live="polite">
-              As of {formatAsOf(lastUpdatedAt)}
-            </span>
-          )}
-          {selections.filtering === 'global' && (
-            <input
-              type="search"
-              className="filter-input filter-input-global"
-              placeholder="Search all columns"
-              aria-label="Search all columns"
-              value={filterQuery}
-              onChange={(e) => setFilterQuery(e.target.value)}
-            />
-          )}
-          {selections.filtering === 'panel' && (
-            <button
-              type="button"
-              className="button"
-              aria-expanded={filterPanelOpen}
-              onClick={() => setFilterPanelOpen((o) => !o)}
-            >
-              Filters
-            </button>
+            <>
+              <span className="as-of-timestamp" role="status" aria-live="polite">
+                As of {formatAsOf(lastUpdatedAt)}
+              </span>
+              <span className="header-separator" aria-hidden="true">|</span>
+            </>
           )}
           {selections.manualRefresh && (
             <button type="button" className="icon-button" onClick={handleRefresh} disabled={isRefreshing} aria-busy={isRefreshing} aria-label={isRefreshing ? 'Refreshing' : 'Refresh'} title="Refresh">
@@ -718,19 +717,30 @@ export default function DemoGrid({ selections, derived }) {
         </div>
       </div>
 
-      {(selections.filtering === 'inline' || (selections.filtering === 'panel' && filterPanelOpen)) && (
+      {(selections.filtering === 'inline' || ((selections.filtering === 'panel' || selections.filtering === 'global') && filterUIOpen)) && (
         <div className="filter-bar no-print">
-          {orderedColumns.map((col) => (
+          {selections.filtering === 'global' ? (
             <input
-              key={col.key}
-              type="text"
-              className="filter-input"
-              placeholder={col.label}
-              aria-label={`Filter by ${col.label}`}
-              value={columnFilters[col.key] || ''}
-              onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
+              type="search"
+              className="filter-input filter-input-global"
+              placeholder="Search all columns"
+              aria-label="Search all columns"
+              value={filterQuery}
+              onChange={(e) => setFilterQuery(e.target.value)}
             />
-          ))}
+          ) : (
+            orderedColumns.map((col) => (
+              <input
+                key={col.key}
+                type="text"
+                className="filter-input"
+                placeholder={col.label}
+                aria-label={`Filter by ${col.label}`}
+                value={columnFilters[col.key] || ''}
+                onChange={(e) => setColumnFilters((prev) => ({ ...prev, [col.key]: e.target.value }))}
+              />
+            ))
+          )}
         </div>
       )}
 
