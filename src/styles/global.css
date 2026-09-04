@@ -519,7 +519,25 @@ h3 {
 
 /* Demo grid */
 
+/* Data-grid component tokens. A table's structural chrome (header
+   background, row hover vs. selection, the accent used on interactive
+   controls) has its own established conventions, independent of any one
+   app's branding, and this project already cites the systems that set
+   them: AG Grid and Ant Design both use a neutral (not brand-tinted) grey
+   for header backgrounds, and blue is the near-universal convention for
+   row selection specifically, distinct from hover. --grid-accent is Ant
+   Design's actual current primary blue (#1677FF), used deliberately
+   instead of reaching for this app's own --color-action, which is a
+   brand decision, not a grid one, even though both happen to be blue for
+   the same underlying reason: blue is what "interactive" conventionally
+   means in this domain. */
 .demo-card {
+  --grid-header-bg: #F3F4F6;
+  --grid-hover-bg: #F3F4F6;
+  --grid-selected-bg: #E6F1FE;
+  --grid-accent: #1677FF;
+  --grid-accent-muted: #E6F1FE;
+  --grid-group-bg: #F0EDFC;
   padding: var(--space-lg);
 }
 
@@ -552,7 +570,7 @@ h3 {
   font: inherit;
   font-size: var(--text-sm-size);
   font-weight: 600;
-  color: var(--color-action);
+  color: var(--grid-accent);
   cursor: pointer;
 }
 
@@ -609,7 +627,7 @@ h3 {
 
 .filter-input:focus {
   outline: none;
-  border-color: var(--color-action);
+  border-color: var(--grid-accent);
 }
 
 .filter-input-global {
@@ -623,7 +641,7 @@ h3 {
 }
 
 .group-header-row td {
-  background: var(--blue-100);
+  background: var(--grid-group-bg);
   font-weight: 600;
   padding-top: var(--space-sm);
   padding-bottom: var(--space-sm);
@@ -662,7 +680,7 @@ h3 {
 }
 
 .demo-table thead th {
-  background: var(--surface-warm);
+  background: var(--grid-header-bg);
   font-weight: 600;
   text-align: left;
 }
@@ -744,11 +762,11 @@ h3 {
 }
 
 .demo-table tbody tr:hover {
-  background: var(--teal-100);
+  background: var(--grid-hover-bg);
 }
 
 .demo-table tr.row-selected {
-  background: var(--teal-100);
+  background: var(--grid-selected-bg);
 }
 
 .select-col, .reorder-col, .actions-col {
@@ -770,16 +788,16 @@ h3 {
 }
 
 .demo-table thead .detail-col {
-  background: var(--surface-warm);
+  background: var(--grid-header-bg);
   z-index: 2;
 }
 
 .demo-table tbody tr:hover .detail-col {
-  background: var(--teal-100);
+  background: var(--grid-hover-bg);
 }
 
 .demo-table tr.row-selected .detail-col {
-  background: var(--teal-100);
+  background: var(--grid-selected-bg);
 }
 
 /* Locked-column decision: persistent border boundary, not a scroll-triggered
@@ -792,25 +810,26 @@ h3 {
 .locked-col {
   position: sticky;
   background: var(--surface-page);
-  border-right: 2px solid var(--border-active);
+  border-right: 2px solid var(--grid-accent);
   z-index: 1;
 }
 
 .demo-table thead .locked-col {
-  background: var(--surface-warm);
+  background: var(--grid-header-bg);
   z-index: 2;
 }
 
 .demo-table tbody tr:hover .locked-col {
-  background: var(--teal-100);
+  background: var(--grid-hover-bg);
 }
 
 .demo-table tr.row-selected .locked-col {
-  background: var(--teal-100);
+  background: var(--grid-selected-bg);
 }
 
-/* Clickable headers use the action colour token, not inherited body text
-   colour, so they read as interactive at a glance. */
+/* Clickable headers use the grid's own accent colour, not the app's brand
+   action colour and not inherited body text colour, so they read as
+   interactive at a glance for reasons specific to this component. */
 .sort-header {
   display: inline-flex;
   align-items: center;
@@ -821,7 +840,7 @@ h3 {
   font: inherit;
   font-weight: 500;
   padding: 0;
-  color: var(--color-action);
+  color: var(--grid-accent);
 }
 
 /* The active sort column gets additional weight on top of the shared
@@ -845,7 +864,7 @@ h3 {
 }
 
 .sort-caret-active {
-  color: var(--color-action);
+  color: var(--grid-accent);
 }
 
 .icon-spin {
@@ -860,7 +879,7 @@ h3 {
 /* Multi-sort-priority decision: a visible ordinal badge, not just an icon */
 .sort-priority {
   font-size: 0.6875rem;
-  background: var(--color-action);
+  background: var(--grid-accent);
   color: #fff;
   border-radius: var(--radius-pill);
   width: 14px;
@@ -888,7 +907,7 @@ h3 {
 
 .editable-cell input {
   width: 100%;
-  border: 1px solid var(--color-action);
+  border: 1px solid var(--grid-accent);
   border-radius: 4px;
   background: var(--surface-page);
   font: inherit;
@@ -925,8 +944,9 @@ h3 {
   box-shadow: var(--shadow-elevated);
 }
 
-/* Row and column reordering, being interactive, use the action colour like
-   every other interactive icon in the demo, not a muted neutral. */
+/* Row and column reordering, being interactive, use the grid's own accent
+   colour like every other interactive icon in the demo, not a muted
+   neutral, and not the app's own brand action colour. */
 .reorder-btn {
   background: none;
   border: 1px solid var(--border-default);
@@ -934,7 +954,7 @@ h3 {
   width: 22px;
   height: 22px;
   cursor: pointer;
-  color: var(--color-action);
+  color: var(--grid-accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -942,7 +962,7 @@ h3 {
 
 .reorder-btn:hover {
   border-color: var(--border-strong);
-  background: var(--teal-100);
+  background: var(--grid-accent-muted);
 }
 
 /* Column reordering: an advanced, mouse-driven function, so the grip only
@@ -952,7 +972,7 @@ h3 {
   display: inline-flex;
   align-items: center;
   margin-left: 6px;
-  color: var(--color-action);
+  color: var(--grid-accent);
   opacity: 0;
   cursor: grab;
   flex-shrink: 0;
@@ -969,13 +989,14 @@ th:hover .col-drag-handle,
 }
 
 th.col-drag-over {
-  background: var(--teal-100);
+  background: var(--grid-accent-muted);
 }
 
 /* Shared base for every icon-only interactive control in the demo, so the
    detail-toggle accordion and the refresh/export/print controls read as
-   one consistent system, not separately-styled one-offs. All action
-   coloured, since they're all interactive. */
+   one consistent system, not separately-styled one-offs. All use the
+   grid's own accent, since they're all interactive within this component
+   specifically, not the app's brand action colour. */
 .icon-button {
   background: none;
   border: 1px solid var(--border-default);
@@ -983,7 +1004,7 @@ th.col-drag-over {
   width: 26px;
   height: 26px;
   cursor: pointer;
-  color: var(--color-action);
+  color: var(--grid-accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -991,7 +1012,7 @@ th.col-drag-over {
 }
 
 .icon-button:hover {
-  background: var(--teal-100);
+  background: var(--grid-accent-muted);
   border-color: var(--border-strong);
 }
 
@@ -1027,18 +1048,18 @@ th.col-drag-over {
   min-height: 28px;
   padding: 2px var(--space-sm);
   font-size: var(--text-sm-size);
-  color: var(--color-action);
-  border-color: var(--color-action);
+  color: var(--grid-accent);
+  border-color: var(--grid-accent);
 }
 
 .actions-col .button:hover {
-  background: var(--blue-100);
+  background: var(--grid-accent-muted);
 }
 
 .actions-col .button[aria-pressed="true"] {
-  background: var(--teal-100);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: var(--grid-accent-muted);
+  border-color: var(--grid-accent);
+  color: var(--grid-accent);
 }
 
 .expand-row td {
@@ -1057,7 +1078,7 @@ th.col-drag-over {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--teal-900);
+  background: var(--grid-accent);
   color: #fff;
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-default);
