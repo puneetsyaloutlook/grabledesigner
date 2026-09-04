@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Info } from 'lucide-react';
 import { selectionSchema, defaultSelections } from '../lib/selectionSchema';
 import { decodeSelections, encodeSelections } from '../lib/selectionState';
 
@@ -62,6 +63,20 @@ export default function Features() {
   );
 }
 
+function ExamplesToggle({ detail }) {
+  const [open, setOpen] = useState(false);
+  if (!detail) return null;
+  return (
+    <div className="examples-toggle-wrap">
+      <button type="button" className="examples-toggle" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <Info size={12} />
+        Examples
+      </button>
+      {open && <p className="examples-detail">{detail}</p>}
+    </div>
+  );
+}
+
 function FieldControl({ field, value, selections, onChange }) {
   if (field.type === 'boolean') {
     return (
@@ -73,15 +88,9 @@ function FieldControl({ field, value, selections, onChange }) {
             onChange={(e) => onChange(e.target.checked)}
             style={{ marginTop: 3 }}
           />
-          <span>
-            {field.question}
-            {field.detail && (
-              <span style={{ display: 'block', fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', marginTop: 2 }}>
-                {field.detail}
-              </span>
-            )}
-          </span>
+          <span>{field.question}</span>
         </label>
+        <ExamplesToggle detail={field.detail} />
       </div>
     );
   }
@@ -89,12 +98,8 @@ function FieldControl({ field, value, selections, onChange }) {
   return (
     <div>
       <p style={{ fontWeight: 500, margin: '0 0 var(--space-xs)' }}>{field.question}</p>
-      {field.detail && (
-        <p style={{ fontSize: 'var(--text-sm-size)', color: 'var(--text-secondary)', margin: '0 0 var(--space-sm)' }}>
-          {field.detail}
-        </p>
-      )}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+      <ExamplesToggle detail={field.detail} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
         {field.options.map((option) => {
           const enabled = isOptionEnabled(option, selections);
           return (
