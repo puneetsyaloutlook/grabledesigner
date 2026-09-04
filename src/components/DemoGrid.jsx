@@ -27,6 +27,10 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function formatTime(date) {
+  return date.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' });
+}
+
 // Negative-number-format decision: leading minus sign. Empty/NA/zero decision:
 // en dash for not-applicable, "0" written out for a genuine zero.
 function formatAmount(value) {
@@ -109,6 +113,7 @@ export default function DemoGrid({ selections, derived }) {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState(() => new Date());
 
   // realTimeUpdates decision: simulate one row updating asynchronously,
   // aria-busy while in progress rather than swapping the value silently.
@@ -119,6 +124,7 @@ export default function DemoGrid({ selections, derived }) {
     const finish = setTimeout(() => {
       setRows((prev) => prev.map((r) => (r.id === targetId ? { ...r, status: 'Approved' } : r)));
       setUpdatingRowId(null);
+      setLastUpdatedAt(new Date());
     }, 3200);
     return () => { clearTimeout(start); clearTimeout(finish); };
   }, [selections.realTimeUpdates]);
@@ -293,7 +299,10 @@ export default function DemoGrid({ selections, derived }) {
   // step, it's just not writing code that would clear them.
   function handleRefresh() {
     setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 900);
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setLastUpdatedAt(new Date());
+    }, 900);
   }
 
   // Export-scope decision: exports sortedRows (the current filtered and
@@ -649,6 +658,11 @@ export default function DemoGrid({ selections, derived }) {
       <div className="demo-card-header">
         <h3 role="status" aria-live="polite">{itemCountLabel}</h3>
         <div className="demo-card-actions no-print">
+          {(selections.manualRefresh || selections.realTimeUpdates) && (
+            <span className="as-of-timestamp" role="status" aria-live="polite">
+              As of {formatTime(lastUpdatedAt)}
+            </span>
+          )}
           {selections.filtering === 'global' && (
             <input
               type="search"
