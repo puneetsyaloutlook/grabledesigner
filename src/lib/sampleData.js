@@ -8,12 +8,12 @@ export const sampleColumns = [
   { key: 'amount', label: 'Amount', tier: 'low', type: 'currency', width: 110 },
   { key: 'status', label: 'Status', tier: 'low', type: 'status', width: 120 },
   { key: 'submitted', label: 'Submitted', tier: 'mid', type: 'date', width: 120 },
+  { key: 'updated', label: 'Last updated', tier: 'mid', type: 'date', width: 130 },
   { key: 'assignee', label: 'Assignee', tier: 'mid', type: 'text', width: 140, editable: true },
   { key: 'priority', label: 'Priority', tier: 'mid', type: 'text', width: 100 },
   { key: 'variance', label: 'Variance', tier: 'mid', type: 'number', width: 100 },
   { key: 'region', label: 'Region', tier: 'high', type: 'text', width: 120 },
   { key: 'channel', label: 'Channel', tier: 'high', type: 'text', width: 110 },
-  { key: 'updated', label: 'Last updated', tier: 'high', type: 'date', width: 130 },
   { key: 'notes', label: 'Notes', tier: 'high', type: 'text', width: 260, truncate: true },
 ];
 

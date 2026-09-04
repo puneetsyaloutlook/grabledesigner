@@ -171,6 +171,18 @@ export const decisions = [
     tradeoff: 'Hiding interactive chrome needs a real print stylesheet, not just relying on the screen layout, which is the same underlying work the overflow-handling requirement already needs, so there’s little extra cost to doing both properly at once.',
     applies: (s) => s.printSupport,
   },
+  {
+    id: 'stacked-pair-sort-behaviour',
+    title: 'Sorting a stacked pair',
+    category: 'Sorting',
+    question: 'Can each stacked value be sorted independently, or does the pair sort as one unit?',
+    options: [
+      { label: 'Each value keeps its own independent sort control, stacked to match the values below', chosen: true, note: 'Consistent with the pair itself: the upper header controls the upper value, the lower header controls the lower value, exactly as they\u2019re read.' },
+      { label: 'The pair sorts as a single combined unit, always by the upper value', chosen: false, note: 'Simpler to build, but breaks the direct correspondence the pattern exists to show, and makes the lower value impossible to sort by at all.' },
+    ],
+    tradeoff: 'Independent sorting costs a little more header space, two small controls instead of one, but a single combined sort would mean the lower value loses a real capability the upper value keeps, for no reason other than where it happens to sit.',
+    applies: (s) => s.stackedValues && s.sorting !== 'none',
+  },
 ];
 
 export function applicableDecisions(selections, derived) {

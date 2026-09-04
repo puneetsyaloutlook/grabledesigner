@@ -278,6 +278,16 @@ export const standards = [
     typical: 'A print-specific stylesheet that un-sticks pinned columns and lets the table flow naturally across the printed page width.',
     applies: (s) => s.printSupport,
   },
+
+  // Stacked pair
+  {
+    id: 'stacked-pair-programmatic',
+    category: 'Structure',
+    requirement: 'A stacked pair of values must keep each value\u2019s association with its own header programmatically, not only visually, even though both values live in one merged cell.',
+    why: 'WCAG 1.3.1. A sighted user reads which stacked value belongs to which stacked header purely by vertical position, but that spatial relationship needs an equivalent for anyone not perceiving the layout visually.',
+    typical: 'A visually-hidden label on each stacked value naming its header, since one merged cell can\u2019t use the normal two-header/headers-id association a genuine two-column layout would.',
+    applies: (s) => s.stackedValues,
+  },
 ];
 
 export function applicableStandards(selections, derived) {
