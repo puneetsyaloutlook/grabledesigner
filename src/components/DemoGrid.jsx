@@ -63,6 +63,25 @@ function formatCell(column, value) {
   return String(value);
 }
 
+// Color-not-sole-indicator standard: each status maps to a semantic tone,
+// but the coloured dot only ever sits next to the existing text, it never
+// replaces it. Open and In review read as active/pending states rather
+// than a success or failure, so they map to info and warning respectively,
+// not the green/red pair that would overstate a routine, ongoing claim as
+// good or bad news.
+const STATUS_TONE = {
+  Open: 'info',
+  'In review': 'warning',
+  Approved: 'success',
+  Closed: 'neutral',
+};
+
+function StatusIndicator({ value }) {
+  const tone = STATUS_TONE[value];
+  if (!tone) return null;
+  return <span className={`status-dot status-dot-${tone}`} aria-hidden="true" />;
+}
+
 // Numeric/alphanumeric font-treatment standard: numeric columns get tabular
 // figures so digits align down the column; ID/code-shaped columns get a
 // monospace font so mixed letters and numbers stay predictable to scan.
@@ -558,6 +577,20 @@ export default function DemoGrid({ selections, derived }) {
                     onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') setEditingCell(null); }}
                   />
                 );
+              } else if (col.type === 'status') {
+                content = (
+                  <span className="status-cell">
+                    {selections.legend && <StatusIndicator value={value} />}
+                    {formatCell(col, value)}
+                  </span>
+                );
+              } else if (selections.footnote && row.footnotes?.[col.key]) {
+                content = (
+                  <>
+                    {formatCell(col, value)}
+                    <sup className="footnote-marker" aria-describedby={footnoteIndex[row.footnotes[col.key]]}>*</sup>
+                  </>
+                );
               } else if (col.truncate && value && String(value).length > 40) {
                 content = <TruncatedCell text={String(value).slice(0, 40) + '…'} />;
               } else if (editable) {
@@ -657,6 +690,26 @@ export default function DemoGrid({ selections, derived }) {
 
   const showPerGroupTotals = selections.rowGrouping && (selections.totals === 'perGroup' || selections.totals === 'both');
   const showGrandTotal = (selections.totals === 'grand' || selections.totals === 'both') && columns.some((c) => c.key === 'amount');
+
+  // Footnote decision: one marker per unique disclaimer text, not per row,
+  // so a caveat that happened to apply to several rows wouldn't repeat
+  // itself in the footer. Built from filteredRows, not the full dataset,
+  // consistent with the export-scope decision: a disclaimer on a row
+  // that's currently filtered out has nothing on screen to explain.
+  const footnoteIndex = {};
+  const activeFootnotes = [];
+  if (selections.footnote) {
+    filteredRows.forEach((row) => {
+      if (!row.footnotes) return;
+      Object.values(row.footnotes).forEach((text) => {
+        if (!(text in footnoteIndex)) {
+          const id = `footnote-${activeFootnotes.length + 1}`;
+          footnoteIndex[text] = id;
+          activeFootnotes.push({ id, text });
+        }
+      });
+    });
+  }
 
   const itemCountLabel = filteredRows.length === rows.length
     ? `Claims (${rows.length})`
@@ -887,6 +940,28 @@ export default function DemoGrid({ selections, derived }) {
           )}
         </table>
       </div>
+
+      {(activeFootnotes.length > 0 || selections.legend) && (
+        <div className="demo-table-footer no-print">
+          {activeFootnotes.length > 0 && (
+            <ul className="footnote-list">
+              {activeFootnotes.map((fn) => (
+                <li key={fn.id} id={fn.id}>* {fn.text}</li>
+              ))}
+            </ul>
+          )}
+          {selections.legend && (
+            <ul className="status-legend">
+              {Object.entries(STATUS_TONE).map(([label, tone]) => (
+                <li key={label} className="status-legend-item">
+                  <span className={`status-dot status-dot-${tone}`} aria-hidden="true" />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {selections.editing === 'viaDetail' && (
         <p className="demo-note">
