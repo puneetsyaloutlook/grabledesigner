@@ -633,35 +633,48 @@ h3 {
 }
 
 /* Grouped headers: the parent label and its child column headers read as
-   one connected unit, not two stacked bordered cells. */
+   one connected unit, so the row-to-row border is off by default... */
 .demo-table thead tr:first-child th {
   border-bottom: none;
 }
 
-.group-header {
+/* ...except directly under the group label itself, which does need a
+   separator to show where the group ends and its own leaf columns begin.
+   These selectors are deliberately as specific as `.demo-table thead th`
+   itself (class + thead + th), not just `.group-header` alone, which was
+   losing to that base rule regardless of source order, the actual cause
+   of the group label's padding, alignment, and gap all being wrong at
+   once, not three separate bugs. */
+.demo-table thead th.group-header {
   text-align: center;
   color: var(--text-secondary);
-  padding-bottom: 2px;
   font-weight: 600;
+  padding-bottom: 2px;
+}
+
+.demo-table thead tr:first-child th.group-header {
+  border-bottom: 1px solid var(--border-default);
+}
+
+.demo-table thead tr:nth-child(2) th {
+  padding-top: 2px;
 }
 
 /* Stacked-pair decision: no spanning label like a group gets, since there
    isn't one, the two stacked headers are the whole story. Each line keeps
    its own independent sort control (stacked-pair-sort-behaviour decision),
-   so this is two ordinary header cells stacked vertically, not one cell
-   split between two meanings. */
+   left-aligned to match the left-aligned values stacked beneath them, not
+   centred. No separator between the two lines, or between the two stacked
+   values in the body, the pairing itself is what's meant to read as one
+   connected unit, not two divided halves. */
 .stacked-pair-header {
   padding: 4px var(--space-sm);
 }
 
 .stacked-pair-header-line {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 2px 0;
-}
-
-.stacked-pair-header-line + .stacked-pair-header-line {
-  border-top: 1px solid var(--border-default);
 }
 
 .stacked-pair-cell {
@@ -673,11 +686,6 @@ h3 {
 
 .stacked-pair-value {
   font-size: var(--text-sm-size);
-}
-
-.stacked-pair-value + .stacked-pair-value {
-  border-top: 1px solid var(--border-default);
-  padding-top: 2px;
 }
 
 /* Visually hidden but readable by assistive technology: the
