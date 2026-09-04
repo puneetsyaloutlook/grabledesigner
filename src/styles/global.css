@@ -451,6 +451,16 @@ h3 {
   z-index: 100;
 }
 
+/* Contained panel: absolute within the grid's own container (see
+   .demo-card's position: relative below), not fixed to the viewport, so
+   it never reaches past the grid's own bounds, for when the component
+   doesn't have portal access to render above the rest of the page. */
+.overlay-backdrop-contained {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
 .overlay-panel {
   background: var(--surface-page);
   box-shadow: var(--shadow-elevated);
@@ -460,10 +470,17 @@ h3 {
   overflow-y: auto;
 }
 
-.overlay-drawer {
+.overlay-side-panel {
   width: 420px;
   max-width: 90vw;
   height: 100vh;
+}
+
+.overlay-contained-panel {
+  width: 360px;
+  max-width: 80%;
+  height: 100%;
+  max-height: none;
 }
 
 .overlay-modal {
@@ -538,6 +555,7 @@ h3 {
   --grid-accent: #1677FF;
   --grid-accent-muted: #E6F1FE;
   --grid-group-bg: #F0EDFC;
+  position: relative;
   padding: var(--space-lg);
 }
 
