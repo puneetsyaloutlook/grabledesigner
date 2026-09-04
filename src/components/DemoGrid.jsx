@@ -27,8 +27,10 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-function formatTime(date) {
-  return date.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' });
+function formatAsOf(date) {
+  const datePart = date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  const timePart = date.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short' });
+  return `${datePart}, ${timePart}`;
 }
 
 // Negative-number-format decision: leading minus sign. Empty/NA/zero decision:
@@ -660,7 +662,7 @@ export default function DemoGrid({ selections, derived }) {
         <div className="demo-card-actions no-print">
           {(selections.manualRefresh || selections.realTimeUpdates) && (
             <span className="as-of-timestamp" role="status" aria-live="polite">
-              As of {formatTime(lastUpdatedAt)}
+              As of {formatAsOf(lastUpdatedAt)}
             </span>
           )}
           {selections.filtering === 'global' && (
