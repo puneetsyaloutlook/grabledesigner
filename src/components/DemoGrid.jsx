@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer, Filter } from 'lucide-react';
+import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer, Filter, MoreHorizontal } from 'lucide-react';
 import { sampleColumns, sampleRows } from '../lib/sampleData';
 import Drawer from './Drawer';
 
@@ -509,13 +509,13 @@ export default function DemoGrid({ selections, derived }) {
             <td className="detail-col">
               <button
                 type="button"
-                className="icon-button detail-toggle"
+                className={`icon-button detail-toggle${isOverlayVariant ? ' detail-toggle-more' : ''}`}
                 aria-expanded={isOverlayVariant ? isOverlayOpen : showInlineDetail}
                 aria-haspopup={isOverlayVariant ? 'dialog' : undefined}
                 aria-label={`${(isOverlayVariant ? isOverlayOpen : showInlineDetail) ? 'Hide' : 'Show'} details for ${row.id}`}
                 onClick={() => toggleDetail(row.id)}
               >
-                <ChevronRight size={14} />
+                {isOverlayVariant ? <MoreHorizontal size={14} /> : <ChevronRight size={14} />}
               </button>
             </td>
           )}
