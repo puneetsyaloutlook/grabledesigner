@@ -183,6 +183,18 @@ export const decisions = [
     tradeoff: 'Independent sorting costs a little more header space, two small controls instead of one, but a single combined sort would mean the lower value loses a real capability the upper value keeps, for no reason other than where it happens to sit.',
     applies: (s) => s.stackedValues && s.sorting !== 'none',
   },
+  {
+    id: 'as-of-timestamp-format',
+    title: 'As-of timestamp format',
+    category: 'Data loading',
+    question: 'What does the as-of timestamp actually show: date, time, and timezone, in what format?',
+    options: [
+      { label: 'Full date (day, text month, year) plus 12-hour time with an explicit AM/PM, plus a timezone abbreviation', chosen: true, note: 'A text month sidesteps the US-vs-world day/month ordering ambiguity entirely, no date is more readable with an explicit AM/PM than without one, and a bare time is meaningless without knowing whose clock it\u2019s on: someone in a different timezone can\u2019t tell if it\u2019s stale without one.' },
+      { label: '24-hour time, no AM/PM', chosen: false, note: 'Removes AM/PM ambiguity outright and is the norm in many international and technical contexts, but is less immediately familiar to a general audience at a glance; a defensible alternative default, not a wrong one.' },
+    ],
+    tradeoff: 'Daylight saving isn\u2019t a separate problem this needs to solve: the timestamp is built from the browser\u2019s own Date and Intl APIs rather than manual UTC-offset math, so the platform\u2019s own timezone database handles DST transitions correctly without extra code. The one thing this demo doesn\u2019t attempt is per-user locale formatting, a real production system would format the date and time according to the viewer\u2019s own locale rather than one fixed format for everyone, which this reference keeps fixed for legibility.',
+    applies: (s) => s.manualRefresh || s.realTimeUpdates,
+  },
 ];
 
 export function applicableDecisions(selections, derived) {
