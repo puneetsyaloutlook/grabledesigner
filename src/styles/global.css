@@ -1224,3 +1224,34 @@ tr[aria-busy="true"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Features page: examples are collapsed by default so a field with a long
+   worked example doesn't make the whole card as tall as the explanation,
+   only as tall as the question itself. */
+.examples-toggle-wrap {
+  margin-top: 4px;
+}
+
+.examples-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.examples-toggle:hover {
+  color: var(--color-action);
+}
+
+.examples-detail {
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+  max-width: 60ch;
+}
