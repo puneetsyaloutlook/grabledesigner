@@ -21,14 +21,21 @@ const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
 // story, and the pair only forms once both are visible together.
 const PAIRS = [{ keys: ['submitted', 'updated'] }];
 
+// The Intl API's own 'short' month format isn't reliably 3 characters:
+// en-AU and en-GB give September as "Sept" (4 chars) while every other
+// month is 3, a real British/Australian convention, not a bug, but it
+// breaks the uniform width a table column needs. An explicit list
+// sidesteps relying on any locale's own abbreviation data for this.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 function formatDate(iso) {
   if (!iso) return '–';
   const d = new Date(iso + 'T00:00:00');
-  return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function formatAsOf(date) {
-  const datePart = date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  const datePart = `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
   const timePart = date.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short' });
   return `${datePart}, ${timePart}`;
 }
