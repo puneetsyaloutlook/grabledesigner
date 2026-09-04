@@ -14,6 +14,13 @@ const DETAIL_COL_WIDTH = 40;
 // rendered as a broken group, it's just not a group.
 const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
 
+// Stacked-pair decision: Submitted and Updated are the same kind of
+// measurement (a date) at two points, genuinely meant to be compared, not
+// two unrelated columns that happen to share a header. Unlike a group,
+// there's no label spanning them, the two stacked headers are the whole
+// story, and the pair only forms once both are visible together.
+const PAIRS = [{ keys: ['submitted', 'updated'] }];
+
 function formatDate(iso) {
   if (!iso) return '–';
   const d = new Date(iso + 'T00:00:00');
@@ -126,11 +133,18 @@ export default function DemoGrid({ selections, derived }) {
     return activeGroups.find((g) => g.keys.includes(key));
   }
 
+  const activePairs = selections.stackedValues
+    ? PAIRS.filter((p) => p.keys.every((k) => columns.some((c) => c.key === k)))
+    : [];
+  function pairFor(key) {
+    return activePairs.find((p) => p.keys.includes(key));
+  }
+
   // Reorderable-columns: a stored key order, ignored (falls back to natural
   // order) if the visible column set has changed since it was set, e.g. the
-  // data-points tier changed. Grouped columns can't be moved and nothing can
-  // be moved past them, so a group's contiguity can never be broken by
-  // reordering, consistent with the grouped-header-pin-behaviour decision.
+  // data-points tier changed. Grouped or paired columns can't be moved and
+  // nothing can be moved past them, so neither a group's nor a pair's
+  // contiguity can ever be broken by reordering.
   const naturalKeys = columns.map((c) => c.key);
   const orderedColumns = (() => {
     if (!columnOrder) return columns;
@@ -142,7 +156,7 @@ export default function DemoGrid({ selections, derived }) {
 
   function moveColumnTo(fromKey, toKey) {
     if (fromKey === toKey) return;
-    if (groupFor(fromKey) || groupFor(toKey)) return;
+    if (groupFor(fromKey) || groupFor(toKey) || pairFor(fromKey) || pairFor(toKey)) return;
     const keys = [...orderedKeys];
     const from = keys.indexOf(fromKey);
     const to = keys.indexOf(toKey);
@@ -155,7 +169,7 @@ export default function DemoGrid({ selections, derived }) {
     const idx = orderedKeys.indexOf(key);
     const swapWith = idx + direction;
     if (swapWith < 0 || swapWith >= orderedKeys.length) return;
-    if (groupFor(orderedKeys[idx]) || groupFor(orderedKeys[swapWith])) return;
+    if (groupFor(orderedKeys[idx]) || groupFor(orderedKeys[swapWith]) || pairFor(orderedKeys[idx]) || pairFor(orderedKeys[swapWith])) return;
     const next = [...orderedKeys];
     [next[idx], next[swapWith]] = [next[swapWith], next[idx]];
     setColumnOrder(next);
@@ -357,7 +371,7 @@ export default function DemoGrid({ selections, derived }) {
     const sortEntry = sortChain.find((s) => s.key === col.key);
     const sortIndex = sortChain.findIndex((s) => s.key === col.key);
     const sortable = selections.sorting !== 'none';
-    const isGrouped = Boolean(groupFor(col.key));
+    const isGrouped = Boolean(groupFor(col.key)) || Boolean(pairFor(col.key));
     const canReorder = selections.reorderableColumns && !isGrouped;
 
     return (
@@ -405,7 +419,7 @@ export default function DemoGrid({ selections, derived }) {
   }
 
   function headerDragProps(col) {
-    if (!selections.reorderableColumns || groupFor(col.key)) return {};
+    if (!selections.reorderableColumns || groupFor(col.key) || pairFor(col.key)) return {};
     return {
       onDragOver: (e) => { e.preventDefault(); setDragOverKey(col.key); },
       onDragLeave: () => setDragOverKey((k) => (k === col.key ? null : k)),
@@ -485,8 +499,31 @@ export default function DemoGrid({ selections, derived }) {
           )}
           {(() => {
             const cells = [];
+            const spannedByPair = new Set();
             orderedColumns.forEach((col, i) => {
               const isLocked = selections.lockedColumns && i === 0;
+              const pair = pairFor(col.key);
+
+              if (pair) {
+                if (spannedByPair.has(col.key)) return; // rendered as part of the pair cell already
+                pair.keys.forEach((k) => spannedByPair.add(k));
+                cells.push(
+                  <td key={`pair-${pair.keys.join('-')}`} colSpan={pair.keys.length}>
+                    <div className="stacked-pair-cell">
+                      {pair.keys.map((k) => {
+                        const pcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
+                        return (
+                          <div key={k} className="stacked-pair-value" style={fontStyleFor(pcol)}>
+                            <span className="sr-only">{pcol.label}: </span>
+                            {formatCell(pcol, cellValue(row, pcol))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </td>
+                );
+                return;
+              }
 
               const value = cellValue(row, col);
               const isEditingThis = editingCell?.rowId === row.id && editingCell?.key === col.key;
@@ -554,25 +591,34 @@ export default function DemoGrid({ selections, derived }) {
   // data row, so the amount lands right-aligned under the Amount column
   // rather than as a single spanning line of text.
   function renderTotalsRow(rowsForTotal, label, keySuffix) {
+    const spannedByPair = new Set();
     return (
       <tr key={`totals-${keySuffix}`} className="totals-row">
         {hasDetailCol && <td className="detail-col" />}
         {canSelect && <td className="select-col" />}
         {selections.dragReorder && <td className="reorder-col" />}
-        {orderedColumns.map((col, i) => (
-          <td
-            key={col.key}
-            style={{
-              textAlign: col.type === 'currency' || col.type === 'number' ? 'right' : 'left',
-              fontWeight: 600,
-              ...fontStyleFor(col),
-            }}
-          >
-            {col.key === 'amount'
-              ? formatAmount(rowsForTotal.reduce((sum, r) => sum + (r.amount || 0), 0))
-              : i === 0 ? label : ''}
-          </td>
-        ))}
+        {orderedColumns.map((col, i) => {
+          const pair = pairFor(col.key);
+          if (pair) {
+            if (spannedByPair.has(col.key)) return null;
+            pair.keys.forEach((k) => spannedByPair.add(k));
+            return <td key={`pair-${pair.keys.join('-')}`} colSpan={pair.keys.length} />;
+          }
+          return (
+            <td
+              key={col.key}
+              style={{
+                textAlign: col.type === 'currency' || col.type === 'number' ? 'right' : 'left',
+                fontWeight: 600,
+                ...fontStyleFor(col),
+              }}
+            >
+              {col.key === 'amount'
+                ? formatAmount(rowsForTotal.reduce((sum, r) => sum + (r.amount || 0), 0))
+                : i === 0 ? label : ''}
+            </td>
+          );
+        })}
         {hasActionsCol && <td className="actions-col" />}
       </tr>
     );
@@ -700,8 +746,10 @@ export default function DemoGrid({ selections, derived }) {
               {(() => {
                 const cells = [];
                 const spannedByGroup = new Set();
+                const spannedByPair = new Set();
                 orderedColumns.forEach((col, i) => {
                   const group = groupFor(col.key);
+                  const pair = pairFor(col.key);
                   const isLocked = selections.lockedColumns && i === 0;
                   const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
 
@@ -711,6 +759,29 @@ export default function DemoGrid({ selections, derived }) {
                     cells.push(
                       <th key={`group-${group.label}`} colSpan={group.keys.length} scope="colgroup" className="group-header">
                         {group.label}
+                      </th>
+                    );
+                    return;
+                  }
+
+                  if (pair) {
+                    if (spannedByPair.has(col.key)) return; // rendered as part of the pair cell already
+                    pair.keys.forEach((k) => spannedByPair.add(k));
+                    cells.push(
+                      <th
+                        key={`pair-${pair.keys.join('-')}`}
+                        colSpan={pair.keys.length}
+                        rowSpan={activeGroups.length > 0 ? 2 : undefined}
+                        className="stacked-pair-header"
+                      >
+                        {pair.keys.map((k) => {
+                          const pcol = orderedColumns.find((c) => c.key === k) || columns.find((c) => c.key === k);
+                          return (
+                            <div key={k} className="stacked-pair-header-line">
+                              {headerCellContent(pcol)}
+                            </div>
+                          );
+                        })}
                       </th>
                     );
                     return;
