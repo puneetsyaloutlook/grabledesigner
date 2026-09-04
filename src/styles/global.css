@@ -1078,8 +1078,8 @@ th.col-drag-over {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--grid-accent);
-  color: #fff;
+  background: var(--grid-accent-muted);
+  color: var(--grid-accent);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-default);
   margin-bottom: var(--space-md);
