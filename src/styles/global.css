@@ -1313,3 +1313,87 @@ tr[aria-busy="true"] {
   margin: 4px 0 0;
   max-width: 60ch;
 }
+
+/* Color-not-sole-indicator standard: the dot sits next to the text, never
+   instead of it. Tones map to this app's own semantic status colours
+   (success/warning/error/info), which are already conventional hues
+   shared across most systems, not this app's brand identity, unlike the
+   grid's own structural colours (see .demo-card's token block above). */
+.status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-success {
+  background: var(--status-success-text);
+}
+
+.status-dot-warning {
+  background: var(--status-warning-text);
+}
+
+.status-dot-error {
+  background: var(--status-error-text);
+}
+
+.status-dot-info {
+  background: var(--status-info-text);
+}
+
+.status-dot-neutral {
+  background: var(--neutral-500);
+}
+
+.demo-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-default);
+}
+
+.footnote-marker {
+  color: var(--text-secondary);
+  margin-left: 1px;
+  cursor: help;
+}
+
+.footnote-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+}
+
+.footnote-list li {
+  margin: 0;
+}
+
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.status-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+}
