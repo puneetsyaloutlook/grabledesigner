@@ -44,7 +44,7 @@ export const referenceSystems = [
     cons: [
       'Carbon dropped its own richer Datagrid component, so out-of-the-box grid features are thinner than AG Grid or Ant Design',
     ],
-    applies: (s) => s.density !== 'default' || s.actions === 'bulk' || s.rowDetail === 'expandRow',
+    applies: (s) => s.density !== 'default' || s.actions === 'bulk' || s.rowDetail === 'drawer',
   },
   {
     id: 'salesforce-lightning',
