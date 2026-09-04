@@ -545,6 +545,12 @@ h3 {
   flex-wrap: wrap;
 }
 
+.as-of-timestamp {
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
 .demo-card-actions .button {
   min-height: 32px;
   padding: 4px var(--space-md);
