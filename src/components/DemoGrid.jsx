@@ -411,13 +411,21 @@ export default function DemoGrid({ selections, derived }) {
     const sortable = selections.sorting !== 'none';
     const isGrouped = Boolean(groupFor(col.key)) || Boolean(pairFor(col.key));
     const canReorder = selections.reorderableColumns && !isGrouped;
+    // Right-aligned columns (numeric/currency) need the label text itself
+    // flush against the right edge, matching the values below it. Without
+    // this, the sort caret sitting after the label in DOM order is what
+    // ends up flush right instead, leaving the label visibly short of
+    // where the numbers actually line up.
+    const align = col.type === 'currency' || col.type === 'number' ? 'right' : 'left';
+    const flexDirection = align === 'right' ? 'row-reverse' : 'row';
 
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', flexDirection }}>
         {sortable ? (
           <button
             type="button"
             className={`sort-header${sortEntry ? ' sort-header-active' : ''}`}
+            style={{ flexDirection }}
             onClick={() => toggleSort(col.key)}
           >
             {col.label}
