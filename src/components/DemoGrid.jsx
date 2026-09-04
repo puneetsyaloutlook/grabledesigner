@@ -384,6 +384,7 @@ export default function DemoGrid({ selections, derived }) {
   }
 
   const modalRow = rows.find((r) => r.id === modalRowId);
+  const drawerRow = rows.find((r) => r.id === openDrawerRowId);
 
   function sortCaret(col) {
     if (selections.sorting === 'none') return null;
@@ -497,9 +498,9 @@ export default function DemoGrid({ selections, derived }) {
     const isExpanded = expandedIds.has(row.id);
     const isDrawerOpen = openDrawerRowId === row.id;
     const isUpdating = updatingRowId === row.id;
-    const showInlineDetail =
-      (selections.rowDetail === 'expandRow' && isExpanded) ||
-      (selections.rowDetail === 'drawer' && isDrawerOpen);
+    const showInlineDetail = selections.rowDetail === 'expandRow' && isExpanded;
+    const isOverlayVariant = selections.rowDetail === 'modal' || selections.rowDetail === 'drawer';
+    const isOverlayOpen = selections.rowDetail === 'modal' ? modalRowId === row.id : isDrawerOpen;
 
     return (
       <Fragment key={row.id}>
@@ -509,9 +510,9 @@ export default function DemoGrid({ selections, derived }) {
               <button
                 type="button"
                 className="icon-button detail-toggle"
-                aria-expanded={selections.rowDetail === 'modal' ? modalRowId === row.id : showInlineDetail}
-                aria-haspopup={selections.rowDetail === 'modal' ? 'dialog' : undefined}
-                aria-label={`${showInlineDetail ? 'Hide' : 'Show'} details for ${row.id}`}
+                aria-expanded={isOverlayVariant ? isOverlayOpen : showInlineDetail}
+                aria-haspopup={isOverlayVariant ? 'dialog' : undefined}
+                aria-label={`${(isOverlayVariant ? isOverlayOpen : showInlineDetail) ? 'Hide' : 'Show'} details for ${row.id}`}
                 onClick={() => toggleDetail(row.id)}
               >
                 <ChevronRight size={14} />
@@ -968,6 +969,19 @@ export default function DemoGrid({ selections, derived }) {
           {'Editing through the row detail view isn’t implemented in this demo, the drawer, modal, or expanded row still shows read-only fields. Shown here as a scope note rather than built out.'}
         </p>
       )}
+
+      <Drawer
+        open={selections.rowDetail === 'drawer' && drawerRow !== undefined}
+        onClose={() => setOpenDrawerRowId(null)}
+        title={drawerRow ? `${drawerRow.id}: ${drawerRow.customer}` : ''}
+        variant="drawer"
+      >
+        {drawerRow && sampleColumns.map((c) => (
+          <p key={c.key} style={{ margin: '0 0 var(--space-sm)' }}>
+            <strong>{c.label}:</strong> {formatCell(c, cellValue(drawerRow, c))}
+          </p>
+        ))}
+      </Drawer>
 
       <Drawer
         open={selections.rowDetail === 'modal' && modalRowId !== null}
