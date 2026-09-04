@@ -2,11 +2,15 @@ import { useEffect, useRef } from 'react';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-// variant: 'drawer' (slides from the right) or 'modal' (centred overlay).
-// Both share the same focus-management requirement from the standards data
-// (row-detail-focus): move focus in on open, trap it while open, return it
-// to whatever triggered the open on close.
-export default function Drawer({ open, onClose, title, children, variant = 'drawer' }) {
+// variant: 'modal' (centred overlay), 'panel' (slides from the browser's own
+// right edge, full viewport height), or 'containedPanel' (slides from the
+// grid's own right edge instead, constrained to the grid's own container
+// rather than the browser, for when the component doesn't have portal
+// access to render above the rest of the page). All three share the same
+// focus-management requirement from the standards data (row-detail-focus):
+// move focus in on open, trap it while open, return it to whatever
+// triggered the open on close.
+export default function Drawer({ open, onClose, title, children, variant = 'panel' }) {
   const panelRef = useRef(null);
   const previouslyFocused = useRef(null);
 
@@ -51,11 +55,19 @@ export default function Drawer({ open, onClose, title, children, variant = 'draw
 
   if (!open) return null;
 
+  const panelClass =
+    variant === 'modal' ? 'overlay-panel overlay-modal' :
+    variant === 'containedPanel' ? 'overlay-panel overlay-contained-panel' :
+    'overlay-panel overlay-side-panel';
+
   return (
-    <div className="overlay-backdrop" onMouseDown={onClose}>
+    <div
+      className={variant === 'containedPanel' ? 'overlay-backdrop overlay-backdrop-contained' : 'overlay-backdrop'}
+      onMouseDown={onClose}
+    >
       <div
         ref={panelRef}
-        className={variant === 'modal' ? 'overlay-panel overlay-modal' : 'overlay-panel overlay-drawer'}
+        className={panelClass}
         role="dialog"
         aria-modal="true"
         aria-labelledby="overlay-title"

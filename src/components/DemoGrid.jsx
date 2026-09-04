@@ -132,7 +132,7 @@ export default function DemoGrid({ selections, derived }) {
   const [editingCell, setEditingCell] = useState(null); // { rowId, key }
   const [editValues, setEditValues] = useState({}); // `${rowId}:${key}` -> value
   const [modalRowId, setModalRowId] = useState(null);
-  const [openDrawerRowId, setOpenDrawerRowId] = useState(null); // one at a time
+  const [openPanelRowId, setOpenPanelRowId] = useState(null); // one at a time, for whichever of panel / containedPanel is active
   const [expandedIds, setExpandedIds] = useState(new Set()); // many at a time
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [updatingRowId, setUpdatingRowId] = useState(null);
@@ -369,22 +369,22 @@ export default function DemoGrid({ selections, derived }) {
   }
 
   function toggleDetail(rowId) {
-    if (selections.rowDetail === 'expandRow') {
+    if (selections.rowDetail === 'drawer') {
       setExpandedIds((prev) => {
         const next = new Set(prev);
         next.has(rowId) ? next.delete(rowId) : next.add(rowId);
         return next;
       });
-    } else if (selections.rowDetail === 'drawer') {
-      // Single-open: opening a new row's drawer closes whichever was open.
-      setOpenDrawerRowId((prev) => (prev === rowId ? null : rowId));
+    } else if (selections.rowDetail === 'panel' || selections.rowDetail === 'containedPanel') {
+      // Single-open: opening a new row's panel closes whichever was open.
+      setOpenPanelRowId((prev) => (prev === rowId ? null : rowId));
     } else if (selections.rowDetail === 'modal') {
       setModalRowId(rowId);
     }
   }
 
   const modalRow = rows.find((r) => r.id === modalRowId);
-  const drawerRow = rows.find((r) => r.id === openDrawerRowId);
+  const panelRow = rows.find((r) => r.id === openPanelRowId);
 
   function sortCaret(col) {
     if (selections.sorting === 'none') return null;
@@ -496,11 +496,11 @@ export default function DemoGrid({ selections, derived }) {
     const isSelected = selectedIds.has(row.id);
     const isFlagged = flaggedIds.has(row.id);
     const isExpanded = expandedIds.has(row.id);
-    const isDrawerOpen = openDrawerRowId === row.id;
+    const isPanelOpen = openPanelRowId === row.id;
     const isUpdating = updatingRowId === row.id;
-    const showInlineDetail = selections.rowDetail === 'expandRow' && isExpanded;
-    const isOverlayVariant = selections.rowDetail === 'modal' || selections.rowDetail === 'drawer';
-    const isOverlayOpen = selections.rowDetail === 'modal' ? modalRowId === row.id : isDrawerOpen;
+    const showInlineDetail = selections.rowDetail === 'drawer' && isExpanded;
+    const isOverlayVariant = selections.rowDetail === 'modal' || selections.rowDetail === 'panel' || selections.rowDetail === 'containedPanel';
+    const isOverlayOpen = selections.rowDetail === 'modal' ? modalRowId === row.id : isPanelOpen;
 
     return (
       <Fragment key={row.id}>
@@ -966,19 +966,19 @@ export default function DemoGrid({ selections, derived }) {
 
       {selections.editing === 'viaDetail' && (
         <p className="demo-note">
-          {'Editing through the row detail view isn’t implemented in this demo, the drawer, modal, or expanded row still shows read-only fields. Shown here as a scope note rather than built out.'}
+          {'Editing through the row detail view isn’t implemented in this demo, the drawer, modal, side panel, or contained panel still shows read-only fields. Shown here as a scope note rather than built out.'}
         </p>
       )}
 
       <Drawer
-        open={selections.rowDetail === 'drawer' && drawerRow !== undefined}
-        onClose={() => setOpenDrawerRowId(null)}
-        title={drawerRow ? `${drawerRow.id}: ${drawerRow.customer}` : ''}
-        variant="drawer"
+        open={(selections.rowDetail === 'panel' || selections.rowDetail === 'containedPanel') && panelRow !== undefined}
+        onClose={() => setOpenPanelRowId(null)}
+        title={panelRow ? `${panelRow.id}: ${panelRow.customer}` : ''}
+        variant={selections.rowDetail === 'containedPanel' ? 'containedPanel' : 'panel'}
       >
-        {drawerRow && sampleColumns.map((c) => (
+        {panelRow && sampleColumns.map((c) => (
           <p key={c.key} style={{ margin: '0 0 var(--space-sm)' }}>
-            <strong>{c.label}:</strong> {formatCell(c, cellValue(drawerRow, c))}
+            <strong>{c.label}:</strong> {formatCell(c, cellValue(panelRow, c))}
           </p>
         ))}
       </Drawer>
