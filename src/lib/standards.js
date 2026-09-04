@@ -298,6 +298,24 @@ export const standards = [
     typical: 'An "As of [time]" label near the table\u2019s own controls, updated whenever a refresh completes or a real-time update lands, not only shown once at page load.',
     applies: (s) => s.manualRefresh || s.realTimeUpdates,
   },
+
+  // Date format
+  {
+    id: 'date-format-unambiguous',
+    category: 'Data formatting',
+    requirement: 'A date must not be shown as two numbers separated by a slash or dash, such as 03/04/2025. That string means 3 April in most of the world and 4 March in the United States, and nothing in the format itself signals which one is meant.',
+    why: 'This is one of the most common real errors in software with any international audience, and it fails silently: there\u2019s no crash, no validation warning, just a wrong date accepted as a right one. A text month, "4 Aug 2026", removes the ambiguity outright, since a name has no reading order to get backwards, unlike two numbers.',
+    typical: 'Day, text month, year: "4 Aug 2026". Three things are worth checking against the specific data before treating that as final, not assuming one shape fits every case: (1) whether the year should always show, or only when it isn\u2019t the current year, common in interfaces where most dates are recent and a repeated current year adds noise without adding information; (2) whether very recent dates are better shown relative to now ("2 days ago", "Yesterday") with absolute dates only once something falls further back, a real usability gain for activity feeds and audit trails specifically, though it costs a small amount of precision and requires a decision about the cutoff; (3) whether the audience is a general one, where a text month reads fastest, or a technical/data-interchange one, where ISO 8601 (2026-08-04) is the more standard and more sortable choice despite being less immediately readable. None of these three is a universal default; each is a real trade-off that depends on who\u2019s reading the date and what they\u2019re using it for. One thing not to leave to a locale\u2019s own formatter: month abbreviations aren\u2019t guaranteed to be a uniform length. en-AU and en-GB both give September as "Sept" while every other month is 3 characters, a genuine convention, not a bug, but one that breaks the even column width a table needs, so it\u2019s safer to supply an explicit, fixed-width abbreviation list than to trust any single locale\u2019s formatting to stay uniform.',
+    applies: (s) => s.dataPoints !== 'low',
+  },
+  {
+    id: 'timestamp-timezone-required',
+    category: 'Data loading',
+    requirement: 'A timestamp that represents a specific moment, not just a calendar date, must show which timezone it\u2019s in whenever the reader might not be on the same clock as the system that generated it.',
+    why: 'A bare time like "3:45 pm" only means something to someone who already knows whose clock it\u2019s on. Without a timezone label, a distributed team, or a user working across regions, has no way to tell whether a shown time is current or many hours out of date, which defeats the point of showing a timestamp at all.',
+    typical: 'A timezone abbreviation next to the time (AEST, UTC), or a relative format ("2 minutes ago") that sidesteps the problem entirely by not requiring the reader to do timezone arithmetic themselves.',
+    applies: (s) => s.manualRefresh || s.realTimeUpdates,
+  },
 ];
 
 export function applicableStandards(selections, derived) {
