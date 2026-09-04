@@ -288,6 +288,16 @@ export const standards = [
     typical: 'A visually-hidden label on each stacked value naming its header, since one merged cell can\u2019t use the normal two-header/headers-id association a genuine two-column layout would.',
     applies: (s) => s.stackedValues,
   },
+
+  // Freshness
+  {
+    id: 'as-of-timestamp',
+    category: 'Data loading',
+    requirement: 'Where data can change after the page has loaded, whether through a manual refresh or automatically, the table must show when it was last updated. A user shouldn\u2019t have to guess how fresh what they\u2019re looking at is.',
+    why: 'The same underlying need behind the refresh-preserves-state standard: an action or a background process that changes the data without the user asking for it needs to leave a visible trace of when it happened, not just silently update the numbers.',
+    typical: 'An "As of [time]" label near the table\u2019s own controls, updated whenever a refresh completes or a real-time update lands, not only shown once at page load.',
+    applies: (s) => s.manualRefresh || s.realTimeUpdates,
+  },
 ];
 
 export function applicableStandards(selections, derived) {
