@@ -88,9 +88,11 @@ function FieldControl({ field, value, selections, onChange }) {
             onChange={(e) => onChange(e.target.checked)}
             style={{ marginTop: 3 }}
           />
-          <span>{field.question}</span>
+          <div>
+            {field.question}
+            <ExamplesToggle detail={field.detail} />
+          </div>
         </label>
-        <ExamplesToggle detail={field.detail} />
       </div>
     );
   }
