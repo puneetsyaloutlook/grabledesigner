@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
 import { STEPS, FRAMEWORK_ITEM } from '../lib/navSteps';
-import logoIcon from '../assets/icon-logo.svg';
+import logoWordmark from '../assets/logo-wordmark.png';
 import checkIcon from '../assets/icon-check.svg';
 
 const NAV_ITEMS = [...STEPS, FRAMEWORK_ITEM];
@@ -15,10 +15,9 @@ export default function Layout() {
       <aside className="side-nav">
         <div className="side-nav-brand">
           <NavLink to={`/${suffix}`} className="side-nav-title">
-            <img src={logoIcon} alt="" className="side-nav-logo" />
-            <span>Grid &amp; Table Designer</span>
+            <img src={logoWordmark} alt="Grid & Table Designer" className="side-nav-logo" />
           </NavLink>
-          <p className="side-nav-tagline">Encouraging your data display behaviours.</p>
+          <p className="side-nav-tagline">Encouraging your data display behaviour.</p>
         </div>
         <div className="side-nav-cards">
           {NAV_ITEMS.map((item) => (
