@@ -1321,6 +1321,22 @@ tr[aria-busy="true"] {
   background: var(--teal-100);
 }
 
+.card-more-link {
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 4px 0 0;
+  font: inherit;
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  color: var(--color-action);
+  cursor: pointer;
+}
+
+.card-more-link:hover {
+  text-decoration: underline;
+}
+
 .examples-detail {
   font-size: var(--text-sm-size);
   color: var(--text-secondary);
