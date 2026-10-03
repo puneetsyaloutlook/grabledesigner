@@ -177,6 +177,17 @@ a.nav-card.nav-card-standalone:hover {
     height: 100%;
   }
 
+  /* The separator reads as "this one's apart from the sequential steps"
+     above it in the vertical sidebar. In the horizontal row it instead
+     sits inside the Framework card's own equal-height slot and pushes
+     the card down from the top, which is what actually misaligned it,
+     not a height problem. Framework's own distinct background colour
+     already carries the "this one's different" signal here, so the rule
+     itself isn't needed at this breakpoint. */
+  .nav-separator {
+    display: none;
+  }
+
   .canvas {
     padding: var(--space-xl) var(--space-lg) 64px;
   }
