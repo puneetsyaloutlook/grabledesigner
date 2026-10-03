@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, ArrowUp, ArrowDown, GripVertical, RefreshCw, Download, Printer, Filter, MoreHorizontal } from 'lucide-react';
 import { sampleColumns, sampleRows } from '../lib/sampleData';
-import { formatAmount, formatAsOf, formatCell, fontStyleFor, STATUS_TONE } from '../lib/formatCell';
+import { formatAmount, formatAsOf, formatCell, fontStyleFor, STATUS_TONE, defaultDirFor } from '../lib/formatCell';
 import Drawer from './Drawer';
 import StatusIndicator from './StatusIndicator';
 
@@ -22,13 +22,6 @@ const GROUPS = [{ label: 'Origin', keys: ['region', 'channel'] }];
 // there's no label spanning them, the two stacked headers are the whole
 // story, and the pair only forms once both are visible together.
 const PAIRS = [{ keys: ['submitted', 'updated'] }];
-
-// Sort-default-direction standard: the first click sorts in the direction
-// that's actually the useful default for that data type, not always
-// ascending regardless of what the column holds.
-function defaultDirFor(column) {
-  return column?.type === 'date' ? 'desc' : 'asc';
-}
 
 // Truncation-reveal decision: tooltip on hover AND keyboard focus, not
 // native title (which fails keyboard users outright).

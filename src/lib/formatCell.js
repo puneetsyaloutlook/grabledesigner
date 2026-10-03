@@ -69,3 +69,11 @@ export const STATUS_TONE = {
   Approved: 'success',
   Closed: 'neutral',
 };
+
+// Sort-default-direction standard: the first click sorts in the direction
+// that's actually the useful default for that data type, not always
+// ascending regardless of what the column holds. Shared so the desktop
+// table and the mobile headers box sort identically on first click.
+export function defaultDirFor(column) {
+  return column?.type === 'date' ? 'desc' : 'asc';
+}

@@ -1175,7 +1175,7 @@ th.col-drag-over {
 .mobile-row-card {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-default);
-  padding: var(--space-sm) var(--space-md) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
 }
 
 .mobile-row-card-selected {
@@ -1183,17 +1183,35 @@ th.col-drag-over {
   background: var(--grid-accent-muted);
 }
 
-.mobile-row-card-top {
+/* Content on the left, the selection/action block on the right, divided by
+   a rule rather than just spaced apart, so the two read as genuinely
+   separate zones of the card rather than one more field among the rest. */
+.mobile-row-card-body {
   display: flex;
+  align-items: stretch;
+  gap: var(--space-md);
+}
+
+.mobile-row-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-row-side-block {
+  flex: none;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  min-height: 26px;
-  margin-bottom: var(--space-xs);
+  justify-content: flex-start;
+  gap: var(--space-sm);
+  padding-left: var(--space-md);
+  border-left: 1px solid var(--border-default);
 }
 
 /* The four corners themselves: a fixed 2x2 grid, not a wrapping flex list,
    so the layout stays exactly four fixed positions regardless of how long
-   any one value happens to be. */
+   any one value happens to be. Used identically by the headers box above
+   the list, so column 1 and 2 of every card line up under their header. */
 .mobile-row-corners {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1207,15 +1225,7 @@ th.col-drag-over {
 }
 
 .mobile-row-field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   min-width: 0;
-}
-
-.mobile-row-field-label {
-  font-size: var(--text-caption-size);
-  color: var(--text-secondary);
 }
 
 .mobile-row-field-value {
@@ -1229,6 +1239,114 @@ th.col-drag-over {
   margin-top: var(--space-sm);
   padding-top: var(--space-sm);
   border-top: 1px solid var(--border-default);
+}
+
+/* Headers box: the one place column names live now that the per-row
+   labels are gone, and the only place sorting is triggered from. */
+.mobile-headers-box {
+  padding: var(--space-xs) 0 var(--space-sm);
+  margin-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.mobile-header-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mobile-header-cell-sortable {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--grid-accent);
+}
+
+.mobile-overflow-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: var(--space-sm);
+  font: inherit;
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  color: var(--grid-accent);
+  cursor: pointer;
+}
+
+.mobile-overflow-chevron-open {
+  transform: rotate(90deg);
+}
+
+.mobile-filter-bar {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mobile-filter-bar .filter-input-global {
+  width: 100%;
+}
+
+.mobile-bulk-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.mobile-select-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm-size);
+  color: var(--text-secondary);
+}
+
+.mobile-bulk-row .bulk-bar {
+  margin-bottom: 0;
+}
+
+.mobile-action-menu-wrap {
+  position: relative;
+}
+
+.mobile-action-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+}
+
+.mobile-action-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font: inherit;
+  font-size: var(--text-sm-size);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.mobile-action-menu button:hover {
+  background: var(--neutral-100);
 }
 
 tr[aria-busy="true"] {
