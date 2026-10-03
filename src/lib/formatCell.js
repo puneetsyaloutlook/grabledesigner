@@ -44,6 +44,13 @@ export function formatCell(column, value) {
   return String(value);
 }
 
+// Numeric columns read right-aligned, text columns left-aligned. Shared so
+// the mobile four-corners view can place numeric fields in the right-hand
+// corners and align them the same way the desktop table does.
+export function alignFor(column) {
+  return column.type === 'currency' || column.type === 'number' ? 'right' : 'left';
+}
+
 // Numeric/alphanumeric font-treatment standard: numeric columns get tabular
 // figures so digits align down the column; ID/code-shaped columns get a
 // monospace font so mixed letters and numbers stay predictable to scan.

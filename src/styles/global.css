@@ -1234,6 +1234,14 @@ th.col-drag-over {
   min-width: 0;
 }
 
+/* Right-hand grid position: the header label and the value both sit flush
+   against the right edge, whatever type of column has landed there, so the
+   right edge of the card reads as one straight line down. */
+.mobile-corner-right {
+  text-align: right;
+  justify-content: flex-end;
+}
+
 .mobile-row-field-value {
   font-size: var(--text-body-size);
   font-weight: var(--text-body-weight);

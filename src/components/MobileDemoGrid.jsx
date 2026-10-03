@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, MoreVertical, Filter } from 'lucide-react';
 import { sampleColumns, sampleRows } from '../lib/sampleData';
-import { formatCell, fontStyleFor, defaultDirFor } from '../lib/formatCell';
+import { formatCell, fontStyleFor, defaultDirFor, alignFor } from '../lib/formatCell';
 import StatusIndicator from './StatusIndicator';
 import Drawer from './Drawer';
 
@@ -16,6 +16,25 @@ const TIER_ORDER = { low: 0, mid: 1, high: 2 };
 // as a simple stacked list.
 const CORNER_COUNT = 4;
 const FOUR_CORNERS_MIN = 3;
+
+// Right-side preference: within each top/bottom pair, a numeric or currency
+// column reads better right-aligned, so it takes the right-hand position
+// (index 1 or 3) whenever the pairing gives it a choice. Only ever swaps
+// within a pair, so the two left-to-right rows a column could appear in
+// don't move relative to each other, just left and right within one row.
+function preferNumericOnRight(columns) {
+  const next = [...columns];
+  [[0, 1], [2, 3]].forEach(([leftIdx, rightIdx]) => {
+    if (rightIdx >= next.length) return;
+    const left = next[leftIdx];
+    const right = next[rightIdx];
+    if (alignFor(left) === 'right' && alignFor(right) !== 'right') {
+      next[leftIdx] = right;
+      next[rightIdx] = left;
+    }
+  });
+  return next;
+}
 
 export default function MobileDemoGrid({ selections }) {
   const [rows, setRows] = useState(sampleRows);
@@ -34,7 +53,14 @@ export default function MobileDemoGrid({ selections }) {
   const tierCap = TIER_ORDER[selections.dataPoints] ?? 0;
   const visibleColumns = sampleColumns.filter((c) => TIER_ORDER[c.tier] <= tierCap);
   const useFourCorners = visibleColumns.length >= FOUR_CORNERS_MIN;
-  const cornerColumns = useFourCorners ? visibleColumns.slice(0, CORNER_COUNT) : visibleColumns;
+  const cornerColumns = useFourCorners
+    ? preferNumericOnRight(visibleColumns.slice(0, CORNER_COUNT))
+    : visibleColumns;
+  // Right-hand grid position, whatever the column sitting there holds. The
+  // user reads down the right edge expecting a straight line, so both
+  // corners in that column of the grid stay right-aligned together rather
+  // than switching with the data type.
+  const isRightSlot = (index) => useFourCorners && index % 2 === 1;
   // Everything not shown as a corner, whether it's beyond the four-corner
   // cap or outside the data-points tier entirely, lives behind the same
   // overflow method already chosen for row detail on the desktop demo.
@@ -245,14 +271,16 @@ export default function MobileDemoGrid({ selections }) {
           are gone. */}
       <div className="mobile-headers-box">
         <div className={useFourCorners ? 'mobile-row-corners' : 'mobile-row-stack'}>
-          {cornerColumns.map((col) => {
+          {cornerColumns.map((col, index) => {
             const sortable = selections.sorting !== 'none';
             const sortIndex = sortChain.findIndex((s) => s.key === col.key);
+            const rightAligned = isRightSlot(index);
             return sortable ? (
               <button
                 key={col.key}
                 type="button"
-                className="mobile-header-cell mobile-header-cell-sortable"
+                className={`mobile-header-cell mobile-header-cell-sortable${rightAligned ? ' mobile-corner-right' : ''}`}
+                style={rightAligned ? { flexDirection: 'row-reverse' } : undefined}
                 onClick={() => toggleSort(col.key)}
                 aria-sort={headerAriaSort(col)}
               >
@@ -263,7 +291,9 @@ export default function MobileDemoGrid({ selections }) {
                 )}
               </button>
             ) : (
-              <span key={col.key} className="mobile-header-cell">{col.label}</span>
+              <span key={col.key} className={`mobile-header-cell${rightAligned ? ' mobile-corner-right' : ''}`}>
+                {col.label}
+              </span>
             );
           })}
         </div>
@@ -287,8 +317,11 @@ export default function MobileDemoGrid({ selections }) {
                 <div className="mobile-row-card-body">
                   <div className="mobile-row-card-content">
                     <div className={useFourCorners ? 'mobile-row-corners' : 'mobile-row-stack'}>
-                      {cornerColumns.map((col) => (
-                        <div key={col.key} className="mobile-row-field">
+                      {cornerColumns.map((col, index) => (
+                        <div
+                          key={col.key}
+                          className={`mobile-row-field${isRightSlot(index) ? ' mobile-corner-right' : ''}`}
+                        >
                           <span className="sr-only">{col.label}: </span>
                           <span className="mobile-row-field-value" style={fontStyleFor(col)}>
                             {col.type === 'status' && selections.legend && <StatusIndicator value={row[col.key]} />}
