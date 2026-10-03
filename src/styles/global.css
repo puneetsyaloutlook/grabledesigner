@@ -1128,6 +1128,109 @@ th.col-drag-over {
   margin-top: var(--space-md);
 }
 
+/* Desktop/Mobile simulation switch on the Experience page. Only rendered
+   once mobile is actually a selected breakpoint, so it never implies a
+   capability that wasn't asked for. */
+.view-toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--neutral-100);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  margin-bottom: var(--space-md);
+}
+
+.view-toggle-button {
+  border: none;
+  background: none;
+  padding: 6px var(--space-md);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.view-toggle-button-active {
+  background: #fff;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Four-corners mobile simulation: one card per row, capped to a 390px
+   phone-width column so the "no horizontal scroll" constraint is visible,
+   not just technically true at any width. */
+.mobile-demo-card {
+  max-width: 390px;
+}
+
+.mobile-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mobile-row-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.mobile-row-card-selected {
+  border-color: var(--grid-accent);
+  background: var(--grid-accent-muted);
+}
+
+.mobile-row-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 26px;
+  margin-bottom: var(--space-xs);
+}
+
+/* The four corners themselves: a fixed 2x2 grid, not a wrapping flex list,
+   so the layout stays exactly four fixed positions regardless of how long
+   any one value happens to be. */
+.mobile-row-corners {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.mobile-row-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.mobile-row-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mobile-row-field-label {
+  font-size: var(--text-caption-size);
+  color: var(--text-secondary);
+}
+
+.mobile-row-field-value {
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow-wrap: break-word;
+}
+
+.mobile-row-overflow {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-default);
+}
+
 tr[aria-busy="true"] {
   opacity: 0.6;
 }
