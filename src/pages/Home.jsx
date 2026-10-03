@@ -1,4 +1,8 @@
 import { STEPS } from '../lib/navSteps';
+import iconChecklist from '../assets/icon-home-checklist.svg';
+import iconProtect from '../assets/icon-home-protect.svg';
+import iconGrid from '../assets/icon-home-grid.svg';
+import iconDocument from '../assets/icon-home-document.svg';
 
 // The chip on each row echoes the sidebar's own label/detail exactly (from
 // the shared STEPS data), the paragraph beside it is the longer version
@@ -10,6 +14,13 @@ const SUMMARIES = {
   '/standards': 'UX and accessibility standards that apply, based on what was selected on Features needed. Each one is triggered by a specific selection.',
   '/experience': 'A working demo built from what was selected on Features needed, implementing the applicable standards and the specific rendering choices behind it.',
   '/documentation': 'The net result: what to build for this configuration, and why, synthesised from your selections, the applicable standards, and the decisions made in Experience.',
+};
+
+const ICONS = {
+  '/features': iconChecklist,
+  '/standards': iconProtect,
+  '/experience': iconGrid,
+  '/documentation': iconDocument,
 };
 
 export default function Home() {
@@ -34,6 +45,7 @@ export default function Home() {
           {STEPS.map((step) => (
             <div className="home-step-row" key={step.to}>
               <div className="home-step-chip">
+                <img className="home-step-icon" src={ICONS[step.to]} alt="" aria-hidden="true" />
                 <h3>{step.label}</h3>
                 <p>{step.detail}</p>
               </div>
