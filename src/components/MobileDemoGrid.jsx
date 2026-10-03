@@ -280,7 +280,14 @@ export default function MobileDemoGrid({ selections }) {
                 key={col.key}
                 type="button"
                 className={`mobile-header-cell mobile-header-cell-sortable${rightAligned ? ' mobile-corner-right' : ''}`}
-                style={rightAligned ? { flexDirection: 'row-reverse' } : undefined}
+                // Reversing the row swaps the caret and label so the label's
+                // own edge, not the caret's, lines up with the numbers below
+                // it. Flipping the row also flips which end "flex-end" means,
+                // so pairing it with flex-end here would push both back to
+                // the left, cancelling the reversal out. flex-start is what
+                // actually lands the pair against the right edge once the
+                // row itself is reversed.
+                style={rightAligned ? { flexDirection: 'row-reverse', justifyContent: 'flex-start' } : undefined}
                 onClick={() => toggleSort(col.key)}
                 aria-sort={headerAriaSort(col)}
               >
