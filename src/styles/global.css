@@ -71,12 +71,12 @@ a {
 }
 
 .nav-card-standalone {
-  background: rgba(255, 255, 255, 0.22);
+  background: #5A8388;
   border: none;
 }
 
 .nav-card-standalone:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #668F94;
 }
 
 .nav-card-standalone .nav-card-detail {
