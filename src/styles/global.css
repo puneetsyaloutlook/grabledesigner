@@ -1230,7 +1230,7 @@ th.col-drag-over {
 
 .mobile-row-field-value {
   font-size: var(--text-body-size);
-  font-weight: 500;
+  font-weight: var(--text-body-weight);
   color: var(--text-primary);
   overflow-wrap: break-word;
 }
