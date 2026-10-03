@@ -8,6 +8,10 @@ export function encodeSelections(selections) {
   allFields.forEach((field) => {
     const value = selections[field.key];
     if (value === undefined || value === null) return;
+    if (field.type === 'multi') {
+      if (Array.isArray(value) && value.length > 0) params.set(field.key, value.join(','));
+      return;
+    }
     params.set(field.key, String(value));
   });
   return params.toString();
@@ -21,6 +25,8 @@ export function decodeSelections(searchParams) {
     if (raw === null) return;
     if (field.type === 'boolean') {
       result[field.key] = raw === 'true';
+    } else if (field.type === 'multi') {
+      result[field.key] = raw === '' ? [] : raw.split(',');
     } else {
       result[field.key] = raw;
     }

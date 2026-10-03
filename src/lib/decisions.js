@@ -219,6 +219,18 @@ export const decisions = [
     tradeoff: 'Whichever scheme is chosen, the standard that actually matters is programmatic association, not the symbol itself: an asterisk and a number are equally meaningless to a screen reader without something connecting the marker to its explanation.',
     applies: (s) => s.footnote,
   },
+  {
+    id: 'mobile-responsive-approach',
+    title: 'Mobile rendering approach',
+    category: 'Responsive layout',
+    question: 'How does this grid render at the mobile breakpoint?',
+    options: [
+      { label: 'A purpose-built mobile view, scoped to a narrower task', chosen: true, note: 'Mobile use of an enterprise grid is usually a more specific, narrower use case than the full desktop workflow, so the layout is designed for that task rather than carrying every desktop column and action along at a smaller size.' },
+      { label: 'The same grid, responsively collapsed (cards, horizontal scroll, or dropped columns)', chosen: false, note: 'Keeps one build to maintain, but tends to carry desktop-scale complexity into a context that rarely needs all of it.' },
+    ],
+    tradeoff: 'A dedicated mobile view costs a second design and build effort. Collapsing the desktop grid responsively avoids that cost, but mobile use of an enterprise grid is rarely "the same task on a smaller screen": it’s usually a specific, narrower use case, so a shrunk desktop grid often ships complexity the mobile task doesn’t actually need.',
+    applies: (s) => s.responsiveRequired && Array.isArray(s.breakpoints) && s.breakpoints.includes('mobile'),
+  },
 ];
 
 export function applicableDecisions(selections, derived) {

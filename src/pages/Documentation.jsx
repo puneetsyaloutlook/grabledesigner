@@ -26,6 +26,16 @@ function summariseSelections(selections) {
         if (value) rows.push({ name: field.docLabel, description: field.docDescription });
         return;
       }
+      if (field.type === 'multi') {
+        if (Array.isArray(value) && value.length > 0) {
+          const labels = field.options
+            .filter((o) => value.includes(o.value))
+            .map((o) => o.label)
+            .join(', ');
+          rows.push({ name: field.docLabel, description: `${labels}.` });
+        }
+        return;
+      }
       const chosen = field.options.find((o) => o.value === value);
       if (chosen && value !== 'none') {
         rows.push({ name: field.docLabel, description: `${chosen.label}.` });

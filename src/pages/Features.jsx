@@ -97,6 +97,35 @@ function FieldControl({ field, value, selections, onChange }) {
     );
   }
 
+  if (field.type === 'multi') {
+    const chosen = Array.isArray(value) ? value : [];
+    function toggle(optionValue) {
+      onChange(
+        chosen.includes(optionValue)
+          ? chosen.filter((v) => v !== optionValue)
+          : [...chosen, optionValue]
+      );
+    }
+    return (
+      <div>
+        <p style={{ fontWeight: 500, margin: '0 0 var(--space-xs)' }}>{field.question}</p>
+        <ExamplesToggle detail={field.detail} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', marginTop: 'var(--space-sm)' }}>
+          {field.options.map((option) => (
+            <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)' }}>
+              <input
+                type="checkbox"
+                checked={chosen.includes(option.value)}
+                onChange={() => toggle(option.value)}
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <p style={{ fontWeight: 500, margin: '0 0 var(--space-xs)' }}>{field.question}</p>

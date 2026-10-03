@@ -180,6 +180,26 @@ export const selectionSchema = [
         ],
       },
       {
+        key: 'responsiveRequired',
+        type: 'boolean',
+        docLabel: 'Responsiveness',
+        docDescription: 'Required, so the layout adapts across breakpoints.',
+        question: 'Does this grid need to adapt across screen sizes, rather than assuming one fixed desktop width?',
+      },
+      {
+        key: 'breakpoints',
+        docLabel: 'Breakpoints supported',
+        type: 'multi',
+        question: 'Which breakpoints does this need to support?',
+        detail: 'Mobile is usually the odd one out. The other three are mostly a question of how much is visible at once, but a phone-width screen is almost always a more specific, narrower use case than whatever the desktop persona is doing, not the same task with less room. That tends to call for a purpose-built mobile view rather than a shrunk or collapsed version of the desktop grid.',
+        options: [
+          { value: 'wide', label: 'Wide (large monitor, dense desktop views)' },
+          { value: 'desktop', label: 'Desktop' },
+          { value: 'tablet', label: 'Tablet' },
+          { value: 'mobile', label: 'Mobile' },
+        ],
+      },
+      {
         key: 'responsiveBehaviour',
         docLabel: 'Responsive behaviour',
         type: 'single',
@@ -259,6 +279,8 @@ export function defaultSelections() {
     group.fields.forEach((field) => {
       if (field.type === 'boolean') {
         defaults[field.key] = false;
+      } else if (field.type === 'multi') {
+        defaults[field.key] = [];
       } else {
         defaults[field.key] = field.options[0].value;
       }
