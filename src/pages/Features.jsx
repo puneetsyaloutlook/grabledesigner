@@ -4,9 +4,14 @@ import { Info } from 'lucide-react';
 import { selectionSchema, defaultSelections } from '../lib/selectionSchema';
 import { decodeSelections, encodeSelections } from '../lib/selectionState';
 
-function isOptionEnabled(option, selections) {
-  if (!option.requires) return true;
-  return Object.entries(option.requires).every(([key, allowed]) =>
+// Shared by both a field (hides the whole question, e.g. breakpoints only
+// makes sense once responsiveness is actually required) and a single option
+// within a field (disables just that choice, e.g. "subtotal per group"
+// needs row grouping on first). Same shape, `requires: { key: [allowed] }`,
+// just applied at a different level.
+function isOptionEnabled(entity, selections) {
+  if (!entity.requires) return true;
+  return Object.entries(entity.requires).every(([key, allowed]) =>
     allowed.includes(selections[key])
   );
 }
@@ -27,7 +32,16 @@ export default function Features() {
   }, [selections]);
 
   function setField(key, value) {
-    setSelections((prev) => ({ ...prev, [key]: value }));
+    setSelections((prev) => {
+      const next = { ...prev, [key]: value };
+      // Turning responsiveness off makes the breakpoints question disappear;
+      // clear it too, so a hidden field can't leave a stale answer behind
+      // in the URL and the documentation.
+      if (key === 'responsiveRequired' && value === false) {
+        next.breakpoints = [];
+      }
+      return next;
+    });
   }
 
   return (
@@ -41,15 +55,17 @@ export default function Features() {
           <section key={group.group} className="card">
             <h2>{group.group}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-              {group.fields.map((field) => (
-                <FieldControl
-                  key={field.key}
-                  field={field}
-                  value={selections[field.key]}
-                  selections={selections}
-                  onChange={(value) => setField(field.key, value)}
-                />
-              ))}
+              {group.fields
+                .filter((field) => isOptionEnabled(field, selections))
+                .map((field) => (
+                  <FieldControl
+                    key={field.key}
+                    field={field}
+                    value={selections[field.key]}
+                    selections={selections}
+                    onChange={(value) => setField(field.key, value)}
+                  />
+                ))}
             </div>
           </section>
         ))}

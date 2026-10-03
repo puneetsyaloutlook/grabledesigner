@@ -192,22 +192,12 @@ export const selectionSchema = [
         type: 'multi',
         question: 'Which breakpoints does this need to support?',
         detail: 'Mobile is usually the odd one out. The other three are mostly a question of how much is visible at once, but a phone-width screen is almost always a more specific, narrower use case than whatever the desktop persona is doing, not the same task with less room. That tends to call for a purpose-built mobile view rather than a shrunk or collapsed version of the desktop grid.',
+        requires: { responsiveRequired: [true] },
         options: [
           { value: 'wide', label: 'Wide (large monitor, dense desktop views)' },
           { value: 'desktop', label: 'Desktop' },
           { value: 'tablet', label: 'Tablet' },
           { value: 'mobile', label: 'Mobile' },
-        ],
-      },
-      {
-        key: 'responsiveBehaviour',
-        docLabel: 'Responsive behaviour',
-        type: 'single',
-        question: 'How should this behave on a narrow screen?',
-        options: [
-          { value: 'horizontalScroll', label: 'Scroll horizontally' },
-          { value: 'cardStack', label: 'Collapse into cards' },
-          { value: 'columnPriority', label: 'Drop lower-priority columns first' },
         ],
       },
     ],
