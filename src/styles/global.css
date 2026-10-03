@@ -70,12 +70,15 @@ a {
   margin: var(--space-md) 0;
 }
 
-.nav-card-standalone {
+/* Compound selector (.nav-card.nav-card-standalone) so this wins on
+   specificity rather than depending on source order relative to .nav-card
+   below, since both are single-class selectors of equal weight. */
+a.nav-card.nav-card-standalone {
   background: #5A8388;
   border: none;
 }
 
-.nav-card-standalone:hover {
+a.nav-card.nav-card-standalone:hover {
   background: #668F94;
 }
 
