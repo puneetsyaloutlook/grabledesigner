@@ -1159,9 +1159,14 @@ th.col-drag-over {
   box-shadow: var(--shadow-elevated);
 }
 
-/* Four-corners mobile simulation: one card per row, capped to a 390px
+/* Four-corners mobile simulation: one row per claim, capped to a 390px
    phone-width column so the "no horizontal scroll" constraint is visible,
-   not just technically true at any width. */
+   not just technically true at any width. Flush against each other,
+   divided only by a bottom rule, the same way table rows are, rather than
+   a boxed card per row: the four-corners layout is a restructuring of the
+   row, not a change of component, and a gap or border around each one
+   would claim a visual distinction (a separate, boxed object) that isn't
+   actually there. */
 .mobile-demo-card {
   max-width: 390px;
 }
@@ -1169,17 +1174,18 @@ th.col-drag-over {
 .mobile-card-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
 }
 
 .mobile-row-card {
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-default);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.mobile-row-card:last-child {
+  border-bottom: none;
 }
 
 .mobile-row-card-selected {
-  border-color: var(--grid-accent);
   background: var(--grid-accent-muted);
 }
 
