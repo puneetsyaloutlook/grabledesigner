@@ -366,9 +366,23 @@ h3 {
   max-width: 65ch;
 }
 
+/* Only the Features row carries this button, so it's the sole case where
+   .home-step-row holds a third child. Grid auto-flow would otherwise drop
+   it into the first (300px) column on a new row; this keeps it under the
+   description in the second column instead. */
+.home-step-start {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: var(--space-sm);
+}
+
 @media (max-width: 720px) {
   .home-step-row {
     grid-template-columns: 1fr;
+  }
+
+  .home-step-start {
+    grid-column: 1;
   }
 }
 

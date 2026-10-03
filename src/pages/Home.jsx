@@ -1,3 +1,4 @@
+import { NavLink, useSearchParams } from 'react-router-dom';
 import { STEPS } from '../lib/navSteps';
 import iconChecklist from '../assets/icon-home-checklist.svg';
 import iconProtect from '../assets/icon-home-protect.svg';
@@ -8,7 +9,10 @@ import iconDocument from '../assets/icon-home-document.svg';
 // the shared STEPS data), the paragraph beside it is the longer version
 // that only makes sense once you're not already looking at the sidebar.
 // These rows are informational only, not links: the left nav is the only
-// clickable way to move between pages.
+// clickable way to move between pages. The Features row is the one
+// exception, since it's the natural starting point for someone reading
+// this page top to bottom, so it gets its own "Start here" button through
+// to the first step.
 const SUMMARIES = {
   '/features': 'Start with the patterns your users need to find in the data. Then map the functionality specified here to those needs, not the reverse.',
   '/standards': 'UX and accessibility standards that apply, based on what was selected on Features needed. Each one is triggered by a specific selection.',
@@ -24,6 +28,10 @@ const ICONS = {
 };
 
 export default function Home() {
+  const [searchParams] = useSearchParams();
+  const query = searchParams.toString();
+  const suffix = query ? `?${query}` : '';
+
   return (
     <div>
       <div className="content-header">
@@ -52,6 +60,11 @@ export default function Home() {
                 </div>
               </div>
               <p className="home-step-description">{SUMMARIES[step.to]}</p>
+              {step.to === '/features' && (
+                <NavLink to={`${step.to}${suffix}`} className="button button-primary home-step-start">
+                  Start here
+                </NavLink>
+              )}
             </div>
           ))}
         </div>
