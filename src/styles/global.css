@@ -71,11 +71,16 @@ a {
 }
 
 .nav-card-standalone {
-  border-style: dashed;
+  background: rgba(255, 255, 255, 0.22);
+  border: none;
 }
 
-.nav-card-standalone.nav-card-active {
-  border-style: solid;
+.nav-card-standalone:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.nav-card-standalone .nav-card-detail {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .nav-card {
