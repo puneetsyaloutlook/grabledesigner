@@ -46,8 +46,10 @@ export default function Home() {
             <div className="home-step-row" key={step.to}>
               <div className="home-step-chip">
                 <img className="home-step-icon" src={ICONS[step.to]} alt="" aria-hidden="true" />
-                <h3>{step.label}</h3>
-                <p>{step.detail}</p>
+                <div className="home-step-chip-text">
+                  <h3>{step.label}</h3>
+                  <p>{step.detail}</p>
+                </div>
               </div>
               <p className="home-step-description">{SUMMARIES[step.to]}</p>
             </div>

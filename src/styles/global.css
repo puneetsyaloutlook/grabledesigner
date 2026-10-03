@@ -301,6 +301,9 @@ h3 {
 }
 
 .home-step-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
   background: var(--warm-100);
   border: 1px solid var(--warm-500);
   border-radius: var(--radius-lg);
@@ -309,12 +312,12 @@ h3 {
 
 .home-step-icon {
   display: block;
-  width: 32px;
-  height: 32px;
-  margin: 0 0 var(--space-sm);
+  flex: none;
+  width: 40px;
+  height: 40px;
 }
 
-.home-step-chip h3 {
+.home-step-chip-text h3 {
   font-family: var(--font-sans);
   font-size: var(--text-body-size);
   font-weight: 700;
@@ -322,7 +325,7 @@ h3 {
   color: var(--neutral-900);
 }
 
-.home-step-chip p {
+.home-step-chip-text p {
   font-size: var(--text-sm-size);
   color: var(--text-secondary);
   margin: 0;
