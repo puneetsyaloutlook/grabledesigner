@@ -163,9 +163,18 @@ a.nav-card.nav-card-standalone:hover {
     flex-direction: row;
   }
 
+  /* .side-nav-cards' own flex row already stretches each card's wrapping
+     div to match the tallest one (a two-line label like "Applicable
+     standards" against a one-line one like "Framework"), but the anchor
+     inside that div is a plain block element, so it was only ever as tall
+     as its own text, leaving the shorter cards' backgrounds stopping short
+     of the wrapper's actual height and the row looking uneven along the
+     bottom edge. Filling the wrapper's height is what actually carries
+     that stretch through to the card people see. */
   .nav-card {
     flex-shrink: 0;
     min-width: 180px;
+    height: 100%;
   }
 
   .canvas {
