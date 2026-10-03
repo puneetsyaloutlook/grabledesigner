@@ -279,7 +279,7 @@ export default function MobileDemoGrid({ selections }) {
               <button
                 key={col.key}
                 type="button"
-                className={`mobile-header-cell mobile-header-cell-sortable${rightAligned ? ' mobile-corner-right' : ''}`}
+                className={`mobile-header-cell mobile-header-cell-sortable${rightAligned ? ' mobile-corner-right' : ''}${sortIndex > -1 ? ' mobile-header-cell-active' : ''}`}
                 // Reversing the row swaps the caret and label so the label's
                 // own edge, not the caret's, lines up with the numbers below
                 // it. Flipping the row also flips which end "flex-end" means,
@@ -331,8 +331,14 @@ export default function MobileDemoGrid({ selections }) {
                         >
                           <span className="sr-only">{col.label}: </span>
                           <span className="mobile-row-field-value" style={fontStyleFor(col)}>
-                            {col.type === 'status' && selections.legend && <StatusIndicator value={row[col.key]} />}
-                            {formatCell(col, row[col.key])}
+                            {col.type === 'status' && selections.legend ? (
+                              <span className="status-cell">
+                                <StatusIndicator value={row[col.key]} />
+                                {formatCell(col, row[col.key])}
+                              </span>
+                            ) : (
+                              formatCell(col, row[col.key])
+                            )}
                           </span>
                         </div>
                       ))}

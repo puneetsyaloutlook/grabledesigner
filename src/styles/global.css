@@ -1176,9 +1176,19 @@ th.col-drag-over {
   flex-direction: column;
 }
 
+/* Bled out to the card's own edges (negative margin matching the card's
+   padding, reclaimed as padding on the row itself) rather than staying
+   inset, so a selected row's highlight and left accent bar can run the
+   full width of the card, not stop short at an inner content column the
+   way a plain background tint on an inset row would. The 3px transparent
+   border is reserved on every row, selected or not, so picking a row up
+   doesn't nudge its own text 3px to the right. */
 .mobile-row-card {
-  padding: var(--space-sm) 0;
+  margin: 0 calc(-1 * var(--space-xl));
+  padding: var(--space-md) var(--space-xl);
   border-bottom: 1px solid var(--border-default);
+  border-left: 3px solid transparent;
+  transition: background-color 150ms ease, border-left-color 150ms ease;
 }
 
 .mobile-row-card:last-child {
@@ -1187,6 +1197,7 @@ th.col-drag-over {
 
 .mobile-row-card-selected {
   background: var(--grid-accent-muted);
+  border-left-color: var(--grid-accent);
 }
 
 /* Content on the left, the selection/action block on the right, divided by
@@ -1209,9 +1220,28 @@ th.col-drag-over {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   padding-left: var(--space-md);
   border-left: 1px solid var(--border-default);
+}
+
+/* Selection and the action menu are the two things a thumb actually taps
+   on this card, so they get the touch sizing the rest of the row doesn't
+   need: a visible 20px control, recoloured to the grid's own accent rather
+   than left as a default-blue system checkbox, inside a 36px square hit
+   area. */
+.mobile-row-side-block input[type='checkbox'],
+.mobile-row-side-block input[type='radio'] {
+  width: 20px;
+  height: 20px;
+  margin: 8px;
+  accent-color: var(--grid-accent);
+  cursor: pointer;
+}
+
+.mobile-row-side-block .icon-button {
+  width: 36px;
+  height: 36px;
 }
 
 /* The four corners themselves: a fixed 2x2 grid, not a wrapping flex list,
@@ -1256,10 +1286,15 @@ th.col-drag-over {
 }
 
 /* Headers box: the one place column names live now that the per-row
-   labels are gone, and the only place sorting is triggered from. */
+   labels are gone, and the only place sorting is triggered from. Given its
+   own tinted band, bled out to the card's edges the same way a selected
+   row is, so it reads as a column-header bar the way the desktop table's
+   header row does, rather than a caption floating on the same white as
+   the data under it. */
 .mobile-headers-box {
-  padding: var(--space-xs) 0 var(--space-sm);
-  margin-bottom: var(--space-sm);
+  background: var(--grid-header-bg);
+  margin: 0 calc(-1 * var(--space-xl)) var(--space-sm);
+  padding: var(--space-sm) var(--space-xl);
   border-bottom: 1px solid var(--border-strong);
 }
 
@@ -1280,6 +1315,14 @@ th.col-drag-over {
   padding: 0;
   cursor: pointer;
   color: var(--grid-accent);
+}
+
+/* The desktop table gives the actively-sorted column extra weight on top
+   of the shared accent colour every sortable header already carries, so
+   it reads as "this one, specifically" rather than just "sortable". Same
+   treatment here, for the same reason. */
+.mobile-header-cell-active {
+  font-weight: 700;
 }
 
 .mobile-overflow-trigger {
@@ -1336,16 +1379,23 @@ th.col-drag-over {
 .mobile-action-menu {
   position: absolute;
   right: 0;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   z-index: 5;
   display: flex;
   flex-direction: column;
-  min-width: 120px;
+  min-width: 140px;
   background: #fff;
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-default);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated);
   overflow: hidden;
+  animation: mobile-menu-in 120ms ease;
+  transform-origin: top right;
+}
+
+@keyframes mobile-menu-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-2px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .mobile-action-menu button {
@@ -1353,6 +1403,7 @@ th.col-drag-over {
   border: none;
   text-align: left;
   padding: var(--space-sm) var(--space-md);
+  min-height: 44px;
   font: inherit;
   font-size: var(--text-sm-size);
   color: var(--text-primary);
