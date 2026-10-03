@@ -13,6 +13,6 @@ export const STEPS = [
 export const FRAMEWORK_ITEM = {
   to: '/framework',
   label: 'Framework',
-  detail: 'The bigger picture this tool’s work sits inside.',
+  detail: 'Tabular data display is just one stage in the maturity curve.',
   separate: true,
 };
