@@ -1177,15 +1177,18 @@ th.col-drag-over {
 }
 
 /* Bled out to the card's own edges (negative margin matching the card's
-   padding, reclaimed as padding on the row itself) rather than staying
+   own padding, reclaimed as padding on the row itself) rather than staying
    inset, so a selected row's highlight and left accent bar can run the
    full width of the card, not stop short at an inner content column the
-   way a plain background tint on an inset row would. The 3px transparent
-   border is reserved on every row, selected or not, so picking a row up
-   doesn't nudge its own text 3px to the right. */
+   way a plain background tint on an inset row would. .demo-card sets its
+   own padding to --space-lg, overriding --space-xl from the plain .card
+   it also carries, so the bleed has to match --space-lg specifically or
+   it overshoots the card's actual edge. The 3px transparent border is
+   reserved on every row, selected or not, so picking a row up doesn't
+   nudge its own text 3px to the right. */
 .mobile-row-card {
-  margin: 0 calc(-1 * var(--space-xl));
-  padding: var(--space-md) var(--space-xl);
+  margin: 0 calc(-1 * var(--space-lg));
+  padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--border-default);
   border-left: 3px solid transparent;
   transition: background-color 150ms ease, border-left-color 150ms ease;
@@ -1290,11 +1293,13 @@ th.col-drag-over {
    own tinted band, bled out to the card's edges the same way a selected
    row is, so it reads as a column-header bar the way the desktop table's
    header row does, rather than a caption floating on the same white as
-   the data under it. */
+   the data under it. Matches --space-lg, not --space-xl, because that's
+   what .demo-card's own padding actually resolves to (see .mobile-row-card
+   above for why). */
 .mobile-headers-box {
   background: var(--grid-header-bg);
-  margin: 0 calc(-1 * var(--space-xl)) var(--space-sm);
-  padding: var(--space-sm) var(--space-xl);
+  margin: 0 calc(-1 * var(--space-lg)) var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
   border-bottom: 1px solid var(--border-strong);
 }
 
